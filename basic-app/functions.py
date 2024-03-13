@@ -8,21 +8,8 @@ def parse_mutation_files(filename):
     mut_list = []
     for x, y in zip(df.counts.tolist(), df.position.tolist()):
         mut_list.extend([y] * x)
-    return mut_list
-
-# function to make mutation dataframe
-def mutation_df():
-    chronic = parse_mutation_files('/Users/egill/Projects/chronic_infection_python/basic-app/data/chronicnucl.tsv')
-    deer = parse_mutation_files('/Users/egill/Projects/chronic_infection_python/basic-app/data/deernucl.tsv')
-    global_mut = parse_mutation_files('/Users/egill/Projects/chronic_infection_python/basic-app/data/globalnucl.tsv')
-    
-    mut_dict = {'chronic': chronic,
-                'deer': deer,
-                'global': global_mut}
-    
-    df = pd.DataFrame.from_dict(mut_dict, orient='index').T.reset_index(drop=True)
-    return df
-
+    total_mutations = sum(df.counts.tolist())
+    return mut_list, total_mutations
 
 # function to parse gene files
 def parse_gene_files(filename):
