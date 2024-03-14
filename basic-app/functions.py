@@ -42,6 +42,6 @@ def make_bins(x, binsize):
             bins0 = names
     return counts, bins0
 
-# function to put mutations in bins
-def get_counts(df):
-    pass
+# function to calculate likelihood
+def get_likelihood(existing_bin_counts, test_bin_counts):
+    return np.sum(np.log(((existing_bin_counts + 1)/np.sum(existing_bin_counts + 1)) ** test_bin_counts))
