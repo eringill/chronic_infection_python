@@ -1,11 +1,8 @@
 from shiny.express import input, render, ui
 from shiny import reactive
-import plotly.express as px
 import plotly.graph_objects as go
 from shinywidgets import render_widget
-import numpy as np
 import functions
-import pandas as pd
 
 ui.page_opts(title="SARS-CoV-2 Chronic Infection Calculator")
 
@@ -62,7 +59,7 @@ def hist1():
     
 @reactive.calc
 def calc_likelihoods():
-    likelihood_list, most_likely = functions.most_likely(input.var2(), input.var(), global_, chronic, deer)
+    likelihood_list, most_likely = functions.most_likely(input.var(), global_, chronic, deer, input.var2())
     return likelihood_list, most_likely
 
 @render.text
@@ -71,16 +68,29 @@ def txt():
 
 @render.text
 def txt1():
-    return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]}'
+    try:
+        return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]}'
+    except:
+        return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
+    
 
 @render.text
 def txt2():
-    return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]}'
+    try:
+        return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]}'
+    except:
+        pass
 
 @render.text
 def txt3():
-    return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]}'
+    try:
+        return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]}'
+    except:
+        pass
 
 @render.text
 def txt4():
-    return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations.'
+    try:
+        return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations.'
+    except:
+        pass
