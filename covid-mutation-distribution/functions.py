@@ -15,11 +15,11 @@ def parse_mutation_files(filename):
 # gene bins from Wuhan reference sequence NC_045512.2
 def parse_gene_files(filename):
     if filename == 'gene':
-        df = pd.read_csv('/Users/egill/Projects/chronic_infection_python/basic-app/data/genes.csv')
+        df = pd.read_csv('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/genes.csv')
         genelist = df['start'].tolist()
         names = df['gene'].tolist()
     elif filename == 'genes_split':
-        df = pd.read_csv('/Users/egill/Projects/chronic_infection_python/basic-app/data/genes_split.csv')
+        df = pd.read_csv('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/genes_split.csv')
         genelist = df['start'].tolist()
         names = df['gene'].tolist()
     return genelist, names

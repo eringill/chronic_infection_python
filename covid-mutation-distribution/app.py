@@ -14,9 +14,9 @@ with ui.sidebar(bg="#f8f8f8"):
                     choices= [int(500), int(1000), 'gene', 'genes_split'])
     (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here", ""),)
 
-chronic, total_chronic = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/basic-app/data/chronicnucl.tsv')
-deer, total_deer = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/basic-app/data/deernucl.tsv')
-global_, total_global = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/basic-app/data/globalnucl.tsv')
+chronic, total_chronic = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/chronicnucl.tsv')
+deer, total_deer = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/deernucl.tsv')
+global_, total_global = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/globalnucl.tsv')
 
 
 @render_widget
