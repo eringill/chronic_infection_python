@@ -1,5 +1,5 @@
 from shiny.express import input, render, ui
-from shiny import module
+from shiny import reactive
 import plotly.express as px
 import plotly.graph_objects as go
 from shinywidgets import render_widget
@@ -9,7 +9,7 @@ import pandas as pd
 
 ui.page_opts(title="SARS-CoV-2 Chronic Infection Calculator")
 
-with ui.sidebar():
+with ui.sidebar(bg="#f8f8f8"):
     ui.input_select("var", "Select Bin Size", 
                     choices= [int(500), int(1000), 'gene', 'genes_split'])
     (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here", ""),)
@@ -60,3 +60,27 @@ def hist1():
     )
     return fig
     
+@reactive.calc
+def calc_likelihoods():
+    likelihood_list, most_likely = functions.most_likely(input.var2(), input.var(), global_, chronic, deer)
+    return likelihood_list, most_likely
+
+@render.text
+def txt():
+    return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
+
+@render.text
+def txt1():
+    return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]}'
+
+@render.text
+def txt2():
+    return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]}'
+
+@render.text
+def txt3():
+    return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]}'
+
+@render.text
+def txt4():
+    return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations.'
