@@ -10,10 +10,12 @@ with ui.sidebar(bg="#f8f8f8"):
     ui.input_select("var", "Select Bin Size", 
                     choices= [int(500), int(1000), 'gene', 'genes_split'])
     (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here", ""),)
+    ui.input_select("var3", "Select Palette",
+                    choices= ["viridis", "inferno", "plasma"])
 
-chronic, total_chronic = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/chronicnucl.tsv')
-deer, total_deer = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/deernucl.tsv')
-global_, total_global = functions.parse_mutation_files('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/globalnucl.tsv')
+chronic, total_chronic = functions.parse_mutation_files('covid-mutation-distribution/chronicnucl.tsv')
+deer, total_deer = functions.parse_mutation_files('covid-mutation-distribution/deernucl.tsv')
+global_, total_global = functions.parse_mutation_files('covid-mutation-distribution/globalnucl.tsv')
 
 
 @render_widget
@@ -30,14 +32,14 @@ def hist1():
     x=bins0,
     y=[x/total_chronic for x in counts0], # normalize bin counts by total number of mutations
     name='chronic', # name used in legend and hover labels,
-    # marker_color='#EB89B5',
+    marker_color=functions.select_palette(input.var3())[0],
     opacity=0.75
     ))
     fig.add_trace(go.Bar(
     x=bins0,
     y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
     name='global', # name used in legend and hover labels,
-    # marker_color='#EB89B5',
+    marker_color=functions.select_palette(input.var3())[1],
     opacity=0.75
     ))
 
@@ -45,7 +47,7 @@ def hist1():
     x=bins0,
     y=[x/total_deer for x in counts2], # normalize bin counts by total number of mutations
     name='deer', # name used in legend and hover labels,
-    # marker_color='#EB89B5',
+    marker_color=functions.select_palette(input.var3())[2],
     opacity=0.75
     ))
     fig.update_layout(

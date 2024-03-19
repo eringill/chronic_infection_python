@@ -17,11 +17,11 @@ def parse_mutation_files(filename):
 # gene bins from Wuhan reference sequence NC_045512.2
 def parse_gene_files(filename):
     if filename == 'gene':
-        df = pd.read_csv('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/genes.csv')
+        df = pd.read_csv('covid-mutation-distribution/genes.csv')
         genelist = df['start'].tolist()
         names = df['gene'].tolist()
     elif filename == 'genes_split':
-        df = pd.read_csv('/Users/egill/Projects/chronic_infection_python/covid-mutation-distribution/data/genes_split.csv')
+        df = pd.read_csv('covid-mutation-distribution/genes_split.csv')
         genelist = df['start'].tolist()
         names = df['gene'].tolist()
     return genelist, names
@@ -73,3 +73,13 @@ def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
         return zipped, best_fit
     except:
         pass
+    
+# function to select palettes
+def select_palette(palette_name):
+    if palette_name == "viridis":
+        colour_list = ['#35b779', '#31688e', '#440154']
+    elif palette_name == "inferno":
+        colour_list = ['#ed6925', '#781c6d', '#000004']
+    elif palette_name == "plasma":
+        colour_list = ['#ed7953', '#9c179e', '#0d0887']
+    return colour_list
