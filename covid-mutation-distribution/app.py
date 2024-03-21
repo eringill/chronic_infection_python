@@ -20,7 +20,8 @@ with ui.nav_panel("Home"):
         with ui.card():
             ui.input_select("var", "Select Bin Size", 
                     choices= ['genes_split', 'gene', int(500), int(1000)])
-            (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here", ""),)
+            (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here (example shown)", 
+                                "897, 3431, 7842, 8293, 8393, 11042, 12789, 13339, 15756, 18492, 21608, 21711, 21941, 22032, 22208, 22034, 22295, 22353, 22556, 22770, 22895, 22896, 22898, 22910, 22916, 23009, 23012, 23013, 23018, 23019, 23271, 23423, 23604, 24378, 24990, 25207, 26529, 26610, 26681, 26833, 28958",autoresize=True,))
             ui.input_select("var3", "Select Palette",
                     choices= ["viridis", "inferno", "plasma"])
 
