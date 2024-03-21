@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import math
 
 example_mutation_list = [897, 3431, 7842, 8293, 8393, 11042, 12789, 13339, 15756, 18492, 21608, 21711, 21941, 22032, 22208, 22034, 22295, 22353, 22556, 22770, 22895, 22896, 22898, 22910, 22916, 23009, 23012, 23013, 23018, 23019, 23271, 23423, 23604, 24378, 24990, 25207, 26529, 26610, 26681, 26833, 28958]
 
@@ -48,18 +49,19 @@ def make_bins(x, binsize):
 
 # function to calculate likelihood
 def get_likelihood(existing_bin_counts, test_bin_counts):
+    existing_bin_counts = np.array(existing_bin_counts)
+    test_bin_counts = np.array(test_bin_counts)
     return np.sum(np.log(((existing_bin_counts + 1)/np.sum(existing_bin_counts + 1)) ** test_bin_counts))
 
 # function to determine most likely distribution
 def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
-    mutated_nucleotide_list = mutated_nucleotide_list.split(',')
-    try: 
-        mut_nuc_list = [int(i) for i in mutated_nucleotide_list]
-    except:
+    
+    try:
+        mutated_nucleotide_list = mutated_nucleotide_list.split(',') 
         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
         mut_nuc_list = [int(i) for i in int_nuc_list]
-    else:
-        pass
+    except:
+        return None
     mut_counts, mut_bins = make_bins(mut_nuc_list, binsize)
     # get bins for global, chronic and deer
     global_counts, global_bins = make_bins(global_,binsize)
@@ -78,12 +80,18 @@ def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
     best_fit = max(zipped)
     return zipped, best_fit
 
+# function to figure out how many times more likely the fit distribution is than the default (global)
+def times_more_likely(zipped_likelihood_list):
+    unzipped = [i for (i, j) in zipped_likelihood_list]
+    unzipped_nums = [float(i) for i in unzipped]
+    return math.exp(max(unzipped_nums) - unzipped_nums[0])
+
 # function to select palettes
 def select_palette(palette_name):
     if palette_name == "viridis":
-        colour_list = ['#35b779', '#31688e', '#440154']
+        colour_list = ['#5ec962', '#21918c', '#3b528b', '#440154']
     elif palette_name == "inferno":
-        colour_list = ['#ed6925', '#781c6d', '#000004']
+        colour_list = ['#f98e09', '#bc3754', '#57106e', '#000004']
     elif palette_name == "plasma":
-        colour_list = ['#ed7953', '#9c179e', '#0d0887']
+        colour_list = ['#f89540', '#cc4778', '#7e03a8', '#0d0887']
     return colour_list
