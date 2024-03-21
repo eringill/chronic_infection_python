@@ -192,7 +192,7 @@ with ui.nav_panel("Home"):
                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                 # display likelihoods, otherwise don't do anything
                 try:
-                    return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0])} times more likely.)'
+                    return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2f} times more likely.)'
                 except:
                     pass
 
