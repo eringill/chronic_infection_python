@@ -5,6 +5,7 @@ import pandas as pd # processing dataframes
 import numpy as np # numbers are important!
 import re # regex
 import math # math is important!
+from pathlib import Path
 
 # for test purposes only
 # example_mutation_list = [897, 3431, 7842, 8293, 8393, 11042, 12789, 13339, 15756, 18492, 21608, 21711, 21941, 22032, 22208, 22034, 22295, 22353, 22556, 22770, 22895, 22896, 22898, 22910, 22916, 23009, 23012, 23013, 23018, 23019, 23271, 23423, 23604, 24378, 24990, 25207, 26529, 26610, 26681, 26833, 28958]
@@ -43,7 +44,8 @@ def parse_gene_files(filename):
     '''
     # if the user selects "gene" as bin size
     if filename == 'gene':
-        df = pd.read_csv('covid-mutation-distribution/genes.csv')
+        gene_data = Path(__file__).parent / "./data/genes.csv"
+        df = pd.read_csv(gene_data)
         # make a list of nucleotide gene start coordinates
         genelist = df['start'].tolist()
         # make a list of gene names
@@ -52,7 +54,8 @@ def parse_gene_files(filename):
     # this option splits the spike protein up into three sections:
     # NTD, RBD and postRBD
     elif filename == 'genes_split':
-        df = pd.read_csv('covid-mutation-distribution/genes_split.csv')
+        split_gene_data = Path(__file__).parent / "./data/genes_split.csv"
+        df = pd.read_csv(split_gene_data)
         # make a list of nucleotide gene start coordinates
         genelist = df['start'].tolist()
         # make a list of gene names
