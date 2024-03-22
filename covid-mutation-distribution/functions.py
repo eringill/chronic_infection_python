@@ -195,4 +195,6 @@ def select_palette(palette_name):
         colour_list = ['#f98e09', '#bc3754', '#57106e', '#000004']
     elif palette_name == "plasma":
         colour_list = ['#f89540', '#cc4778', '#7e03a8', '#0d0887']
+    elif palette_name == "seaborn":
+        colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC']
     return colour_list

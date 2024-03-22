@@ -29,7 +29,7 @@ with ui.nav_panel("Home"):
                                 "897, 3431, 7842, 8293, 8393, 11042, 12789, 13339, 15756, 18492, 21608, 21711, 21941, 22032, 22208, 22034, 22295, 22353, 22556, 22770, 22895, 22896, 22898, 22910, 22916, 23009, 23012, 23013, 23018, 23019, 23271, 23423, 23604, 24378, 24990, 25207, 26529, 26610, 26681, 26833, 28958",autoresize=True,))
             # colour palette
             ui.input_select("var3", "Select Palette",
-                    choices= ["viridis", "inferno", "plasma"])
+                    choices= ["plasma", "viridis", "inferno", "seaborn"])
 
         # second column (or "card")
         with ui.card():
@@ -72,6 +72,7 @@ with ui.nav_panel("Home"):
                 x0 = chronic
                 x1 = global_
                 x2 = deer
+                opacity = 1.0
                 
                 # calculate mutations per user-specified bin size in histogram for each distribution
                 # chronic
@@ -88,7 +89,7 @@ with ui.nav_panel("Home"):
                 y=[x/total_chronic for x in counts0], # normalize bin counts by total number of mutations
                 name='chronic', # name used in legend and hover labels,
                 marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
-                opacity=0.75
+                opacity=opacity
                 ))
                 # add plot of global distribution
                 fig.add_trace(go.Bar(
@@ -96,7 +97,7 @@ with ui.nav_panel("Home"):
                 y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
                 name='global', # name used in legend and hover labels,
                 marker_color=functions.select_palette(input.var3())[1], # user specifies colour palette
-                opacity=0.75
+                opacity=opacity
                 ))
                 # add plot of deer distribution
                 fig.add_trace(go.Bar(
@@ -104,7 +105,7 @@ with ui.nav_panel("Home"):
                 y=[x/total_deer for x in counts2], # normalize bin counts by total number of mutations
                 name='deer', # name used in legend and hover labels,
                 marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
-                opacity=0.75
+                opacity=opacity
                 ))
                 # add plot of nucleotide positions specified by user
                 fig.add_trace(go.Bar(
@@ -112,7 +113,7 @@ with ui.nav_panel("Home"):
                 y=[x/plot_user_input()[2] for x in plot_user_input()[0]], # normalize bin counts by total number of mutations
                 name='user_input', # name used in legend and hover labels,
                 marker_color=functions.select_palette(input.var3())[3], # user specifies colour palette
-                opacity=0.75
+                opacity=opacity
                 ))
                 fig.update_layout(
                 title_text='Distribution of Mutations\nAcross Genome', # title of plot
