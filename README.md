@@ -26,6 +26,6 @@ sum(log(((distribution bin counts + 1) / sum(distribution bin counts + 1)) ^ use
 
 ### Feedback
 We're pleased to accept any feedback you have. You can submit an issue in the GitHub repository [here](https://github.com/eringill/chronic_infection_python).
-You can also email questions, comments or suggestions to erin.gill81(at)gmail.com.
+You can also email questions, comments or suggestions to erin.gill81(at)gmail.com. You can also leave comments in the Discussions tab.
 
  
