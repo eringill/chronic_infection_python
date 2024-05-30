@@ -201,3 +201,22 @@ def select_palette(palette_name):
     elif palette_name == "seaborn":
         colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC']
     return colour_list
+
+def parse_genome_positions():
+    '''
+    input: none
+    
+    output: a dictionary of nucleotides and their position numbers in the 
+    Wuhan reference sequence NC_045512.2 genome
+    '''
+    # open file that contains genome
+    g = open("./data/genome.txt", "r")
+    genome = g.read()
+    # remove all white space
+    genome = (re.sub('[\s+]', '', genome))
+    #convert to list
+    genome = list(genome)
+    # create list of genome positions
+    positions = list(range(len(genome)))
+    return {positions[i]: genome[i] for i in range(len(positions))}
+    
