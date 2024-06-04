@@ -27,7 +27,7 @@ with ui.nav_panel("Home"):
                     choices= ['genes_split', 'gene', int(500), int(1000)])
             # nucleotide positions where mutations occur - example is shown by default
             (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here (example shown)", 
-                                "897, 3431, 7842, 8293, 8393, 11042, 12789, 13339, 15756, 18492, 21608, 21711, 21941, 22032, 22208, 22034, 22295, 22353, 22556, 22770, 22895, 22896, 22898, 22910, 22916, 23009, 23012, 23013, 23018, 23019, 23271, 23423, 23604, 24378, 24990, 25207, 26529, 26610, 26681, 26833, 28958",autoresize=True,))
+                                "A897G, G3431A, T7842C, C8293T, A8393C, C11042T, T12789C, G13339A, T15756C, A18492G, T21608C, T21711C, G21941A, A22032G, T22208C, G22034C, C22295T, A22353G, G22556A, A22770G, A22895G",autoresize=True,))
             # colour palette
             ui.input_select("var3", "Select Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
@@ -200,9 +200,44 @@ with ui.nav_panel("Home"):
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise don't do anything
                         try:
-                            return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2f} times more likely.)'
+                            return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2E} times more likely.)'
                         except:
                             pass
+                with ui.card():
+                    "Transition to Transversion Ratio"
+                    @reactive.calc
+                    def get_transition_transversion_ratio():
+                        # gui accepts input as a string, so it first needs to be split into a list 
+                        # splits occur wherever there is a comma
+                        # then pass to function defined in functions.py
+                        # to get number of transitions, transversions
+                        transitions, transversions = functions.transition_or_transversion(input.var2().split(','))
+                        return transitions, transversions
+                    
+                    @render_widget
+                    # function to plot transition/transversion ratio heatmap
+                    def heatmap():
+                        transitions, transversions = get_transition_transversion_ratio()
+                        fig2 = go.Figure(data=go.Heatmap(
+                            z=[[float(transitions)/float(transversions)]],
+                            text=[[f'{float(transitions)/transversions:.2f}']],
+                            texttemplate='%{text}',
+                            colorscale='RdBu',
+                            textfont={'size':20},
+                            zmax=15, zmin=0,
+                            hovertemplate='Transition - Transversion Ratio: %{z}',
+                            colorbar=dict(
+                                title="Ratio",
+                                titleside="top",
+                                tickmode="array",
+                                tickvals=[1, 7, 14],
+                                labelalias={1: "Typical", 14: "Molnupiravir-induced"},
+                                ticks="outside"
+                            )))
+                        fig2.update_yaxes(showticklabels=False)
+                        fig2.update_xaxes(showticklabels=False)
+                        # return figure
+                        return fig2
 
 # name of second tab 
 with ui.nav_panel("Application Notes"):

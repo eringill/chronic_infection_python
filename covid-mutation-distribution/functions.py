@@ -233,11 +233,12 @@ def check_for_standard_nucleotides(nuc_list):
 def transition_or_transversion(nuc_pos_list):
     # remove digits
     nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list]
-    nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_parsed]
+    nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
+    nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
     try:
         check_for_standard_nucleotides(nuc_list_standard)
     except:
-        print('Please enter standard nucleotides before and after each position number.')
+        print('Please enter standard nucleotides before and after each position number if you would like to visualize the transition to transversion ratio.')
     transitions = 0
     transversions = 0
     for i in nuc_list_standard:
