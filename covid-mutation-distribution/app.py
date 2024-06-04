@@ -145,62 +145,64 @@ with ui.nav_panel("Home"):
                 # return figure
                 return fig
             
-            # once nucleotide positions where mutations occur are entered into the text box, these
-            # calculations occur reactively
-            @reactive.calc
-            # function to calculate log likelihoods of user's mutation distribution fitting each 
-            # of the specified mutation distributions
-            def calc_likelihoods():
-                # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
-                likelihood_list, most_likely = functions.most_likely(input.var(), global_, chronic, deer, input.var2())
-                # return a list of tuples: [('global', global_likelihood), ('chronic', chronic_likelihood), ('deer', deer_likelihood)]
-                # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
-                return likelihood_list, most_likely
+            with ui.layout_column_wrap(width=1/2):
+                with ui.card():
+                # once nucleotide positions where mutations occur are entered into the text box, these
+                # calculations occur reactively
+                    @reactive.calc
+                    # function to calculate log likelihoods of user's mutation distribution fitting each 
+                    # of the specified mutation distributions
+                    def calc_likelihoods():
+                        # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
+                        likelihood_list, most_likely = functions.most_likely(input.var(), global_, chronic, deer, input.var2())
+                        # return a list of tuples: [('global', global_likelihood), ('chronic', chronic_likelihood), ('deer', deer_likelihood)]
+                        # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
+                        return likelihood_list, most_likely
 
-            # print text out for the user
-            @render.text
-            def txt():
-                return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
+                    # print text out for the user
+                    @render.text
+                    def txt():
+                        return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
 
-            # print text out for the user
-            @render.text
-            def txt1():
-                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
-                try:
-                    return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]:.2f}'
-                except:
-                    return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
-            
-            # print text out for the user
-            @render.text
-            def txt2():
-                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                # display likelihoods, otherwise don't do anything 
-                try:
-                    return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]:.2f}'
-                except:
-                    pass
+                    # print text out for the user
+                    @render.text
+                    def txt1():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
+                        try:
+                            return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]:.2f}'
+                        except:
+                            return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
+                    
+                    # print text out for the user
+                    @render.text
+                    def txt2():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise don't do anything 
+                        try:
+                            return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]:.2f}'
+                        except:
+                            pass
 
-            # print text out for the user            
-            @render.text
-            def txt3():
-                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                # display likelihoods, otherwise don't do anything
-                try:
-                    return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]:.2f}'
-                except:
-                    pass
-            
-            # print text out for the user
-            @render.text
-            def txt4():
-                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                # display likelihoods, otherwise don't do anything
-                try:
-                    return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2f} times more likely.)'
-                except:
-                    pass
+                    # print text out for the user            
+                    @render.text
+                    def txt3():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise don't do anything
+                        try:
+                            return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]:.2f}'
+                        except:
+                            pass
+                    
+                    # print text out for the user
+                    @render.text
+                    def txt4():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise don't do anything
+                        try:
+                            return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2f} times more likely.)'
+                        except:
+                            pass
 
 # name of second tab 
 with ui.nav_panel("Application Notes"):

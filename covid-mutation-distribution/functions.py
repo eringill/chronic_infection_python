@@ -210,7 +210,7 @@ def parse_genome_positions():
     Wuhan reference sequence NC_045512.2 genome
     '''
     # open file that contains genome
-    g = open("./data/genome.txt", "r")
+    g = open(Path(__file__).parent / "./data/genome.txt", "r")
     genome = g.read()
     # remove all white space
     genome = (re.sub('[\s+]', '', genome))
@@ -219,4 +219,50 @@ def parse_genome_positions():
     # create list of genome positions
     positions = list(range(len(genome)))
     return {positions[i]: genome[i] for i in range(len(positions))}
+
+def check_for_standard_nucleotides(nuc_list):
+    # first check to see if each list position contains two uppercase alphabetic characters
+    count = 0
+    for i in nuc_list:
+        parsed = re.match('[A|C|T|G]{2}', i)
+        if parsed:
+            count += 1
+    if count != len(nuc_list):
+        raise Exception('Please enter standard nucleotides before and after each position number.')
+
+def transition_or_transversion(nuc_pos_list):
+    # remove digits
+    nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list]
+    nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_parsed]
+    try:
+        check_for_standard_nucleotides(nuc_list_standard)
+    except:
+        print('Please enter standard nucleotides before and after each position number.')
+    transitions = 0
+    transversions = 0
+    for i in nuc_list_standard:
+        if i[0] == 'A':
+            if i[1] == 'G':
+                transitions += 1
+            elif i[1] in ['C', 'T']:
+                transversions += 1
+        elif i[0] == 'C':
+            if i[1] == 'T':
+                transitions += 1
+            elif i[1] in ['A', 'G']:
+                transversions += 1
+        elif i[0] == 'G':
+            if i[1] == 'A':
+                transitions += 1
+            elif i[1] in ['C', 'T']:
+                transversions += 1
+        elif i[0] == 'T':
+            if i[1] == 'C':
+                transitions += 1
+            elif i[1] in ['A', 'G']:
+                transversions += 1
+    return transitions, transversions
+                
     
+    
+        
