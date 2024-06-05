@@ -15,7 +15,55 @@ ui.page_opts(
     fillable=True
 )
 
-# Name of first tab
+# name of notes tab 
+with ui.nav_panel("Application Notes"):
+    # markdown of text to appear on second tab page
+    ui.markdown(
+        '''
+### Overview
+This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. More details are available on VIROLOGICAL POST?
+   	 
+### Background
+SARS-CoV-2 evolution exhibits a strong clock-like signature with mutational changes accumulating over time, but this pattern is punctuated by “saltational changes”, where lineages appear with a higher number of mutations than expected from their divergence time from other lineages ([Neher 2022](https://academic.oup.com/ve/article/8/2/veac113/6887176)). Such unusual lineages are thought to reflect long passage times within immunocompromised individuals, sharing many of the same signatures seen in chronic infections ([Harari et al. 2022](https://www.nature.com/articles/s41591-022-01882-4)). 
+
+When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. 2023](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases (Takada et al. 2023), and exposure to mutagens such as molnupiravir ([Gruber et al. 2024](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
+
+Given a user-provided set of nucleotide mutations defining an unusual lineage of SARS-CoV-2, this application compares the probability of generating this set from the following three distributions:
+- The list of mutations observed during the first nine months of the pandemic, prior to the spread of VoC [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
+- The list of mutations compiled from 27 chronic infections of immunocompromised individuals [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
+- The list of mutations inferred from 109 separate zoonotic spillovers from humans to white-tailed deer [Feng et al. (2023)](https://www.nature.com/articles/s41467-023-39782-x). 
+
+In the first paper, the authors demonstrate that specific lineage-defining mutation patterns occur in SARS-CoV-2 genomes that are sequenced from chronic infections vs. mutations that occurred in SARS-CoV-2 genomes sequenced around the globe at the start of the pandemic (before the rise of Variants of Concern (VOCs)). They also analyzed lineage-defining mutation patterns in VOCs, and concluded that “mutations in chronic infections are predictive of lineage-defining mutations of VOCs”.
+
+
+Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
+
+In addition, the app informs the user whether the data contain signals consistent with:
+- Past molnupiravir use: The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. 2024](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
+- Mutator lineages: The presence of P203L in nsp14 is flagged as a mutation that alters the ExoN proofreading domain and is associated with a doubling of the mutation rate (Takada et al. 2023), which may contribute to the unusual features of the lineage.
+
+
+### Application Use
+This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
+
+The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, and global (pre-VOC)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units), as is the likelihood of seeing the data relative to the global distribution12.
+
+Because the mutational data sets are sparse, the method bins sites across the genome when calculating likelihoods. The user can define the bin of interest: genes, genes splitting the spike protein into regions of interest, genome split into 500 nucleotide windows, or genome split into 1000 nucleotide windows. For a given bin choice, the log-likelihood of drawing the user-defined mutation set from each distribution is calculated from the multinomial distribution as:
+```
+sum(log(((distribution bin counts + 1) / sum(distribution bin counts + 1))<sup>user bin counts</sup>))
+```
+The addition of one to each bin ensures that there are no bins lacking data.
+
+## Notes on Input
+- Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
+- These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
+- Do **NOT** include insertions or deletions (indels) e.g. `ins21608TCATGCCGCTGT, ∆23009-23011`
+- If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
+
+'''
+    )
+    
+# Name of application tab
 with ui.nav_panel("Home"):
     # layout of columns on first tab
     with ui.layout_columns(col_widths=(4, 8)):
@@ -239,39 +287,5 @@ with ui.nav_panel("Home"):
                         # return figure
                         return fig2
 
-# name of second tab 
-with ui.nav_panel("Application Notes"):
-    # markdown of text to appear on second tab page
-    ui.markdown(
-        '''
-### Overview
-This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto.
-   	 
-### Background
-This application draws from work conducted by [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4) and [Feng et al. (2023)](https://www.nature.com/articles/s41467-023-39782-x). 
 
-
-In the first paper, the authors demonstrate that specific lineage-defining mutation patterns occur in SARS-CoV-2 genomes that are sequenced from chronic infections vs. mutations that occurred in SARS-CoV-2 genomes sequenced around the globe at the start of the pandemic (before the rise of Variants of Concern (VOCs)). They also analyzed lineage-defining mutation patterns in VOCs, and concluded that “mutations in chronic infections are predictive of lineage-defining mutations of VOCs”.
-
-
-Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
-
-### Application Use
-This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. A list of lineage-defining mutations for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
-The application determines which mutation distribution best fits your list of mutations (chronic, deer, global (pre-VOC)) via likelihood calculations. The log likelihood that your list fits each distribution is displayed.
-Likelihoods are calculated based on user-defined bin size (genes with split spike protein, genes, genome split into 500nt windows or genome split into 1000nt windows) as follows:
-```
-sum(log(((distribution bin counts + 1) / sum(distribution bin counts + 1)) ^ user bin counts))
-```
-
-#### Notes on Input
-* Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`.
-* Do **NOT** include insertions or deletions (indels) e.g. `ins21608TCATGCCGCTGT, ∆23009-23011`.
-* If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
-
-### Feedback
-We're pleased to accept any feedback you have. You can submit an issue in the GitHub repository [here](https://github.com/eringill/chronic_infection_python).
-You can also email questions, comments or suggestions to erin.gill81(at)gmail.com.
-'''
-    )
     
