@@ -287,15 +287,7 @@ with ui.nav_panel("Home"):
                             except:
                                 pass
                         
-                    with ui.value_box(
-                        showcase=faicons.icon_svg("dna", width="50px"),
-                        theme="bg-gradient-blue-purple",
-                    ):
-                        ""
-                        
-                        @render.ui
-                        def mut_lineage():
-                            return f'Your lineage {functions.mut_lineage_parsing(input.var())} a mutator lineage.'
+                    
                 with ui.card():
                     "Transition to Transversion Ratio"
                     @reactive.calc
@@ -331,6 +323,15 @@ with ui.nav_panel("Home"):
                         fig2.update_xaxes(showticklabels=False)
                         # return figure
                         return fig2
+                    with ui.value_box(
+                            showcase=faicons.icon_svg("dna", width="50px"),
+                            theme="bg-gradient-blue-purple",
+                        ):
+                            ""
+                            
+                            @render.ui
+                            def mut_lineage():
+                                return f'Your lineage {functions.mut_lineage_parsing(input.var())} a mutator lineage.'
 
 
     
