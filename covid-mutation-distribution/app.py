@@ -8,6 +8,7 @@ from shinywidgets import render_widget # rendering graph
 import functions # functions from functions.py
 import re # regex
 from pathlib import Path
+import faicons
 
 ui.page_opts(
     title="SARS-CoV-2 Mutation Distribution Profiler",
@@ -251,6 +252,16 @@ with ui.nav_panel("Home"):
                             return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2E} times more likely.)'
                         except:
                             pass
+                        
+                    with ui.value_box(
+                        showcase=faicons.icon_svg("dna", width="50px"),
+                        theme="bg-gradient-blue-purple",
+                    ):
+                        "Mutator Lineage"
+                        
+                        @render.ui
+                        def mut_lineage():
+                            return f'Your lineage {functions.mut_lineage_parsing(input.var())} a mutator lineage.'
                 with ui.card():
                     "Transition to Transversion Ratio"
                     @reactive.calc
