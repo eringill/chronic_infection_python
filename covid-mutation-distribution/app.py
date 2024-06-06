@@ -20,14 +20,24 @@ ui.page_opts(
 with ui.nav_panel("Application Notes"):
     # markdown of text to appear on second tab page
     ui.markdown(
-        '''
+'''
 ### Overview
 This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. More details are available on VIROLOGICAL POST?
+
+Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:
+- Mutations observed during the first nine months of the pandemic (pre-VoC)
+- Mutations observed in chronic infections
+- Mutations observed in zoonotic spillovers from humans to white-tailed deer
+
+In addition, the application will inform the user if the mutation pattern is:
+- Consistent with molnupiravir use
+- A mutator lineage
+See below for more details.
    	 
 ### Background
-SARS-CoV-2 evolution exhibits a strong clock-like signature with mutational changes accumulating over time, but this pattern is punctuated by “saltational changes”, where lineages appear with a higher number of mutations than expected from their divergence time from other lineages ([Neher 2022](https://academic.oup.com/ve/article/8/2/veac113/6887176)). Such unusual lineages are thought to reflect long passage times within immunocompromised individuals, sharing many of the same signatures seen in chronic infections ([Harari et al. 2022](https://www.nature.com/articles/s41591-022-01882-4)). 
+SARS-CoV-2 evolution exhibits a strong clock-like signature with mutational changes accumulating over time, but this pattern is punctuated by “saltational changes”, where lineages appear with a higher number of mutations than expected from their divergence time from other lineages ([Neher (2022)](https://academic.oup.com/ve/article/8/2/veac113/6887176)). Such unusual lineages are thought to reflect long passage times within immunocompromised individuals, sharing many of the same signatures seen in chronic infections ([Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4)). 
 
-When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. 2023](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases (Takada et al. 2023), and exposure to mutagens such as molnupiravir ([Gruber et al. 2024](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
+When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. (2023)](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), and exposure to mutagens such as molnupiravir ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
 
 Given a user-provided set of nucleotide mutations defining an unusual lineage of SARS-CoV-2, this application compares the probability of generating this set from the following three distributions:
 - The list of mutations observed during the first nine months of the pandemic, prior to the spread of VoC [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
@@ -40,8 +50,8 @@ In the first paper, the authors demonstrate that specific lineage-defining mutat
 Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
 
 In addition, the app informs the user whether the data contain signals consistent with:
-- Past molnupiravir use: The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. 2024](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
-- Mutator lineages: The presence of P203L in nsp14 is flagged as a mutation that alters the ExoN proofreading domain and is associated with a doubling of the mutation rate (Takada et al. 2023), which may contribute to the unusual features of the lineage.
+Past molnupiravir use: The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
+Mutator lineages: The presence of P203L in nsp14 (C18,647T transition results in mutation of P->L) is flagged as a mutation that alters the ExoN proofreading domain and is associated with a doubling of the mutation rate ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), which may contribute to the unusual features of the lineage.
 
 
 ### Application Use
@@ -60,7 +70,7 @@ The addition of one to each bin ensures that there are no bins lacking data.
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
 - Do **NOT** include insertions or deletions (indels) e.g. `ins21608TCATGCCGCTGT, ∆23009-23011`
 - If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
-
+   	 
 '''
     )
     
@@ -214,50 +224,74 @@ with ui.nav_panel("Home"):
                         return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
 
                     # print text out for the user
-                    @render.text
-                    def txt1():
+
+                    with ui.value_box(
+                        showcase=faicons.icon_svg("globe"),
+                        theme="bg-green",
+                        showcase_layout="bottom", 
+                    ):
+                        ""
+                        
+                        @render.ui
+                        def txt1():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
-                        try:
-                            return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]:.2f}'
-                        except:
-                            return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
-                    
+                            try:
+                                return f'{calc_likelihoods()[0][0][1]}: {calc_likelihoods()[0][0][0]:.2f}'
+                            except:
+                                return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
                     # print text out for the user
-                    @render.text
-                    def txt2():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything 
-                        try:
-                            return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]:.2f}'
-                        except:
-                            pass
+                    with ui.value_box(
+                        showcase=faicons.icon_svg("head-side-virus", width="50px"),
+                        theme="bg-purple",
+                        showcase_layout="bottom", 
+                    ):
+                        ""
+                        @render.ui
+                        def txt2():
+                            # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                            # display likelihoods, otherwise don't do anything 
+                            try:
+                                return f'{calc_likelihoods()[0][1][1]}: {calc_likelihoods()[0][1][0]:.2f}'
+                            except:
+                                pass
 
-                    # print text out for the user            
-                    @render.text
-                    def txt3():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything
-                        try:
-                            return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]:.2f}'
-                        except:
-                            pass
+                    # print text out for the user
+                    with ui.value_box(
+                        showcase=faicons.icon_svg("virus-covid", width="50px"),
+                        theme="bg-orange",
+                        showcase_layout="bottom", 
+                    ):
+                        ""            
+                        @render.ui
+                        def txt3():
+                            # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                            # display likelihoods, otherwise don't do anything
+                            try:
+                                return f'{calc_likelihoods()[0][2][1]}: {calc_likelihoods()[0][2][0]:.2f}'
+                            except:
+                                pass
                     
                     # print text out for the user
-                    @render.text
-                    def txt4():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything
-                        try:
-                            return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2E} times more likely.)'
-                        except:
-                            pass
+                    with ui.value_box(
+                        showcase=faicons.icon_svg("check", width="50px"),
+                        theme="blue",
+                    ):
+                        ""
+                        @render.ui
+                        def txt4():
+                            # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                            # display likelihoods, otherwise don't do anything
+                            try:
+                                return f'Your sequence best fits the distribution of {calc_likelihoods()[1][1]} mutations. ({functions.times_more_likely(calc_likelihoods()[0]):.2E} times more likely.)'
+                            except:
+                                pass
                         
                     with ui.value_box(
                         showcase=faicons.icon_svg("dna", width="50px"),
                         theme="bg-gradient-blue-purple",
                     ):
-                        "Mutator Lineage"
+                        ""
                         
                         @render.ui
                         def mut_lineage():
