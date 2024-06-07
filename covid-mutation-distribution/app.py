@@ -86,7 +86,7 @@ with ui.nav_panel("Home"):
                     choices= ['genes_split', 'gene', int(500), int(1000)])
             # nucleotide positions where mutations occur - example is shown by default
             with ui.tooltip(id="tooltip", placement="right"): 
-                (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations* (using genomic nucleotide position, example shown)", 
+                (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
                                 "A897G, G3431A, T7842C, C8293T, A8393C, C11042T, T12789C, G13339A, T15756C, A18492G, T21608C, T21711C, G21941A, A22032G, T22208C, G22034C, C22295T, A22353G, G22556A, A22770G, A22895G",autoresize=True,))
                 'Lineage-defining mutations should include only those that have occurred since divergence from the larger SARS-CoV-2 tree.'
 
@@ -140,7 +140,7 @@ with ui.nav_panel("Home"):
                                 showcase=faicons.icon_svg("dna", width="120px"),
                                 theme="bg-gradient-blue-purple",
                             ):
-                                "Mutation in nsp14 that would lead to heigtened mutation rates:"
+                                "Changes at known mutator sites:"
                                 
                                 @render.ui
                                 def mut_lineage():
@@ -200,12 +200,20 @@ with ui.nav_panel("Home"):
                     counts2, bins2 = functions.make_bins(x2,input.var())
                     # instatiate figure
                     fig = go.Figure()
+                    # add plot of nucleotide positions specified by user
+                    fig.add_trace(go.Bar(
+                    x=bins0,
+                    y=[x/plot_user_input()[2] for x in plot_user_input()[0]], # normalize bin counts by total number of mutations
+                    name='user_input', # name used in legend and hover labels,
+                    marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
+                    opacity=opacity
+                    ))
                     # add plot of chronic distribution
                     fig.add_trace(go.Bar(
                     x=bins0,
                     y=[x/total_chronic for x in counts0], # normalize bin counts by total number of mutations
                     name='chronic', # name used in legend and hover labels,
-                    marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
+                    marker_color=functions.select_palette(input.var3())[1], # user specifies colour palette
                     opacity=opacity
                     ))
                     # add plot of global distribution
@@ -213,7 +221,7 @@ with ui.nav_panel("Home"):
                     x=bins0,
                     y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
                     name='global', # name used in legend and hover labels,
-                    marker_color=functions.select_palette(input.var3())[1], # user specifies colour palette
+                    marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
                     opacity=opacity
                     ))
                     # add plot of deer distribution
@@ -221,14 +229,6 @@ with ui.nav_panel("Home"):
                     x=bins0,
                     y=[x/total_deer for x in counts2], # normalize bin counts by total number of mutations
                     name='deer', # name used in legend and hover labels,
-                    marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
-                    opacity=opacity
-                    ))
-                    # add plot of nucleotide positions specified by user
-                    fig.add_trace(go.Bar(
-                    x=bins0,
-                    y=[x/plot_user_input()[2] for x in plot_user_input()[0]], # normalize bin counts by total number of mutations
-                    name='user_input', # name used in legend and hover labels,
                     marker_color=functions.select_palette(input.var3())[3], # user specifies colour palette
                     opacity=opacity
                     ))
