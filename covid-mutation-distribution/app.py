@@ -85,124 +85,177 @@ with ui.nav_panel("Home"):
             ui.input_select("var", "Select Bin Size", 
                     choices= ['genes_split', 'gene', int(500), int(1000)])
             # nucleotide positions where mutations occur - example is shown by default
-            (ui.input_text_area("var2", "Please enter a comma-separated list of nucleotide positions where mutations occur here (example shown)", 
+            with ui.tooltip(id="tooltip", placement="right"): 
+                (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations* (using genomic nucleotide position, example shown)", 
                                 "A897G, G3431A, T7842C, C8293T, A8393C, C11042T, T12789C, G13339A, T15756C, A18492G, T21608C, T21711C, G21941A, A22032G, T22208C, G22034C, C22295T, A22353G, G22556A, A22770G, A22895G",autoresize=True,))
+                'Lineage-defining mutations should include only those that have occurred since divergence from the larger SARS-CoV-2 tree.'
+
             # colour palette
             ui.input_select("var3", "Select Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
 
         # second column (or "card")
         with ui.card():
-            # shiny won't use file paths in quotes, you have to use pathlib
-            # define mutation distributions and total number of mutations for chronic sequences
-            chronic_data = Path(__file__).parent / "./data/chronicnucl.tsv"
-            chronic, total_chronic = functions.parse_mutation_files(chronic_data)
-            # for deer sequences
-            deer_data = Path(__file__).parent / "./data/deernucl.tsv"
-            deer, total_deer = functions.parse_mutation_files(deer_data)
-            # for global sequences
-            global_data = Path(__file__).parent / "./data/globalnucl.tsv"
-            global_, total_global = functions.parse_mutation_files(global_data)
+            with ui.layout_column_wrap(width=1/2):
+                with ui.card():
+                    "Transition to Transversion Ratio"
+                    @reactive.calc
+                    def get_transition_transversion_ratio():
+                                # gui accepts input as a string, so it first needs to be split into a list 
+                                # splits occur wherever there is a comma
+                                # then pass to function defined in functions.py
+                                # to get number of transitions, transversions
+                        transitions, transversions = functions.transition_or_transversion(input.var2().split(','))
+                        return transitions, transversions
+                            
+                    @render_widget
+                            # function to plot transition/transversion ratio heatmap
+                    def heatmap():
+                        transitions, transversions = get_transition_transversion_ratio()
+                        fig2 = go.Figure(data=go.Heatmap(
+                            z=[[float(transitions)/float(transversions)]],
+                            text=[[f'{float(transitions)/transversions:.2f}']],
+                            texttemplate='%{text}',
+                            colorscale='RdBu',
+                            textfont={'size':20},
+                            zmax=15, zmin=0,
+                            hovertemplate='Transition - Transversion Ratio: %{z}',
+                            colorbar=dict(
+                                title="Ratio",
+                                titleside="top",
+                                tickmode="array",
+                                tickvals=[1, 7, 14],
+                                labelalias={1: "Typical", 14: "Molnupiravir-induced"},
+                                ticks="outside"
+                            )))
+                        fig2.update_yaxes(showticklabels=False)
+                        fig2.update_xaxes(showticklabels=False)
+                        fig2.update_layout(height=200, width=300)
+                        
 
-            # once nucleotide positions where mutations occur are entered into the text box, these
-            # calculations occur reactively
-            @reactive.calc
-            # function to parse user mutation data input for plotting
-            def plot_user_input():
-                # gui accepts input as a string, so it first needs to be split into a list 
-                # splits occur wherever there is a comma
-                mutated_nucleotide_list = input.var2().split(',')
-                # try to remove non-digit characters, then convert each string in list into
-                # a digit
-                try: 
-                    int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
-                    mut_nuc_list = [int(i) for i in int_nuc_list]
-                # if this fails, return some dummy data so the plot is still rendered
-                except: return [[0,0,0], [1,1,1], 1]
-                # otherwise, parse the list of mutation positions into bins based on the size
-                # specified by the user
-                counts, bins0 = functions.make_bins(mut_nuc_list, input.var())
-                # determine the total number of mutations that are in the list supplied by the
-                # user
-                total_counts = sum(counts)
-                # return everything
-                return counts, bins0, total_counts
+                        # return figure
+                        return fig2
+                with ui.card():
+                    with ui.value_box(
+                                showcase=faicons.icon_svg("dna", width="120px"),
+                                theme="bg-gradient-blue-purple",
+                            ):
+                                "Mutation in nsp14 that would lead to heigtened mutation rates:"
+                                
+                                @render.ui
+                                def mut_lineage():
+                                    return f'{functions.mut_lineage_parsing(input.var())}'
+            with ui.card():
+                # shiny won't use file paths in quotes, you have to use pathlib
+                # define mutation distributions and total number of mutations for chronic sequences
+                chronic_data = Path(__file__).parent / "./data/chronicnucl.tsv"
+                chronic, total_chronic = functions.parse_mutation_files(chronic_data)
+                # for deer sequences
+                deer_data = Path(__file__).parent / "./data/deernucl.tsv"
+                deer, total_deer = functions.parse_mutation_files(deer_data)
+                # for global sequences
+                global_data = Path(__file__).parent / "./data/globalnucl.tsv"
+                global_, total_global = functions.parse_mutation_files(global_data)
 
-            # plot out mutation distributions
-            @render_widget
-            # function to plot graph
-            def hist1():
-                # assign x variables
-                x0 = chronic
-                x1 = global_
-                x2 = deer
-                opacity = 1.0
-                
-                # calculate mutations per user-specified bin size in histogram for each distribution
-                # chronic
-                counts0, bins0 = functions.make_bins(x0,input.var())
-                # global
-                counts1, bins1 = functions.make_bins(x1,input.var())
-                # deer
-                counts2, bins2 = functions.make_bins(x2,input.var())
-                # instatiate figure
-                fig = go.Figure()
-                # add plot of chronic distribution
-                fig.add_trace(go.Bar(
-                x=bins0,
-                y=[x/total_chronic for x in counts0], # normalize bin counts by total number of mutations
-                name='chronic', # name used in legend and hover labels,
-                marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
-                opacity=opacity
-                ))
-                # add plot of global distribution
-                fig.add_trace(go.Bar(
-                x=bins0,
-                y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
-                name='global', # name used in legend and hover labels,
-                marker_color=functions.select_palette(input.var3())[1], # user specifies colour palette
-                opacity=opacity
-                ))
-                # add plot of deer distribution
-                fig.add_trace(go.Bar(
-                x=bins0,
-                y=[x/total_deer for x in counts2], # normalize bin counts by total number of mutations
-                name='deer', # name used in legend and hover labels,
-                marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
-                opacity=opacity
-                ))
-                # add plot of nucleotide positions specified by user
-                fig.add_trace(go.Bar(
-                x=bins0,
-                y=[x/plot_user_input()[2] for x in plot_user_input()[0]], # normalize bin counts by total number of mutations
-                name='user_input', # name used in legend and hover labels,
-                marker_color=functions.select_palette(input.var3())[3], # user specifies colour palette
-                opacity=opacity
-                ))
-                fig.update_layout(
-                title_text='Distribution of Mutations\nAcross Genome', # title of plot
-                xaxis_title_text='Genome Position', # xaxis label
-                yaxis_title_text='Proportion of Mutations', # yaxis label
-                bargap=0.2, # gap between bars of adjacent location coordinates
-                bargroupgap=0.1, # gap between bars of the same location coordinates
-                plot_bgcolor='white' # specify white background
-                )
-                fig.update_yaxes( # make y axes and ticks look pretty
-                mirror=True,
-                ticks='outside',
-                showline=True,
-                linecolor='black',
-                gridcolor='lightgrey'
-                )
-                fig.update_xaxes( # make x axes and ticks look pretty
-                mirror=True,
-                ticks='outside',
-                showline=True,
-                linecolor='black',
-                gridcolor='white'
-                )
-                # return figure
-                return fig
+                # once nucleotide positions where mutations occur are entered into the text box, these
+                # calculations occur reactively
+                @reactive.calc
+                # function to parse user mutation data input for plotting
+                def plot_user_input():
+                    # gui accepts input as a string, so it first needs to be split into a list 
+                    # splits occur wherever there is a comma
+                    mutated_nucleotide_list = input.var2().split(',')
+                    # try to remove non-digit characters, then convert each string in list into
+                    # a digit
+                    try: 
+                        int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
+                        mut_nuc_list = [int(i) for i in int_nuc_list]
+                    # if this fails, return some dummy data so the plot is still rendered
+                    except: return [[0,0,0], [1,1,1], 1]
+                    # otherwise, parse the list of mutation positions into bins based on the size
+                    # specified by the user
+                    counts, bins0 = functions.make_bins(mut_nuc_list, input.var())
+                    # determine the total number of mutations that are in the list supplied by the
+                    # user
+                    total_counts = sum(counts)
+                    # return everything
+                    return counts, bins0, total_counts
+
+                # plot out mutation distributions
+                @render_widget
+                # function to plot graph
+                def hist1():
+                    # assign x variables
+                    x0 = chronic
+                    x1 = global_
+                    x2 = deer
+                    opacity = 1.0
+                    
+                    # calculate mutations per user-specified bin size in histogram for each distribution
+                    # chronic
+                    counts0, bins0 = functions.make_bins(x0,input.var())
+                    # global
+                    counts1, bins1 = functions.make_bins(x1,input.var())
+                    # deer
+                    counts2, bins2 = functions.make_bins(x2,input.var())
+                    # instatiate figure
+                    fig = go.Figure()
+                    # add plot of chronic distribution
+                    fig.add_trace(go.Bar(
+                    x=bins0,
+                    y=[x/total_chronic for x in counts0], # normalize bin counts by total number of mutations
+                    name='chronic', # name used in legend and hover labels,
+                    marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
+                    opacity=opacity
+                    ))
+                    # add plot of global distribution
+                    fig.add_trace(go.Bar(
+                    x=bins0,
+                    y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
+                    name='global', # name used in legend and hover labels,
+                    marker_color=functions.select_palette(input.var3())[1], # user specifies colour palette
+                    opacity=opacity
+                    ))
+                    # add plot of deer distribution
+                    fig.add_trace(go.Bar(
+                    x=bins0,
+                    y=[x/total_deer for x in counts2], # normalize bin counts by total number of mutations
+                    name='deer', # name used in legend and hover labels,
+                    marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
+                    opacity=opacity
+                    ))
+                    # add plot of nucleotide positions specified by user
+                    fig.add_trace(go.Bar(
+                    x=bins0,
+                    y=[x/plot_user_input()[2] for x in plot_user_input()[0]], # normalize bin counts by total number of mutations
+                    name='user_input', # name used in legend and hover labels,
+                    marker_color=functions.select_palette(input.var3())[3], # user specifies colour palette
+                    opacity=opacity
+                    ))
+                    fig.update_layout(
+                    title_text='Distribution of Mutations\nAcross Genome', # title of plot
+                    xaxis_title_text='Genome Position', # xaxis label
+                    yaxis_title_text='Proportion of Mutations', # yaxis label
+                    bargap=0.2, # gap between bars of adjacent location coordinates
+                    bargroupgap=0.1, # gap between bars of the same location coordinates
+                    plot_bgcolor='white' # specify white background
+                    )
+                    fig.update_yaxes( # make y axes and ticks look pretty
+                    mirror=True,
+                    ticks='outside',
+                    showline=True,
+                    linecolor='black',
+                    gridcolor='lightgrey'
+                    )
+                    fig.update_xaxes( # make x axes and ticks look pretty
+                    mirror=True,
+                    ticks='outside',
+                    showline=True,
+                    linecolor='black',
+                    gridcolor='white'
+                    )
+                    # return figure
+                    return fig
             
             with ui.layout_column_wrap(width=1/2):
                 with ui.card():
@@ -288,50 +341,8 @@ with ui.nav_panel("Home"):
                                 pass
                         
                     
-                with ui.card():
-                    "Transition to Transversion Ratio"
-                    @reactive.calc
-                    def get_transition_transversion_ratio():
-                        # gui accepts input as a string, so it first needs to be split into a list 
-                        # splits occur wherever there is a comma
-                        # then pass to function defined in functions.py
-                        # to get number of transitions, transversions
-                        transitions, transversions = functions.transition_or_transversion(input.var2().split(','))
-                        return transitions, transversions
+                
                     
-                    @render_widget
-                    # function to plot transition/transversion ratio heatmap
-                    def heatmap():
-                        transitions, transversions = get_transition_transversion_ratio()
-                        fig2 = go.Figure(data=go.Heatmap(
-                            z=[[float(transitions)/float(transversions)]],
-                            text=[[f'{float(transitions)/transversions:.2f}']],
-                            texttemplate='%{text}',
-                            colorscale='RdBu',
-                            textfont={'size':20},
-                            zmax=15, zmin=0,
-                            hovertemplate='Transition - Transversion Ratio: %{z}',
-                            colorbar=dict(
-                                title="Ratio",
-                                titleside="top",
-                                tickmode="array",
-                                tickvals=[1, 7, 14],
-                                labelalias={1: "Typical", 14: "Molnupiravir-induced"},
-                                ticks="outside"
-                            )))
-                        fig2.update_yaxes(showticklabels=False)
-                        fig2.update_xaxes(showticklabels=False)
-                        # return figure
-                        return fig2
-                    with ui.value_box(
-                            showcase=faicons.icon_svg("dna", width="50px"),
-                            theme="bg-gradient-blue-purple",
-                        ):
-                            ""
-                            
-                            @render.ui
-                            def mut_lineage():
-                                return f'Your lineage {functions.mut_lineage_parsing(input.var())} a mutator lineage.'
 
 
     

@@ -268,6 +268,6 @@ def mut_lineage_parsing(nuc_pos_list):
     nuc_pos_list_parsed = nuc_pos_list.split(',')
     nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
-    return "IS" if "C18647T" in nuc_list_standard else "IS NOT"
+    return "YES" if "C18647T" in nuc_list_standard else "NO"
     
         
