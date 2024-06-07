@@ -270,4 +270,10 @@ def mut_lineage_parsing(nuc_pos_list):
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
     return "YES" if "C18647T" in nuc_list_standard else "NO"
     
+def sci_notation(number, sig_fig=2):
+    ret_string = "{0:.{1:d}e}".format(number, sig_fig)
+    a, b = ret_string.split("e")
+    # remove leading "+" and strip leading zeros
+    b = int(b)
+    return a + " * 10^" + str(b)
         
