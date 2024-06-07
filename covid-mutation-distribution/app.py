@@ -32,6 +32,7 @@ Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application c
 In addition, the application will inform the user if the mutation pattern is:
 - Consistent with molnupiravir use
 - A mutator lineage
+
 See below for more details.
    	 
 ### Background
@@ -87,7 +88,7 @@ with ui.nav_panel("Home"):
             # nucleotide positions where mutations occur - example is shown by default
             with ui.tooltip(id="tooltip", placement="right"): 
                 (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
-                                "A897G, G3431A, T7842C, C8293T, A8393C, C11042T, T12789C, G13339A, T15756C, A18492G, T21608C, T21711C, G21941A, A22032G, T22208C, G22034C, C22295T, A22353G, G22556A, A22770G, A22895G",autoresize=True,))
+                                "A897G, G3431A, T7842C, C8293T, A8393C, C11042T, T12789C, G13339A, T15756C, A18492G, T21608C, T21711C, G21941A, A22032G, T22208C, G22034C, C22295T, A22353G, G22556A, A22770G, A22895G, T22896C, G22898A, T22910C, C22916T, A23009G, T23012C, G23013A, G23018A, C23019T, C23271T, A23423G, G23604C, G24378A, T24990C, C25207T, A26529G, T26610C, A26681G, A26833G, C28958T",autoresize=True,))
                 'Lineage-defining mutations should include only those that have occurred since divergence from the larger SARS-CoV-2 tree.'
 
             # colour palette
