@@ -346,7 +346,7 @@ with ui.nav_panel("Home"):
                     @render.ui
                     def txt5():
                         try:
-                            return f'({functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0]), sig_fig=1)} times more likely.)'
+                            return f'({functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0]), sig_fig=1)} times more likely than the .)'
                         except:
                             pass
                 

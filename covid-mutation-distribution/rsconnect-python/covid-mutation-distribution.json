@@ -5,7 +5,7 @@
         "app_url": "https://eringill.shinyapps.io/covid-mutation-distributions/",
         "app_id": 11504694,
         "app_guid": null,
-        "title": "covid-mutation-distributions",
+        "title": "covid-mutation-distributions-dev",
         "app_mode": "python-shiny",
         "app_store_version": 1
     }
