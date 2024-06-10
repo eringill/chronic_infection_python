@@ -171,19 +171,22 @@ def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
 def times_more_likely(zipped_likelihood_list):
     '''
     input: zipped_likelihood_list-a list of tuples containing the likelihood that the user's mutation distribution 
-    fits each of the existing distributions in the following format [('global', global_likelihood), 
-    ('chronic', chronic_likelihood), ('deer', deer_likelihood)]
+    fits each of the existing distributions in the following format [(global_likelihood, 'global'), 
+    (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
     
     output: the number of times that the user's mutation distribution is better explained by the best
-    fit distribution than the global distribution
+    fit distribution than the next best fit distribution
     '''
+    # first sort the input list so that most likely is first
+    sorted_list = sorted(zipped_likelihood_list, key=lambda x: x[0])
     # first unzip the input list, keep only the likelihoods (global, chronic, deer)
-    unzipped = [i for (i, j) in zipped_likelihood_list]
-    # convert items in the unzipped list to floats
-    unzipped_nums = [float(i) for i in unzipped]
+    unzipped_names = [j for (i, j) in sorted_list]
+    unzipped_nums = [i for (i, j) in sorted_list]
+    # convert items in the unzipped number list to floats
+    unzipped_nums_float = [float(i) for i in unzipped_nums]
     # return the number of times that the user's mutation distribution is better explained by the best
     # fit distribution than the global distribution
-    return math.exp(max(unzipped_nums) - unzipped_nums[0])
+    return math.exp(unzipped_nums_float[2] - unzipped_nums_float[1]), unzipped_names[1]
 
 # function to select colour palettes for the plot
 def select_palette(palette_name):

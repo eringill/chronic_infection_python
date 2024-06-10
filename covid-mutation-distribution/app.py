@@ -157,6 +157,10 @@ with ui.nav_panel("Home"):
                 # for global sequences
                 global_data = Path(__file__).parent / "./data/globalnucl.tsv"
                 global_, total_global = functions.parse_mutation_files(global_data)
+                
+                # for late global sequences
+                globallate_data = Path(__file__).parent / "./data/globallatenucl.tsv"
+                global_late, total_lateglobal = functions.parse_mutation_files(globallate_data)
 
                 # once nucleotide positions where mutations occur are entered into the text box, these
                 # calculations occur reactively
@@ -345,10 +349,11 @@ with ui.nav_panel("Home"):
                             pass
                     @render.ui
                     def txt5():
-                        try:
-                            return f'({functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0]), sig_fig=1)} times more likely than the .)'
-                        except:
-                            pass
+
+                            more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
+                            dist = functions.times_more_likely(calc_likelihoods()[0])[1]
+                            return f'({more_likely} times more likely than the {dist} distribution.)'
+
                 
                     
 
