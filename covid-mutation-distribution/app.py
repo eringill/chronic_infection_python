@@ -97,6 +97,13 @@ with ui.nav_panel("Home"):
 
         # second column (or "card")
         with ui.card():
+            @reactive.calc
+            def number_of_mutations():
+                # return the number of mutations that the user has entered
+                return len(input.var2().split(','))
+            @render.text
+            def print_mutations():
+                return f'You have entered {number_of_mutations()} mutations.'
             with ui.layout_column_wrap(width=1/2):
                 with ui.card():
                     "Transition to Transversion Ratio"
