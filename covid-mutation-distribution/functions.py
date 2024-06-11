@@ -119,14 +119,14 @@ def get_likelihood(existing_bin_counts, test_bin_counts):
     return np.sum(np.log(((existing_bin_counts + 1)/np.sum(existing_bin_counts + 1)) ** test_bin_counts))
 
 # function to determine most likely distribution for the user's list of mutations
-def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
+def most_likely(binsize, global_, global_late, chronic, deer, mutated_nucleotide_list):
     '''
     inputs: binsize-user-selected binsize, global_-list of mutated nucleotide positions in global distribution,
     chronic-list of mutated nucleotide positions in chronic distribution, deer-list of mutated nucleotide positions
     in deer distribution, mutated_nucleotide_list-user-specified list of mutated nucleotide positions
     
     outputs: zipped-a list of tuples containing the likelihood that the user's mutation distribution fits each of the
-    existing distributions in the following format [(global_likelihood, 'global'), 
+    existing distributions in the following format [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),
     (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')],
     best_fit: the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
     '''
@@ -149,19 +149,21 @@ def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
     mut_counts, mut_bins = make_bins(mut_nuc_list, binsize)
     # get bins for global, chronic and deer
     global_counts, global_bins = make_bins(global_,binsize)
+    global_late_counts, global_late_bins = make_bins(global_late, binsize)
     chronic_counts, chronic_bins = make_bins(chronic,binsize)
     deer_counts, deer_bins = make_bins(deer,binsize)
     
     # calculate all likelihoods using the number of mutations per bin in the user's input and
     # in existing distributions
     global_likelihood = get_likelihood(global_counts, mut_counts)
+    global_late_likelihood = get_likelihood(global_late_counts, mut_counts)
     chronic_likelihood = get_likelihood(chronic_counts, mut_counts)
     deer_likelihood = get_likelihood(deer_counts, mut_counts)
     
     # make a list of all likelihoods
-    likelihood_list = [global_likelihood, chronic_likelihood, deer_likelihood]
+    likelihood_list = [global_likelihood, global_late_likelihood, chronic_likelihood, deer_likelihood]
     # create a matching list of names for the list above
-    names = ['global', 'chronic', 'deer']
+    names = ['global', 'global_late', 'chronic', 'deer']
     # zip the two lists together
     zipped = list(zip(likelihood_list, names))
     # find the name of the distribution that best fits the user's input
@@ -172,7 +174,7 @@ def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
 def times_more_likely(zipped_likelihood_list):
     '''
     input: zipped_likelihood_list-a list of tuples containing the likelihood that the user's mutation distribution 
-    fits each of the existing distributions in the following format [(global_likelihood, 'global'), 
+    fits each of the existing distributions in the following format [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),
     (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
     
     output: the number of times that the user's mutation distribution is better explained by the best
@@ -187,7 +189,7 @@ def times_more_likely(zipped_likelihood_list):
     unzipped_nums_float = [float(i) for i in unzipped_nums]
     # return the number of times that the user's mutation distribution is better explained by the best
     # fit distribution than the global distribution
-    return math.exp(unzipped_nums_float[2] - unzipped_nums_float[1]), unzipped_names[1]
+    return math.exp(unzipped_nums_float[3] - unzipped_nums_float[2]), unzipped_names[2]
 
 # function to select colour palettes for the plot
 def select_palette(palette_name):
@@ -197,13 +199,13 @@ def select_palette(palette_name):
     output: colour_list-list of hex codes for colours to use when plotting graph
     '''
     if palette_name == "viridis":
-        colour_list = ['#5ec962', '#21918c', '#3b528b', '#440154']
+        colour_list = ['#7ad151', '#22a884', '#2a788e', '#414487', '#440154']
     elif palette_name == "inferno":
-        colour_list = ['#f98e09', '#bc3754', '#57106e', '#000004']
+        colour_list = ['#fca50a', '#dd513a', '#932667', '#420a68', '#000004']
     elif palette_name == "plasma":
-        colour_list = ['#f89540', '#cc4778', '#7e03a8', '#0d0887']
+        colour_list = ['#fca636', '#e16462', '#b12a90', '#6a00a8', '#0d0887']
     elif palette_name == "seaborn":
-        colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC']
+        colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC', '#ECE133']
     return colour_list
 
 def parse_genome_positions():

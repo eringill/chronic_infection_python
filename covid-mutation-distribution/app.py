@@ -176,7 +176,7 @@ with ui.nav_panel("Home"):
                         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
                         mut_nuc_list = [int(i) for i in int_nuc_list]
                     # if this fails, return some dummy data so the plot is still rendered
-                    except: return [[0,0,0], [1,1,1], 1]
+                    except: return [[0,0,0,0], [1,1,1,1], 1]
                     # otherwise, parse the list of mutation positions into bins based on the size
                     # specified by the user
                     counts, bins0 = functions.make_bins(mut_nuc_list, input.var())
@@ -193,7 +193,8 @@ with ui.nav_panel("Home"):
                     # assign x variables
                     x0 = chronic
                     x1 = global_
-                    x2 = deer
+                    x2 = global_late
+                    x3 = deer
                     opacity = 1.0
                     
                     # calculate mutations per user-specified bin size in histogram for each distribution
@@ -201,8 +202,10 @@ with ui.nav_panel("Home"):
                     counts0, bins0 = functions.make_bins(x0,input.var())
                     # global
                     counts1, bins1 = functions.make_bins(x1,input.var())
-                    # deer
+                    # global late
                     counts2, bins2 = functions.make_bins(x2,input.var())
+                    # deer
+                    counts3, bins3 = functions.make_bins(x3,input.var())
                     # instatiate figure
                     fig = go.Figure()
                     # add plot of nucleotide positions specified by user
@@ -229,12 +232,20 @@ with ui.nav_panel("Home"):
                     marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
                     opacity=opacity
                     ))
+                    # add plot of global late distribution
+                    fig.add_trace(go.Bar(
+                    x=bins0,
+                    y=[x/total_lateglobal for x in counts2],
+                    name='global_late',
+                    marker_color=functions.select_palette(input.var3())[3],
+                    opacity=opacity    
+                    ))
                     # add plot of deer distribution
                     fig.add_trace(go.Bar(
                     x=bins0,
-                    y=[x/total_deer for x in counts2], # normalize bin counts by total number of mutations
+                    y=[x/total_deer for x in counts3], # normalize bin counts by total number of mutations
                     name='deer', # name used in legend and hover labels,
-                    marker_color=functions.select_palette(input.var3())[3], # user specifies colour palette
+                    marker_color=functions.select_palette(input.var3())[4], # user specifies colour palette
                     opacity=opacity
                     ))
                     fig.update_layout(
@@ -271,7 +282,7 @@ with ui.nav_panel("Home"):
                 # of the specified mutation distributions
                 def calc_likelihoods():
                     # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
-                    likelihood_list, most_likely = functions.most_likely(input.var(), global_, chronic, deer, input.var2())
+                    likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
                     # return a list of tuples: [(global_likelihood, 'global'), (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
                     # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
                     return likelihood_list, most_likely
@@ -285,7 +296,7 @@ with ui.nav_panel("Home"):
 
                 with ui.value_box(
                     showcase=faicons.icon_svg("globe", width='50px'),
-                    theme="bg-green",
+                    theme="text-green",
                     showcase_layout="left center", 
                     max_height='90px'
                 ):
@@ -301,6 +312,22 @@ with ui.nav_panel("Home"):
                             return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
                 # print text out for the user
                 with ui.value_box(
+                    showcase=faicons.icon_svg("earth-americas", width="50px"),
+                    theme="bg-green",
+                    sshowcase_layout="left center", 
+                    max_height='90px'
+                ):
+                    "Global Late"
+                    @render.ui
+                    def txt2():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise don't do anything 
+                        try:
+                            return f'{calc_likelihoods()[0][1][0]:.2f}'
+                        except:
+                            pass
+                # print text out for the user
+                with ui.value_box(
                     showcase=faicons.icon_svg("head-side-virus", width="50px"),
                     theme="bg-purple",
                     sshowcase_layout="left center", 
@@ -308,11 +335,11 @@ with ui.nav_panel("Home"):
                 ):
                     "Chronic"
                     @render.ui
-                    def txt2():
+                    def txt3():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise don't do anything 
                         try:
-                            return f'{calc_likelihoods()[0][1][0]:.2f}'
+                            return f'{calc_likelihoods()[0][2][0]:.2f}'
                         except:
                             pass
 
@@ -325,11 +352,11 @@ with ui.nav_panel("Home"):
                 ):
                     "Deer"            
                     @render.ui
-                    def txt3():
+                    def txt4():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise don't do anything
                         try:
-                            return f'{calc_likelihoods()[0][2][0]:.2f}'
+                            return f'{calc_likelihoods()[0][3][0]:.2f}'
                         except:
                             pass
                 
@@ -340,7 +367,7 @@ with ui.nav_panel("Home"):
                 ):
                     "Your sequence best fits the following distribution:"
                     @render.ui
-                    def txt4():
+                    def txt5():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise don't do anything
                         try:
@@ -348,7 +375,7 @@ with ui.nav_panel("Home"):
                         except:
                             pass
                     @render.ui
-                    def txt5():
+                    def txt6():
 
                             more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
                             dist = functions.times_more_likely(calc_likelihoods()[0])[1]
