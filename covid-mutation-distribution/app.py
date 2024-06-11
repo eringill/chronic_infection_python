@@ -272,7 +272,7 @@ with ui.nav_panel("Home"):
                 def calc_likelihoods():
                     # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
                     likelihood_list, most_likely = functions.most_likely(input.var(), global_, chronic, deer, input.var2())
-                    # return a list of tuples: [('global', global_likelihood), ('chronic', chronic_likelihood), ('deer', deer_likelihood)]
+                    # return a list of tuples: [(global_likelihood, 'global'), (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
                     # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
                     return likelihood_list, most_likely
 

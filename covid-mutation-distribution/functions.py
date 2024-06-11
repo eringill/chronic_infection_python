@@ -126,7 +126,8 @@ def most_likely(binsize, global_, chronic, deer, mutated_nucleotide_list):
     in deer distribution, mutated_nucleotide_list-user-specified list of mutated nucleotide positions
     
     outputs: zipped-a list of tuples containing the likelihood that the user's mutation distribution fits each of the
-    existing distributions in the following format [('global', global_likelihood), ('chronic', chronic_likelihood), ('deer', deer_likelihood)],
+    existing distributions in the following format [(global_likelihood, 'global'), 
+    (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')],
     best_fit: the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
     '''
     # first try to see if user input of mutated nucleotides can be processed
