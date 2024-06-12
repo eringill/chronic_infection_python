@@ -170,7 +170,10 @@ with ui.nav_panel("Home"):
                                 
                                 @render.ui
                                 def mut_lineage():
-                                    return f'{functions.mut_lineage_parsing(input.var())}'
+                                    if input.var2() != '1':
+                                        return f'{functions.mut_lineage_parsing(input.var2())}'
+                                    else:
+                                        return f'{functions.mut_lineage_parsing(input.var4())}'
             with ui.card():
                 # shiny won't use file paths in quotes, you have to use pathlib
                 # define mutation distributions and total number of mutations for chronic sequences
@@ -310,7 +313,10 @@ with ui.nav_panel("Home"):
                 # of the specified mutation distributions
                 def calc_likelihoods():
                     # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
-                    likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
+                    if input.var2() != '1':
+                        likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
+                    else:
+                        likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var4())
                     # return a list of tuples: [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),(chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
                     # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
                     return likelihood_list, most_likely
