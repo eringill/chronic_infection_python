@@ -86,11 +86,20 @@ with ui.nav_panel("Home"):
             ui.input_select("var", "Select Bin Size", 
                     choices= ['genes_split', 'gene', int(500), int(1000)])
             # nucleotide positions where mutations occur - example is shown by default
-            with ui.tooltip(id="tooltip", placement="right"): 
-                (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
-                                "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,))
-                'Lineage-defining mutations should include only those that have occurred since divergence from the larger SARS-CoV-2 tree.'
-
+            ui.input_radio_buttons(
+                'var2',
+                'Please select a lineage whose mutation distribution you would like to visualize',
+                {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86',
+                 'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641',
+                 None:'I want to enter my own list of lineage-defining mutations'}
+            )
+            
+            if input.var2() == None:
+                with ui.tooltip(id="tooltip", placement="right"): 
+                    (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
+                                    "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,))
+                    'Lineage-defining mutations should include only those that have occurred since divergence from the larger SARS-CoV-2 tree.'
+            
             # colour palette
             ui.input_select("var3", "Select Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
