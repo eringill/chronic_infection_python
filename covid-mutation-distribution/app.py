@@ -88,7 +88,7 @@ with ui.nav_panel("Home"):
             # nucleotide positions where mutations occur - example is shown by default
             with ui.tooltip(id="tooltip", placement="right"): 
                 (ui.input_text_area("var2", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
-                                "A897G, G3431A, T7842C, C8293T, A8393C, C11042T, T12789C, G13339A, T15756C, A18492G, T21608C, T21711C, G21941A, A22032G, T22208C, G22034C, C22295T, A22353G, G22556A, A22770G, A22895G, T22896C, G22898A, T22910C, C22916T, A23009G, T23012C, G23013A, G23018A, C23019T, C23271T, A23423G, G23604C, G24378A, T24990C, C25207T, A26529G, T26610C, A26681G, A26833G, C28958T",autoresize=True,))
+                                "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,))
                 'Lineage-defining mutations should include only those that have occurred since divergence from the larger SARS-CoV-2 tree.'
 
             # colour palette
@@ -222,7 +222,7 @@ with ui.nav_panel("Home"):
                     fig.add_trace(go.Bar(
                     x=bins0,
                     y=[x/plot_user_input()[2] for x in plot_user_input()[0]], # normalize bin counts by total number of mutations
-                    name='user_input', # name used in legend and hover labels,
+                    name='user input', # name used in legend and hover labels,
                     marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
                     opacity=opacity
                     ))
@@ -238,7 +238,7 @@ with ui.nav_panel("Home"):
                     fig.add_trace(go.Bar(
                     x=bins0,
                     y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
-                    name='global', # name used in legend and hover labels,
+                    name='global pre-VoC', # name used in legend and hover labels,
                     marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
                     opacity=opacity
                     ))
@@ -246,7 +246,7 @@ with ui.nav_panel("Home"):
                     fig.add_trace(go.Bar(
                     x=bins0,
                     y=[x/total_lateglobal for x in counts2],
-                    name='global_late',
+                    name='global Omicron',
                     marker_color=functions.select_palette(input.var3())[3],
                     opacity=opacity    
                     ))
@@ -293,7 +293,7 @@ with ui.nav_panel("Home"):
                 def calc_likelihoods():
                     # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
                     likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
-                    # return a list of tuples: [(global_likelihood, 'global'), (chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
+                    # return a list of tuples: [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),(chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
                     # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
                     return likelihood_list, most_likely
 
@@ -310,7 +310,7 @@ with ui.nav_panel("Home"):
                     showcase_layout="left center", 
                     max_height='90px'
                 ):
-                    "Global"
+                    "Global pre-VoC"
                     
                     @render.ui
                     def txt1():
@@ -327,7 +327,7 @@ with ui.nav_panel("Home"):
                     sshowcase_layout="left center", 
                     max_height='90px'
                 ):
-                    "Global Late"
+                    "Global Omicron"
                     @render.ui
                     def txt2():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),

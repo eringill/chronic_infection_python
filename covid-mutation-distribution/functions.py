@@ -163,7 +163,7 @@ def most_likely(binsize, global_, global_late, chronic, deer, mutated_nucleotide
     # make a list of all likelihoods
     likelihood_list = [global_likelihood, global_late_likelihood, chronic_likelihood, deer_likelihood]
     # create a matching list of names for the list above
-    names = ['global', 'global_late', 'chronic', 'deer']
+    names = ['global_preVoC', 'global_Omicron', 'chronic', 'deer']
     # zip the two lists together
     zipped = list(zip(likelihood_list, names))
     # find the name of the distribution that best fits the user's input
