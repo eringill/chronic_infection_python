@@ -100,7 +100,10 @@ with ui.nav_panel("Home"):
             @reactive.calc
             def number_of_mutations():
                 # return the number of mutations that the user has entered
-                return len(input.var2().split(','))
+                if input.var2().split(',') == ['']:
+                    return 0
+                else:
+                    return len(input.var2().split(','))
             @render.text
             def print_mutations():
                 return f'You have entered {number_of_mutations()} mutations.'
