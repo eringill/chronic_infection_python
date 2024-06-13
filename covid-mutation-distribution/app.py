@@ -78,7 +78,7 @@ The addition of one to each bin ensures that there are no bins lacking data.
 # Name of application tab
 with ui.nav_panel("Home"):
     # layout of columns on first tab
-    with ui.layout_columns(col_widths=(4, 8)):
+    with ui.layout_columns(col_widths=(3, 9)):
         # first column (or "card")
         with ui.card():
             # variables defined by user input
@@ -163,7 +163,7 @@ with ui.nav_panel("Home"):
                         return fig2
                 with ui.card():
                     with ui.value_box(
-                                showcase=faicons.icon_svg("dna", width="120px"),
+                                showcase=faicons.icon_svg("dna", width="80px"),
                                 theme="bg-gradient-blue-purple",
                             ):
                                 "Changes at known mutator sites:"
@@ -306,114 +306,116 @@ with ui.nav_panel("Home"):
             
 
             with ui.card():
-            # once nucleotide positions where mutations occur are entered into the text box, these
-            # calculations occur reactively
-                @reactive.calc
-                # function to calculate log likelihoods of user's mutation distribution fitting each 
-                # of the specified mutation distributions
-                def calc_likelihoods():
-                    # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
-                    if input.var2() != '1':
-                        likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
-                    else:
-                        likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var4())
-                    # return a list of tuples: [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),(chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
-                    # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
-                    return likelihood_list, most_likely
-
-                # print text out for the user
                 @render.text
                 def txt():
                     return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
-
-                # print text out for the user
-
-                with ui.value_box(
-                    showcase=faicons.icon_svg("globe", width='50px'),
-                    theme="text-green",
-                    showcase_layout="left center", 
-                    max_height='90px'
-                ):
-                    "Global pre-VoC"
+                with ui.layout_column_wrap(width=1/2):
+                # once nucleotide positions where mutations occur are entered into the text box, these
+                # calculations occur reactively
+                    @reactive.calc
+                    # function to calculate log likelihoods of user's mutation distribution fitting each 
+                    # of the specified mutation distributions
+                    def calc_likelihoods():
+                        # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
+                        if input.var2() != '1':
+                            likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
+                        else:
+                            likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var4())
+                        # return a list of tuples: [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),(chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
+                        # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
+                        return likelihood_list, most_likely
+                    with ui.card():
                     
-                    @render.ui
-                    def txt1():
+
+                        # print text out for the user
+
+                        with ui.value_box(
+                            showcase=faicons.icon_svg("globe", width='50px'),
+                            theme="text-green",
+                            showcase_layout="left center", 
+                            max_height='90px'
+                        ):
+                            "Global pre-VoC"
+                            
+                            @render.ui
+                            def txt1():
+                            # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                            # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
+                                try:
+                                    return f'{calc_likelihoods()[0][0][0]:.2f}'
+                                except:
+                                    pass
+                        # print text out for the user
+                        with ui.value_box(
+                            showcase=faicons.icon_svg("earth-americas", width="50px"),
+                            theme="bg-green",
+                            sshowcase_layout="left center", 
+                            max_height='90px'
+                        ):
+                            "Global Omicron"
+                            @render.ui
+                            def txt2():
+                                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                                # display likelihoods, otherwise don't do anything 
+                                try:
+                                    return f'{calc_likelihoods()[0][1][0]:.2f}'
+                                except:
+                                    pass
+                    with ui.card():
+                        # print text out for the user
+                        with ui.value_box(
+                            showcase=faicons.icon_svg("head-side-virus", width="50px"),
+                            theme="bg-purple",
+                            sshowcase_layout="left center", 
+                            max_height='90px'
+                        ):
+                            "Chronic"
+                            @render.ui
+                            def txt3():
+                                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                                # display likelihoods, otherwise don't do anything 
+                                try:
+                                    return f'{calc_likelihoods()[0][2][0]:.2f}'
+                                except:
+                                    pass
+
+                        # print text out for the user
+                        with ui.value_box(
+                            showcase=faicons.icon_svg("virus-covid", width="50px"),
+                            theme="bg-orange",
+                            showcase_layout="left center", 
+                            max_height='90px'
+                        ):
+                            "Deer"            
+                            @render.ui
+                            def txt4():
+                                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                                # display likelihoods, otherwise don't do anything
+                                try:
+                                    return f'{calc_likelihoods()[0][3][0]:.2f}'
+                                except:
+                                    pass
+                        
+            # print text out for the user
+            with ui.value_box(
+                showcase=faicons.icon_svg("check", width="50px"),
+                theme="blue",
+            ):
+                "Your sequence best fits the following distribution:"
+                @render.ui
+                def txt5():
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                    # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
-                        try:
-                            return f'{calc_likelihoods()[0][0][0]:.2f}'
-                        except:
-                            return f'Please enter a comma-separated list of integer nucleotide positions in the box on the left to see your results.'
-                # print text out for the user
-                with ui.value_box(
-                    showcase=faicons.icon_svg("earth-americas", width="50px"),
-                    theme="bg-green",
-                    sshowcase_layout="left center", 
-                    max_height='90px'
-                ):
-                    "Global Omicron"
-                    @render.ui
-                    def txt2():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything 
-                        try:
-                            return f'{calc_likelihoods()[0][1][0]:.2f}'
-                        except:
-                            pass
-                # print text out for the user
-                with ui.value_box(
-                    showcase=faicons.icon_svg("head-side-virus", width="50px"),
-                    theme="bg-purple",
-                    sshowcase_layout="left center", 
-                    max_height='90px'
-                ):
-                    "Chronic"
-                    @render.ui
-                    def txt3():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything 
-                        try:
-                            return f'{calc_likelihoods()[0][2][0]:.2f}'
-                        except:
-                            pass
+                    # display likelihoods, otherwise don't do anything
+                    try:
+                        return f'{calc_likelihoods()[1][1]}'
+                    except:
+                        pass
+                @render.ui
+                def txt6():
 
-                # print text out for the user
-                with ui.value_box(
-                    showcase=faicons.icon_svg("virus-covid", width="50px"),
-                    theme="bg-orange",
-                    showcase_layout="left center", 
-                    max_height='90px'
-                ):
-                    "Deer"            
-                    @render.ui
-                    def txt4():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything
-                        try:
-                            return f'{calc_likelihoods()[0][3][0]:.2f}'
-                        except:
-                            pass
-                
-                # print text out for the user
-                with ui.value_box(
-                    showcase=faicons.icon_svg("check", width="50px"),
-                    theme="blue",
-                ):
-                    "Your sequence best fits the following distribution:"
-                    @render.ui
-                    def txt5():
-                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                        # display likelihoods, otherwise don't do anything
-                        try:
-                            return f'{calc_likelihoods()[1][1]}'
-                        except:
-                            pass
-                    @render.ui
-                    def txt6():
-
-                            more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
-                            dist = functions.times_more_likely(calc_likelihoods()[0])[1]
-                            return f'({more_likely} times more likely than the {dist} distribution.)'
+                        more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
+                        dist = functions.times_more_likely(calc_likelihoods()[0])[1]
+                        return f'({more_likely} times more likely than the {dist} distribution.)'
 
                 
                     
