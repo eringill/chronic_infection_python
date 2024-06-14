@@ -92,7 +92,6 @@ def make_bins(x, binsize):
             # then make a list of the number of mutations that fall into each bin (gene)
             counts, bins = np.histogram(x, bins=genebins)
             # the last name is n/a, so remove it from the list of gene names
-            names.pop(0)
             bins0 = names
         else:
             # first get the gene start positions and gene names from file using
@@ -101,7 +100,6 @@ def make_bins(x, binsize):
             # then make a list of the number of mutations that fall into each bin (gene)
             counts, bins = np.histogram(x, bins=genebins)
             # the last name is n/a, so remove it from the list of gene names
-            names.pop(0)
             bins0 = names
     return counts, bins0
 
