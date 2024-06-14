@@ -50,6 +50,7 @@ def parse_gene_files(filename):
         genelist = df['start'].tolist()
         # make a list of gene names
         names = df['gene'].tolist()
+        names.pop()
     # if the user selects "genes_split" as bin size
     # this option splits the spike protein up into three sections:
     # NTD, RBD and postRBD
@@ -60,6 +61,7 @@ def parse_gene_files(filename):
         genelist = df['start'].tolist()
         # make a list of gene names
         names = df['gene'].tolist()
+        names.pop()
     return genelist, names
 
 # function to make bins based on either genes or a specific number of nucleotides,

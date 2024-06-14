@@ -15,30 +15,35 @@ ui.page_opts(
     page_fn=partial(page_navbar, id="page"),
     fillable=True
 )
-
+# add dark mode switch to navbar
+ui.nav_spacer()
+with ui.nav_control():
+        ui.input_dark_mode() # << 
+        
 # Name of application tab
 with ui.nav_panel("Home"):
+    with ui.card(): 
+        ui.markdown(
+        '''
+        Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following four distributions:
+        - Mutations observed during the first nine months of the pandemic (pre-VoC) (global pre-VoC distribution)
+        - Mutations observed during the Omicron era (global Omicron distribution)
+        - Mutations observed in chronic infections (chronic distribution)
+        - Mutations observed in zoonotic spillovers from humans to white-tailed deer (deer distribution)
+        
+        In addition, the application will inform the user if the mutation pattern is:
+        - Consistent with molnupiravir use (via examination of the transition:transversion ratio)
+        - A mutator lineage (contains a mutation that is known to increase the mutation rate of the lineage)
+        
+        See Application Notes tab for more information.
+        '''    
+        )
     # layout of columns on first tab
     with ui.layout_columns(col_widths=(4, 8)):
         # first column (or "card")
         with ui.card():
-            ui.input_dark_mode() # << 
             # variables defined by user input
             # bin size
-            ui.markdown(
-            '''
-            Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following four distributions:
-            - Mutations observed during the first nine months of the pandemic (pre-VoC) (global pre-VoC distribution)
-            - Mutations observed during the Omicron era (global Omicron distribution)
-            - Mutations observed in chronic infections (chronic distribution)
-            - Mutations observed in zoonotic spillovers from humans to white-tailed deer (deer distribution)
-            
-            In addition, the application will inform the user if the mutation pattern is:
-            - Consistent with molnupiravir use (via examination of the transition:transversion ratio)
-            - A mutator lineage (contains a mutation that is known to increase the mutation rate of the lineage)
-            See Application Notes tab for more information.
-            '''
-            )
             ui.input_select("var", "Select Bin Size", 
                     choices= ['genes_split', 'gene', int(500), int(1000)])
             # nucleotide positions where mutations occur - example is shown by default
@@ -262,7 +267,6 @@ with ui.nav_panel("Home"):
                     # return figure
                     return fig
             
-
             with ui.card():
                 @render.text
                 def txt():
@@ -379,7 +383,6 @@ with ui.nav_panel("Home"):
 # name of notes tab 
 with ui.nav_panel("Application Notes"):
     # markdown of text to appear on second tab page
-    ui.input_dark_mode() # << 
     ui.markdown(
 '''
 ### Background
@@ -412,14 +415,14 @@ sum(log(((distribution bin counts + 1) / sum(distribution bin counts + 1))<sup>u
 ```
 The addition of one to each bin ensures that there are no bins lacking data.
 
-## Notes on Input and Useful Tools
+### Notes on Input and Useful Tools
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
 - Indels should be reported by including the first position only e.g. `ins21608` **NOT** `ins21608TCATGCCGCTGT`
 - If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
 - If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
 
-## Acknowledgements
+### Acknowledgements
 This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. More details are available on VIROLOGICAL POST?
 
 '''
