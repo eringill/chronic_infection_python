@@ -134,9 +134,28 @@ with ui.nav_panel("Home"):
                                 @render.ui
                                 def mut_lineage():
                                     if input.var2() != '1':
-                                        return f'{functions.mut_lineage_parsing(input.var2())}'
+                                        if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
+                                            return 'NO'
+                                        else:
+                                            return f'Confirmed: {functions.mut_lineage_parsing(input.var2())[0]}'
                                     else:
-                                        return f'{functions.mut_lineage_parsing(input.var4())}'
+                                        if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
+                                            return 'NO'
+                                        else:
+                                            return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
+                                @render.ui
+                                def potential_mut_lineage():
+                                    if input.var2() != '1':
+                                        if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
+                                            return ''
+                                        else:
+                                            return f'Potential: {functions.mut_lineage_parsing(input.var2())[1]}'
+                                    else:
+                                        if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
+                                            return ''
+                                        else:
+                                            return f'Potential: {functions.mut_lineage_parsing(input.var4())[1]}'
+
             with ui.card():
                 # shiny won't use file paths in quotes, you have to use pathlib
                 # define mutation distributions and total number of mutations for chronic sequences

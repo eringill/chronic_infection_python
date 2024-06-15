@@ -274,7 +274,15 @@ def mut_lineage_parsing(nuc_pos_list):
     nuc_pos_list_parsed = nuc_pos_list.split(',')
     nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
-    return "YES" if "C18647T" in nuc_list_standard else "NO"
+    int_nuc_list = [re.sub('\D', '', i) for i in nuc_list_standard]
+    mut_nuc_list = [int(i) for i in int_nuc_list]
+    mutator_list = [18155, 18218, 18647]
+    potential_mutator_list = [18307, 18308, 18309, 18313, 18314, 18315, 18610, 18611, 18612, 18841, 18842, 18843, 18856, 18857, 18858]
+    mutator_exists = set(mut_nuc_list) & set(mutator_list)
+    potential_mutator_exists = set(mut_nuc_list) & set(potential_mutator_list)
+    mutator_text = ', '.join(str(e) for e in (list(mutator_exists)))
+    potential_mutator_text = ', '.join(str(e) for e in (list(potential_mutator_exists)))
+    return mutator_text, potential_mutator_text
     
 def sci_notation(number, sig_fig=2):
     ret_string = "{0:.{1:d}e}".format(number, sig_fig)
