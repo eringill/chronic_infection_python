@@ -139,10 +139,23 @@ def most_likely(binsize, global_, global_late, chronic, deer, mutated_nucleotide
         # an integer
         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
         mut_nuc_list = [int(i) for i in int_nuc_list]
-    except:
+    except ValueError:
         # if this fails, return None and exit function - there will be a message printed on the
         # screen prompting the user to enter appropriate input
-        return None
+        int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
+        mut_nuc_list = []
+        for i in int_nuc_list:
+            try:
+                mut_nuc_list.append(int(i))
+            except:
+                pass
+    except:    
+        names = ['', '', '', '']
+        dummy_likelihoods = ['','','','']
+        # zip the two lists together
+        dummy_zipped = list(zip(dummy_likelihoods, names))
+        dummy_fit = ['','']
+        return dummy_zipped, dummy_fit
     
     # if the user's input is processed successfully, split the mutated nucleotide positions
     # into bins
@@ -187,9 +200,12 @@ def times_more_likely(zipped_likelihood_list):
     unzipped_nums = [i for (i, j) in sorted_list]
     # convert items in the unzipped number list to floats
     unzipped_nums_float = [float(i) for i in unzipped_nums]
+    if unzipped_nums_float[0] == float(0):
+        return '', 'Please enter a list of nucleotide positions in order to calculate likelihoods.'
     # return the number of times that the user's mutation distribution is better explained by the best
     # fit distribution than the global distribution
-    return math.exp(unzipped_nums_float[3] - unzipped_nums_float[2]), unzipped_names[2]
+    else:
+        return math.exp(unzipped_nums_float[3] - unzipped_nums_float[2]), unzipped_names[2]
 
 # function to select colour palettes for the plot
 def select_palette(palette_name):
@@ -241,13 +257,14 @@ def transition_or_transversion(nuc_pos_list):
     nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list]
     nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
+    nuc_list_parsed = [i for i in nuc_list_standard if (len(i) == 2)]
     try:
         check_for_standard_nucleotides(nuc_list_standard)
     except:
         print('Please enter standard nucleotides before and after each position number if you would like to visualize the transition to transversion ratio.')
     transitions = 0
     transversions = 0
-    for i in nuc_list_standard:
+    for i in nuc_list_parsed:
         if i[0] == 'A':
             if i[1] == 'G':
                 transitions += 1
@@ -268,20 +285,26 @@ def transition_or_transversion(nuc_pos_list):
                 transitions += 1
             elif i[1] in ['A', 'G']:
                 transversions += 1
+    if transversions == 0:
+        transversions += 1
     return transitions, transversions
                 
 def mut_lineage_parsing(nuc_pos_list):
-    nuc_pos_list_parsed = nuc_pos_list.split(',')
-    nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
-    nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
-    int_nuc_list = [re.sub('\D', '', i) for i in nuc_list_standard]
-    mut_nuc_list = [int(i) for i in int_nuc_list]
-    mutator_list = [18155, 18218, 18647]
-    potential_mutator_list = [18307, 18308, 18309, 18313, 18314, 18315, 18610, 18611, 18612, 18841, 18842, 18843, 18856, 18857, 18858]
-    mutator_exists = set(mut_nuc_list) & set(mutator_list)
-    potential_mutator_exists = set(mut_nuc_list) & set(potential_mutator_list)
-    mutator_text = ', '.join(str(e) for e in (list(mutator_exists)))
-    potential_mutator_text = ', '.join(str(e) for e in (list(potential_mutator_exists)))
+    try:
+        nuc_pos_list_parsed = nuc_pos_list.split(',')
+        nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
+        nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
+        int_nuc_list = [re.sub('\D', '', i) for i in nuc_list_standard]
+        mut_nuc_list = [int(i) for i in int_nuc_list]
+        mutator_list = [18155, 18218, 18647]
+        potential_mutator_list = [18307, 18308, 18309, 18313, 18314, 18315, 18610, 18611, 18612, 18841, 18842, 18843, 18856, 18857, 18858]
+        mutator_exists = set(mut_nuc_list) & set(mutator_list)
+        potential_mutator_exists = set(mut_nuc_list) & set(potential_mutator_list)
+        mutator_text = ', '.join(str(e) for e in (list(mutator_exists)))
+        potential_mutator_text = ', '.join(str(e) for e in (list(potential_mutator_exists)))
+    except:
+        mutator_text = ''
+        potential_mutator_text = ''
     return mutator_text, potential_mutator_text
     
 def sci_notation(number, sig_fig=2):

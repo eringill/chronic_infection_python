@@ -189,6 +189,17 @@ with ui.nav_panel("Home"):
                         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
                         mut_nuc_list = [int(i) for i in int_nuc_list]
                     # if this fails, return some dummy data so the plot is still rendered
+                    except ValueError: 
+                        int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
+                        mut_nuc_list = []
+                        for i in int_nuc_list:
+                            try:
+                                mut_nuc_list.append(int(i))
+                            except ValueError:
+                                return [[0,0,0,0], [1,1,1,1], 1]
+                        if len(mut_nuc_list) == 0:
+                            return [[0,0,0,0], [1,1,1,1], 1]   
+                                
                     except: return [[0,0,0,0], [1,1,1,1], 1]
                     # otherwise, parse the list of mutation positions into bins based on the size
                     # specified by the user
@@ -387,16 +398,21 @@ with ui.nav_panel("Home"):
                 def txt5():
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                     # display likelihoods, otherwise don't do anything
+                    if calc_likelihoods()[0][0][0] == float(0):
+                        return ''
                     try:
                         return f'{calc_likelihoods()[1][1]}'
                     except:
                         pass
                 @render.ui
                 def txt6():
-
+                    try:    
                         more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
                         dist = functions.times_more_likely(calc_likelihoods()[0])[1]
                         return f'({more_likely} times more likely than the {dist} distribution.)'
+                    except:
+                        return f'Please enter a list of nucleotide positions to calculate likelihoods.'
+                    
 
                 
 # name of notes tab 
