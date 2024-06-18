@@ -85,12 +85,13 @@ def make_bins(x, binsize):
         bins0 = 0.5 * (bins0[:-1] + bins0[1:])
     # if the user has specified 'gene' or 'genes_split' instead
     except ValueError:
+        y = [i for i in x if i > 265]
         if binsize == 'gene':
             # first get the gene start positions and gene names from file using
             # parse_gene_files() function
             genebins, names = parse_gene_files('gene')
             # then make a list of the number of mutations that fall into each bin (gene)
-            counts, bins = np.histogram(x, bins=genebins)
+            counts, bins = np.histogram(y, bins=genebins)
             # the last name is n/a, so remove it from the list of gene names
             bins0 = names
         else:
@@ -98,7 +99,7 @@ def make_bins(x, binsize):
             # parse_gene_files() function
             genebins, names = parse_gene_files('genes_split')
             # then make a list of the number of mutations that fall into each bin (gene)
-            counts, bins = np.histogram(x, bins=genebins)
+            counts, bins = np.histogram(y, bins=genebins)
             # the last name is n/a, so remove it from the list of gene names
             bins0 = names
     return counts, bins0
@@ -134,11 +135,12 @@ def most_likely(binsize, global_, global_late, chronic, deer, mutated_nucleotide
     try:
         # gui accepts input as a string, so it first needs to be split into a list 
         # splits occur wherever there is a comma 
-        mutated_nucleotide_list = mutated_nucleotide_list.split(',') 
+        mutated_nucleotide_list = mutated_nucleotide_list.rstrip(',').rstrip().split(',') 
         # try to remove non-digit characters, then convert each string in list into
         # an integer
         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
-        mut_nuc_list = [int(i) for i in int_nuc_list]
+        digit_nuc_list = [int(i) for i in int_nuc_list]
+        mut_nuc_list = [i for i in digit_nuc_list if i > 0 and i < 30001]
     except ValueError:
         # if this fails, return None and exit function - there will be a message printed on the
         # screen prompting the user to enter appropriate input
@@ -146,7 +148,10 @@ def most_likely(binsize, global_, global_late, chronic, deer, mutated_nucleotide
         mut_nuc_list = []
         for i in int_nuc_list:
             try:
-                mut_nuc_list.append(int(i))
+                if int(i) < 30001 and int(i) > 0:
+                    mut_nuc_list.append(int(i))
+                else: 
+                    pass 
             except:
                 pass
     except:    
@@ -254,7 +259,8 @@ def check_for_standard_nucleotides(nuc_list):
 
 def transition_or_transversion(nuc_pos_list):
     # remove digits
-    nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list]
+    nuc_pos_list_stripped = nuc_pos_list.rstrip(',').split(',')
+    nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list_stripped]
     nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
     nuc_list_parsed = [i for i in nuc_list_standard if (len(i) == 2)]
@@ -291,7 +297,7 @@ def transition_or_transversion(nuc_pos_list):
                 
 def mut_lineage_parsing(nuc_pos_list):
     try:
-        nuc_pos_list_parsed = nuc_pos_list.split(',')
+        nuc_pos_list_parsed = nuc_pos_list.rstrip(',').split(',')
         nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
         nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
         int_nuc_list = [re.sub('\D', '', i) for i in nuc_list_standard]

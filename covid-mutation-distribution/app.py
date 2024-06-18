@@ -44,14 +44,16 @@ with ui.nav_panel("Home"):
         with ui.card():
             # variables defined by user input
             # bin size
-            ui.input_select("var", "Select Bin Size", 
+            with ui.tooltip(id="btn_tooltip", placement="right"):
+                ui.input_select("var", "Select Bin Size", 
                     choices= ['genes_split', 'gene', int(500), int(1000)])
+                'This is the number and type of segments that the genome will be divided into when plotting mutations and calculating likelihoods.'
             # nucleotide positions where mutations occur - example is shown by default
             ui.input_radio_buttons(
                 'var2',
                 'Please select a lineage whose mutation distribution you would like to visualize',
-                {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86',
-                 'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641',
+                {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
+                 'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641 (lineage from white-tailed deer)',
                  '1':'I want to enter my own list of lineage-defining mutations'}
             )
             with ui.panel_conditional("input.var2 === '1'"):
@@ -59,8 +61,10 @@ with ui.nav_panel("Home"):
                                         "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,)
 
             # colour palette
-            ui.input_select("var3", "Select Palette",
+            with ui.tooltip(id="btn_tooltip2", placement="right"):
+                ui.input_select("var3", "Select Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
+                'You can change the colors of the plot here.'
 
         # second column (or "card")
         with ui.card():
@@ -71,15 +75,18 @@ with ui.nav_panel("Home"):
                     if input.var2().split(',') == ['']:
                         return 0
                     else:
-                        return len(input.var2().split(','))
+                        return len(input.var2().rstrip(',').rstrip().split(','))
                 else:
                     if input.var4().split(',') == ['']:
                         return 0
                     else:
-                        return len(input.var4().split(','))
+                        return len(input.var4().rstrip(',').rstrip().split(','))
             @render.text
             def print_mutations():
-                return f'You have entered {number_of_mutations()} mutations.'
+                if number_of_mutations == 1:
+                    return f'You have entered {number_of_mutations()} mutation.'
+                else:
+                    return f'You have entered {number_of_mutations()} mutations.'
             with ui.layout_column_wrap(width=1/2):
                 with ui.card():
                     "Transition to Transversion Ratio"
@@ -90,9 +97,9 @@ with ui.nav_panel("Home"):
                                 # then pass to function defined in functions.py
                                 # to get number of transitions, transversions
                         if input.var2() != '1':
-                            transitions, transversions = functions.transition_or_transversion(input.var2().split(','))
+                            transitions, transversions = functions.transition_or_transversion(input.var2())
                         else:
-                            transitions, transversions = functions.transition_or_transversion(input.var4().split(','))
+                            transitions, transversions = functions.transition_or_transversion(input.var4())
                         return transitions, transversions
                             
                     @render_widget
@@ -180,21 +187,23 @@ with ui.nav_panel("Home"):
                     # gui accepts input as a string, so it first needs to be split into a list 
                     # splits occur wherever there is a comma
                     if input.var2() != '1':
-                        mutated_nucleotide_list = input.var2().split(',')
+                        mutated_nucleotide_list = input.var2().rstrip(',').rstrip().split(',')
                     else:
-                        mutated_nucleotide_list = input.var4().split(',')
+                        mutated_nucleotide_list = input.var4().rstrip(',').rstrip().split(',')
                     # try to remove non-digit characters, then convert each string in list into
                     # a digit
                     try: 
                         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
-                        mut_nuc_list = [int(i) for i in int_nuc_list]
+                        digit_nuc_list = [int(i) for i in int_nuc_list]
+                        mut_nuc_list = [i for i in digit_nuc_list if (i < 30001 and i > 0)]
                     # if this fails, return some dummy data so the plot is still rendered
                     except ValueError: 
                         int_nuc_list = [re.sub('\D', '', i) for i in mutated_nucleotide_list]
-                        mut_nuc_list = []
+                        digit_nuc_list = []
                         for i in int_nuc_list:
                             try:
-                                mut_nuc_list.append(int(i))
+                                digit_nuc_list.append(int(i))
+                                mut_nuc_list = [i for i in digit_nuc_list if (i < 30001 and i > 0)]
                             except ValueError:
                                 return [[0,0,0,0], [1,1,1,1], 1]
                         if len(mut_nuc_list) == 0:
@@ -207,6 +216,8 @@ with ui.nav_panel("Home"):
                     # determine the total number of mutations that are in the list supplied by the
                     # user
                     total_counts = sum(counts)
+                    if total_counts == 0:
+                        total_counts += 1
                     # return everything
                     return counts, bins0, total_counts
 
