@@ -25,17 +25,18 @@ with ui.nav_panel("Home"):
     with ui.card(): 
         ui.markdown(
         '''
-        Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following four distributions:
+        Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:
         - Mutations observed during the first nine months of the pandemic (pre-VoC) (global pre-VoC distribution)
         - Mutations observed during the Omicron era (global Omicron distribution)
         - Mutations observed in chronic infections (chronic distribution)
         - Mutations observed in zoonotic spillovers from humans to white-tailed deer (deer distribution)
-        
+
         In addition, the application will inform the user if the mutation pattern is:
         - Consistent with molnupiravir use (via examination of the transition:transversion ratio)
-        - A mutator lineage (contains a mutation that is known to increase the mutation rate of the lineage)
+        - A mutator lineage (contains a mutation in nsp14 that is known to increase the mutation rate of the lineage)
         
         See Application Notes tab for more information.
+
         '''    
         )
     # layout of columns on first tab
@@ -53,16 +54,18 @@ with ui.nav_panel("Home"):
                 'var2',
                 'Please select a lineage whose mutation distribution you would like to visualize',
                 {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
-                 'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641 (lineage from white-tailed deer)',
+                 'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641 (zoonotic lineage from white-tailed deer)',
                  '1':'I want to enter my own list of lineage-defining mutations'}
             )
             with ui.panel_conditional("input.var2 === '1'"):
-                ui.input_text_area("var4", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
+                with ui.tooltip(id="cond_tooltip", placement="right"):
+                    ui.input_text_area("var4", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
                                         "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,)
+                    'Power analyses suggest that a minimum of 10 lineage-defining mutations are needed for accurate results.'
 
             # colour palette
             with ui.tooltip(id="btn_tooltip2", placement="right"):
-                ui.input_select("var3", "Select Palette",
+                ui.input_select("var3", "Select Color Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
                 'You can change the colors of the plot here.'
 
@@ -101,67 +104,71 @@ with ui.nav_panel("Home"):
                         else:
                             transitions, transversions = functions.transition_or_transversion(input.var4())
                         return transitions, transversions
+                    
+                    with ui.tooltip(id="btn_tooltip3", placement="right"):        
+                        @render_widget
+                                # function to plot transition/transversion ratio heatmap
+                        def heatmap():
+                            transitions, transversions = get_transition_transversion_ratio()
+                            fig2 = go.Figure()
+                            config = {'displayModeBar': False}
+                            fig2.add_trace(go.Heatmap(
+                                z=[[float(transitions)/float(transversions)]],
+                                text=[[f'{float(transitions)/transversions:.2f}']],
+                                texttemplate='%{text}',
+                                colorscale='RdBu',
+                                textfont={'size':20},
+                                zmax=15, zmin=0,
+                                hovertemplate='Transition - Transversion Ratio: %{z}',
+                                colorbar=dict(
+                                    title="Ratio",
+                                    titleside="top",
+                                    tickmode="array",
+                                    tickvals=[1, 7, 14],
+                                    labelalias={1: "Typical", 14: "Molnupiravir-induced"},
+                                    ticks="outside"
+                                )))
                             
-                    @render_widget
-                            # function to plot transition/transversion ratio heatmap
-                    def heatmap():
-                        transitions, transversions = get_transition_transversion_ratio()
-                        fig2 = go.Figure()
-                        config = {'displayModeBar': False}
-                        fig2.add_trace(go.Heatmap(
-                            z=[[float(transitions)/float(transversions)]],
-                            text=[[f'{float(transitions)/transversions:.2f}']],
-                            texttemplate='%{text}',
-                            colorscale='RdBu',
-                            textfont={'size':20},
-                            zmax=15, zmin=0,
-                            hovertemplate='Transition - Transversion Ratio: %{z}',
-                            colorbar=dict(
-                                title="Ratio",
-                                titleside="top",
-                                tickmode="array",
-                                tickvals=[1, 7, 14],
-                                labelalias={1: "Typical", 14: "Molnupiravir-induced"},
-                                ticks="outside"
-                            )))
-                        
-                        fig2.update_yaxes(showticklabels=False)
-                        fig2.update_xaxes(showticklabels=False)
-                        fig2.update_layout(height=150, width=300)
-                        
-                        # return figure
-                        return fig2
+                            fig2.update_yaxes(showticklabels=False)
+                            fig2.update_xaxes(showticklabels=False)
+                            fig2.update_layout(height=150, width=300)
+                            
+                            # return figure
+                            return fig2
+                        'The transition:transversion ratio of SARS-CoV-2 is typically ~2:1, while molnupiravir induces a ratio of between 9:1 and 14:1 (Gruber et al. 2024).'
                 with ui.card():
-                    with ui.value_box(
-                                showcase=faicons.icon_svg("dna", width="80px"),
-                                theme="bg-gradient-blue-purple"
-                            ):
-                                "Changes at known mutator sites:"
-                                
-                                @render.ui
-                                def mut_lineage():
-                                    if input.var2() != '1':
-                                        if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
-                                            return 'NO'
+                    with ui.tooltip(id="btn_tooltip4", placement="right"):
+                        with ui.value_box(
+                                    showcase=faicons.icon_svg("dna", width="80px"),
+                                    theme="bg-gradient-blue-purple"
+                                ):
+                                    "Changes at known mutator sites:"
+                                    
+                                    @render.ui
+                                    def mut_lineage():
+                                        if input.var2() != '1':
+                                            if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
+                                                return 'NO'
+                                            else:
+                                                return f'Confirmed: {functions.mut_lineage_parsing(input.var2())[0]}'
                                         else:
-                                            return f'Confirmed: {functions.mut_lineage_parsing(input.var2())[0]}'
-                                    else:
-                                        if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
-                                            return 'NO'
+                                            if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
+                                                return 'NO'
+                                            else:
+                                                return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
+                                    @render.ui
+                                    def potential_mut_lineage():
+                                        if input.var2() != '1':
+                                            if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
+                                                return ''
+                                            else:
+                                                return f'Potential: {functions.mut_lineage_parsing(input.var2())[1]}'
                                         else:
-                                            return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
-                                @render.ui
-                                def potential_mut_lineage():
-                                    if input.var2() != '1':
-                                        if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
-                                            return ''
-                                        else:
-                                            return f'Potential: {functions.mut_lineage_parsing(input.var2())[1]}'
-                                    else:
-                                        if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
-                                            return ''
-                                        else:
-                                            return f'Potential: {functions.mut_lineage_parsing(input.var4())[1]}'
+                                            if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
+                                                return ''
+                                            else:
+                                                return f'Potential: {functions.mut_lineage_parsing(input.var4())[1]}'
+                        'See Application Notes table for a list of Confirmed and Potential mutator sites.'
 
             with ui.card():
                 # shiny won't use file paths in quotes, you have to use pathlib
@@ -447,8 +454,23 @@ In the first paper, the authors demonstrate that specific lineage-defining mutat
 Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
 
 In addition, the app informs the user whether the data contain signals consistent with:
-- Past molnupiravir use: The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
-- Mutator lineages: The presence of P203L in nsp14 (C18,647T transition results in mutation of P->L) is flagged as a mutation that alters the ExoN proofreading domain and is associated with a doubling of the mutation rate ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), which may contribute to the unusual features of the lineage.
+- **Past molnupiravir Use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
+- **Mutator lineages:** Mutator alleles may contribute to the unusual features of a lineage by increasing the rate and type of mutation. Known mutators have been observed in nsp14 within the ExoN proofreading domain of SARS-CoV-2.  P203L in nsp14 was shown to have an elevated substitution rate in phylogenetic analyses, which was confirmed to double the mutation rate when passaged through hamsters ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)). Sites F60S and C39F in nsp14 were associated with a 22-fold and 6-fold higher substitution rate in phylogenetic analyses ([Mack et al. (2023)](https://link.springer.com/article/10.1186/s12967-020-02344-6)). We considered mutations at sites 39, 60, and 203 in nsp14 to be known mutators and mutations in sites 90, 92, 191, 268, and 273, which fall within the ExoN proofreading domain of nsp14, to be potential mutators.
+
+**Table 1: Mutator Sites.** Known and Potential mutator sites (denoted by “Confirmed” and “Potential” in the “Site Type” column, respectively) are listed in the table below. Known sites have been confirmed experimentally, and the specific amino acid / nucleotide changes leading to mutator phenotypes are shown. Potential sites lie within the ExoN proofreading domain of nsp14 (as shown in Mack et al. 2023). The wild type amino acids, their positions within the mature nsp14 protein, encoding nucleotides and genomic locations are shown for these sites, but changes that would lead to mutator phenotypes have not been confirmed.
+
+| **Gene** 	| **Amino Acid Change** 	| **Nucleotide Change** 	| **Site Type** 	|     **Reference**    	|
+|:--------:	|:---------------------:	|:---------------------:	|:-------------:	|:--------------------:	|
+| nsp14    	|          C39F         	|        G18,155T       	|   Confirmed   	|  (Mack et al. 2023)  	|
+| nsp14    	|          F60S         	|        T18,218C       	|   Confirmed   	| (Takada et al. 2023) 	|
+| nsp14    	|         P203L         	|        C18,647T       	|   Confirmed   	|  (Mack et al. 2023)  	|
+| nsp14    	|          D90          	|  18,307-18,309 (GAT)  	|   Potential   	|  (Mack et al. 2023)  	|
+| nsp14    	|          E92          	|  18,313-18,315 (GAG)  	|   Potential   	|  (Mack et al. 2023)  	|
+| nsp14    	|          E191         	|  18,610-18,612 (GAG)  	|   Potential   	|  (Mack et al. 2023)  	|
+| nsp14    	|          H268         	|  18,841-18,843 (CAT)  	|   Potential   	|  (Mack et al. 2023)  	|
+| nsp14    	|          D273         	|  18,856-18,858 (GAT)  	|   Potential   	|  (Mack et al. 2023)  	|
+
+
 
 ### Application Use
 This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
