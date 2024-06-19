@@ -69,7 +69,9 @@ with ui.nav_panel("Home"):
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
                 'You can change the colors of the plot here.'
                 
-            ui.input_action_button("submit", "Submit", class_="btn-success")
+            with ui.tooltip(id="btn_tip_submit", placement="right"):
+                ui.input_action_button("submit", "Submit", class_="btn-success")
+                'Click here to analyze your list of mutations.'
 
         # second column (or "card")
         with ui.card():
@@ -89,6 +91,12 @@ with ui.nav_panel("Home"):
             @render.text
             @reactive.event(input.submit)
             def print_mutations():
+                if input.var2() != '1':
+                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                else:
+                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                if transitions == False:
+                    return 'Please double check your input to ensure that it includes only nucleotide positions, the nucleotides A, C, T, G and U and the terms "ins", "del" or "indel".'
                 if number_of_mutations == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
@@ -103,7 +111,7 @@ with ui.nav_panel("Home"):
                                 # then pass to function defined in functions.py
                                 # to get number of transitions, transversions
                         if input.var2() != '1':
-                            transitions, transversions = functions.transition_or_transversion(input.var2())
+                            transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                         else:
                             transitions, transversions = functions.transition_or_transversion(input.var4())
                         return transitions, transversions
@@ -128,8 +136,8 @@ with ui.nav_panel("Home"):
                                     title="Ratio",
                                     titleside="top",
                                     tickmode="array",
-                                    tickvals=[1, 7, 14],
-                                    labelalias={1: "Typical", 14: "Molnupiravir-induced"},
+                                    tickvals=[2, 7, 14],
+                                    labelalias={2: "Typical", 14: "Molnupiravir-induced"},
                                     ticks="outside"
                                 )))
                             
@@ -239,6 +247,12 @@ with ui.nav_panel("Home"):
                 @reactive.event(input.submit)
                 # function to plot graph
                 def hist1():
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transitions == False:
+                        return ''
                     # assign x variables
                     x0 = chronic
                     x1 = global_
@@ -360,6 +374,12 @@ with ui.nav_panel("Home"):
                             def txt1():
                             # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                             # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transitions == False:
+                                    return ''
                                 try:
                                     return f'{calc_likelihoods()[0][0][0]:.2f}'
                                 except:
@@ -375,6 +395,12 @@ with ui.nav_panel("Home"):
                             @render.ui
                             @reactive.event(input.submit)
                             def txt2():
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transitions == False:
+                                    return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
                                 try:
@@ -393,6 +419,12 @@ with ui.nav_panel("Home"):
                             @render.ui
                             @reactive.event(input.submit)
                             def txt3():
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transitions == False:
+                                    return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
                                 try:
@@ -413,6 +445,12 @@ with ui.nav_panel("Home"):
                             def txt4():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transitions == False:
+                                    return ''
                                 try:
                                     return f'{calc_likelihoods()[0][3][0]:.2f}'
                                 except:
@@ -427,6 +465,12 @@ with ui.nav_panel("Home"):
                 @render.ui
                 @reactive.event(input.submit)
                 def txt5():
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transitions == False:
+                        return ''
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                     # display likelihoods, otherwise don't do anything
                     if calc_likelihoods()[0][0][0] == float(0):
@@ -438,6 +482,12 @@ with ui.nav_panel("Home"):
                 @render.ui
                 @reactive.event(input.submit)
                 def txt6():
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transitions == False:
+                        return ''
                     try:    
                         more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
                         dist = functions.times_more_likely(calc_likelihoods()[0])[1]

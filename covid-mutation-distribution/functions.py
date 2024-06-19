@@ -249,48 +249,48 @@ def parse_genome_positions():
 
 def check_for_standard_nucleotides(nuc_list):
     # first check to see if each list position contains two uppercase alphabetic characters
-    count = 0
     for i in nuc_list:
-        parsed = re.match('[A|C|T|G]{2}', i)
-        if parsed:
-            count += 1
-    if count != len(nuc_list):
-        raise Exception('Please enter standard nucleotides before and after each position number.')
+        parsed = re.match('[A|C|T|G]{1,2}', i)
+        indel = re.match('[INS|DEL|INDEL]', i)
+        if not parsed and not indel:
+            return False
+    return True
 
 def transition_or_transversion(nuc_pos_list):
     # remove digits
-    nuc_pos_list_stripped = nuc_pos_list.rstrip(',').split(',')
+    nuc_pos_list_stripped = nuc_pos_list.rstrip(',').rstrip().split(',')
     nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list_stripped]
-    nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
-    nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
-    nuc_list_parsed = [i for i in nuc_list_standard if (len(i) == 2)]
-    try:
-        check_for_standard_nucleotides(nuc_list_standard)
-    except:
-        print('Please enter standard nucleotides before and after each position number if you would like to visualize the transition to transversion ratio.')
-    transitions = 0
-    transversions = 0
-    for i in nuc_list_parsed:
-        if i[0] == 'A':
-            if i[1] == 'G':
-                transitions += 1
-            elif i[1] in ['C', 'T']:
-                transversions += 1
-        elif i[0] == 'C':
-            if i[1] == 'T':
-                transitions += 1
-            elif i[1] in ['A', 'G']:
-                transversions += 1
-        elif i[0] == 'G':
-            if i[1] == 'A':
-                transitions += 1
-            elif i[1] in ['C', 'T']:
-                transversions += 1
-        elif i[0] == 'T':
-            if i[1] == 'C':
-                transitions += 1
-            elif i[1] in ['A', 'G']:
-                transversions += 1
+    nuc_pos_list_nospace = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
+    nuc_pos_list_blank_removed = [i for i in nuc_pos_list_nospace if i != '']
+    nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_blank_removed]
+    nuc_list_upper = [i.upper() for i in nuc_list_standard]
+    nuc_list_parsed = [i for i in nuc_list_upper if (len(i) == 2)]
+    if check_for_standard_nucleotides(nuc_list_upper) == False:
+        return False, False
+    else:
+        transitions = 0
+        transversions = 0
+        for i in nuc_list_parsed:
+            if i[0] == 'A':
+                if i[1] == 'G':
+                    transitions += 1
+                elif i[1] in ['C', 'T']:
+                    transversions += 1
+            elif i[0] == 'C':
+                if i[1] == 'T':
+                    transitions += 1
+                elif i[1] in ['A', 'G']:
+                    transversions += 1
+            elif i[0] == 'G':
+                if i[1] == 'A':
+                    transitions += 1
+                elif i[1] in ['C', 'T']:
+                    transversions += 1
+            elif i[0] == 'T':
+                if i[1] == 'C':
+                    transitions += 1
+                elif i[1] in ['A', 'G']:
+                    transversions += 1
     if transversions == 0:
         transversions += 1
     return transitions, transversions
