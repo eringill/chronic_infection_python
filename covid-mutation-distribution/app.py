@@ -1,7 +1,7 @@
 # imports
 from functools import partial # for adding a navbar
 from shiny.express import input, render, ui # interactivity
-from shiny import reactive # reactivity (i.e. calculations)
+from shiny import reactive, render # reactivity (i.e. calculations)
 from shiny.ui import page_navbar # for adding a navbar
 import plotly.graph_objects as go # graph
 from shinywidgets import render_widget # rendering graph
@@ -68,6 +68,8 @@ with ui.nav_panel("Home"):
                 ui.input_select("var3", "Select Color Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
                 'You can change the colors of the plot here.'
+                
+            ui.input_action_button("submit", "Submit", class_="btn-success")
 
         # second column (or "card")
         with ui.card():
@@ -85,6 +87,7 @@ with ui.nav_panel("Home"):
                     else:
                         return len(input.var4().rstrip(',').rstrip().split(','))
             @render.text
+            @reactive.event(input.submit)
             def print_mutations():
                 if number_of_mutations == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
@@ -107,6 +110,7 @@ with ui.nav_panel("Home"):
                     
                     with ui.tooltip(id="btn_tooltip3", placement="right"):        
                         @render_widget
+                        @reactive.event(input.submit)
                                 # function to plot transition/transversion ratio heatmap
                         def heatmap():
                             transitions, transversions = get_transition_transversion_ratio()
@@ -145,6 +149,7 @@ with ui.nav_panel("Home"):
                                     "Changes at known mutator sites:"
                                     
                                     @render.ui
+                                    @reactive.event(input.submit)
                                     def mut_lineage():
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
@@ -157,6 +162,7 @@ with ui.nav_panel("Home"):
                                             else:
                                                 return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
                                     @render.ui
+                                    @reactive.event(input.submit)
                                     def potential_mut_lineage():
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
@@ -230,6 +236,7 @@ with ui.nav_panel("Home"):
 
                 # plot out mutation distributions
                 @render_widget
+                @reactive.event(input.submit)
                 # function to plot graph
                 def hist1():
                     # assign x variables
@@ -317,6 +324,7 @@ with ui.nav_panel("Home"):
             
             with ui.card():
                 @render.text
+                @reactive.event(input.submit)
                 def txt():
                     return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
                 with ui.layout_column_wrap(width=1/2):
@@ -348,6 +356,7 @@ with ui.nav_panel("Home"):
                             "Global pre-VoC"
                             
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt1():
                             # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                             # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
@@ -364,6 +373,7 @@ with ui.nav_panel("Home"):
                         ):
                             "Global Omicron"
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt2():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
@@ -381,6 +391,7 @@ with ui.nav_panel("Home"):
                         ):
                             "Chronic"
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt3():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
@@ -398,6 +409,7 @@ with ui.nav_panel("Home"):
                         ):
                             "Deer"            
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt4():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything
@@ -413,6 +425,7 @@ with ui.nav_panel("Home"):
             ):
                 "Your sequence best fits the following distribution:"
                 @render.ui
+                @reactive.event(input.submit)
                 def txt5():
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                     # display likelihoods, otherwise don't do anything
@@ -423,6 +436,7 @@ with ui.nav_panel("Home"):
                     except:
                         pass
                 @render.ui
+                @reactive.event(input.submit)
                 def txt6():
                     try:    
                         more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
