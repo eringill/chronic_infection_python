@@ -67,6 +67,7 @@ def parse_gene_files(filename):
 # function to make bins based on either genes or a specific number of nucleotides,
 # depending on what the user selects. Mutation positions are then put into bins.
 def make_bins(x, binsize):
+    x = list(set(x))
     '''
     inputs: x-list of nucleotide positions where mutations occur, binsize-user-defined bin size
     for plotting and likelihood calculations
@@ -249,9 +250,11 @@ def parse_genome_positions():
 
 def check_for_standard_nucleotides(nuc_list):
     # first check to see if each list position contains two uppercase alphabetic characters
-    pattern = re.compile(r'^(?:ins|del|indel)?[ACTG]{0,2}(?:ins|del|indel)?$')
+    pattern = re.compile(r'^(?:INS|DEL|INDEL)?[ACTG]{0,2}(?:INS|DEL|INDEL)?$')
     for i in nuc_list:
-        if pattern.match(i) == False:
+        if re.match(pattern, i):
+            pass
+        else:
             return False
     return True
 

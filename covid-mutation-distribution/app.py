@@ -79,12 +79,12 @@ with ui.nav_panel("Home"):
             def number_of_mutations():
                 # return the number of mutations that the user has entered
                 if input.var2() != '1':
-                    if input.var2().split(',') == ['']:
+                    if input.var2().rstrip(',').rstrip().split(',') == ['']:
                         return 0
                     else:
                         return len(input.var2().rstrip(',').rstrip().split(','))
                 else:
-                    if input.var4().split(',') == ['']:
+                    if input.var4().rstrip(',').rstrip().split(',') == ['']:
                         return 0
                     else:
                         return len(input.var4().rstrip(',').rstrip().split(','))
@@ -499,8 +499,11 @@ with ui.nav_panel("Home"):
                         transitions, transversions = functions.transition_or_transversion(input.var4())
                     if transitions == False:
                         return ''
-                    try:    
-                        more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
+                    try:
+                        if int(functions.times_more_likely(calc_likelihoods()[0])[0]) > 99999:     
+                            more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
+                        else:
+                            more_likely = f'{functions.times_more_likely(calc_likelihoods()[0])[0]:.2f}'
                         dist = functions.times_more_likely(calc_likelihoods()[0])[1]
                         return f'({more_likely} times more likely than the {dist} distribution.)'
                     except:
