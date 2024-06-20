@@ -124,6 +124,11 @@ with ui.nav_panel("Home"):
                             transitions, transversions = get_transition_transversion_ratio()
                             fig2 = go.Figure()
                             config = {'displayModeBar': False}
+                            if transitions == False:
+                                fig2.update_yaxes(showticklabels=False)
+                                fig2.update_xaxes(showticklabels=False)
+                                fig2.update_layout(height=150, width=300)
+                                return fig2
                             fig2.add_trace(go.Heatmap(
                                 z=[[float(transitions)/float(transversions)]],
                                 text=[[f'{float(transitions)/transversions:.2f}']],
@@ -159,6 +164,12 @@ with ui.nav_panel("Home"):
                                     @render.ui
                                     @reactive.event(input.submit)
                                     def mut_lineage():
+                                        if input.var2() != '1':
+                                            transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                        else:
+                                            transitions, transversions = functions.transition_or_transversion(input.var4())
+                                        if transitions == False:
+                                            return ''
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
                                                 return 'NO'
@@ -228,9 +239,14 @@ with ui.nav_panel("Home"):
                             except ValueError:
                                 return [[0,0,0,0], [1,1,1,1], 1]
                         if len(mut_nuc_list) == 0:
-                            return [[0,0,0,0], [1,1,1,1], 1]   
-                                
+                            return [[0,0,0,0], [1,1,1,1], 1]               
                     except: return [[0,0,0,0], [1,1,1,1], 1]
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transitions == False:
+                        return [[0,0,0,0], [1,1,1,1], 1]
                     # otherwise, parse the list of mutation positions into bins based on the size
                     # specified by the user
                     counts, bins0 = functions.make_bins(mut_nuc_list, input.var())
@@ -240,6 +256,7 @@ with ui.nav_panel("Home"):
                     if total_counts == 0:
                         total_counts += 1
                     # return everything
+                    
                     return counts, bins0, total_counts
 
                 # plot out mutation distributions
@@ -247,12 +264,6 @@ with ui.nav_panel("Home"):
                 @reactive.event(input.submit)
                 # function to plot graph
                 def hist1():
-                    if input.var2() != '1':
-                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
-                        transitions, transversions = functions.transition_or_transversion(input.var4())
-                    if transitions == False:
-                        return ''
                     # assign x variables
                     x0 = chronic
                     x1 = global_
