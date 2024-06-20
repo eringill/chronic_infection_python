@@ -86,7 +86,7 @@ def make_bins(x, binsize):
         bins0 = 0.5 * (bins0[:-1] + bins0[1:])
     # if the user has specified 'gene' or 'genes_split' instead
     except ValueError:
-        y = [i for i in x if i > 265]
+        y = [i for i in x if i > 265 and i < 30001]
         if binsize == 'gene':
             # first get the gene start positions and gene names from file using
             # parse_gene_files() function

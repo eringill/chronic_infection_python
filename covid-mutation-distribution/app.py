@@ -55,6 +55,7 @@ with ui.nav_panel("Home"):
                 'Please select a lineage whose mutation distribution you would like to visualize',
                 {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
                  'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641 (zoonotic lineage from white-tailed deer)',
+                 'G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T': 'Molnupiravir-induced mutation signature (Patient D from Fountain-Jones et al. (2024))',
                  '1':'I want to enter my own list of lineage-defining mutations'}
             )
             with ui.panel_conditional("input.var2 === '1'"):
@@ -282,6 +283,12 @@ with ui.nav_panel("Home"):
                     counts3, bins3 = functions.make_bins(x3,input.var())
                     # instatiate figure
                     fig = go.Figure()
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transitions == False:
+                        return fig
                     # add plot of nucleotide positions specified by user
                     fig.add_trace(go.Bar(
                     x=bins0,
@@ -532,7 +539,7 @@ In the first paper, the authors demonstrate that specific lineage-defining mutat
 Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
 
 In addition, the app informs the user whether the data contain signals consistent with:
-- **Past molnupiravir Use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
+- **Past molnupiravir Use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions. A sample molnupiravir-induced mutation distribution is taken from [Fountain-Jones et al. (2024)](https://www.thelancet.com/journals/lanmic/article/PIIS2666-5247(23)00393-2/fulltext#:~:text=We%20found%20that%20as%20early,patients%20not%20treated%20with%20molnupiravir)
 - **Mutator lineages:** Mutator alleles may contribute to the unusual features of a lineage by increasing the rate and type of mutation. Known mutators have been observed in nsp14 within the ExoN proofreading domain of SARS-CoV-2.  P203L in nsp14 was shown to have an elevated substitution rate in phylogenetic analyses, which was confirmed to double the mutation rate when passaged through hamsters ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)). Sites F60S and C39F in nsp14 were associated with a 22-fold and 6-fold higher substitution rate in phylogenetic analyses ([Mack et al. (2023)](https://link.springer.com/article/10.1186/s12967-020-02344-6)). We considered mutations at sites 39, 60, and 203 in nsp14 to be known mutators and mutations in sites 90, 92, 191, 268, and 273, which fall within the ExoN proofreading domain of nsp14, to be potential mutators.
 
 **Table 1: Mutator Sites.** Known and Potential mutator sites (denoted by “Confirmed” and “Potential” in the “Site Type” column, respectively) are listed in the table below. Known sites have been confirmed experimentally, and the specific amino acid / nucleotide changes leading to mutator phenotypes are shown. Potential sites lie within the ExoN proofreading domain of nsp14 (as shown in Mack et al. 2023). The wild type amino acids, their positions within the mature nsp14 protein, encoding nucleotides and genomic locations are shown for these sites, but changes that would lead to mutator phenotypes have not been confirmed.
