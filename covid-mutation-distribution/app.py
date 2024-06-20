@@ -96,7 +96,7 @@ with ui.nav_panel("Home"):
                 else:
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 if transitions == False:
-                    return 'Please double check your input to ensure that it includes only nucleotide positions, the nucleotides A, C, T, G and U and the terms "ins", "del" or "indel".'
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start or end with "ins", "del" or "indel".'
                 if number_of_mutations == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:

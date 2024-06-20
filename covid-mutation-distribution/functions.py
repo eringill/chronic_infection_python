@@ -249,12 +249,11 @@ def parse_genome_positions():
 
 def check_for_standard_nucleotides(nuc_list):
     # first check to see if each list position contains two uppercase alphabetic characters
+    pattern = re.compile(r'^(?:ins|del|indel)?[ACTG]{1,2}(?:ins|del|indel)?$')
     for i in nuc_list:
-        parsed = re.match('[A|C|T|G]{1,2}', i)
-        indel = re.match('[INS|DEL|INDEL]', i)
-        if not parsed and not indel:
-            return False
-    return True
+        if pattern.match(i):
+            return True
+    return False
 
 def transition_or_transversion(nuc_pos_list):
     # remove digits
