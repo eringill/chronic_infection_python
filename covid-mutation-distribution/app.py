@@ -71,7 +71,7 @@ with ui.nav_panel("Home"):
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
                 'You can change the colors of the plot here.'
                 
-            with ui.tooltip(id="btn_tip_submit", placement="right"):
+            with ui.tooltip(id="btn_tip_submit", placement="below"):
                 ui.input_action_button("submit", "Submit", class_="btn-success")
                 'Click here to analyze your list of mutations.'
 
@@ -359,7 +359,7 @@ with ui.nav_panel("Home"):
                 @render.text
                 @reactive.event(input.submit)
                 def txt():
-                    return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
+                    return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows: (higher is better)'
                 with ui.layout_column_wrap(width=1/2):
                 # once nucleotide positions where mutations occur are entered into the text box, these
                 # calculations occur reactively
@@ -559,7 +559,7 @@ In addition, the app informs the user whether the data contain signals consisten
 
 
 ### Application Use
-This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
+This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
 
 The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, global (pre-VOC) and global (Omicron era)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units).
 
