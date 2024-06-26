@@ -84,25 +84,20 @@ def make_bins(x, binsize):
         # np.histogram gives you the bin edges https://numpy.org/doc/stable/reference/generated/numpy.histogram.html
         counts, bins0 = np.histogram(x, bins=range(1,30001,int(binsize)))
         bins0 = 0.5 * (bins0[:-1] + bins0[1:])
-    # if the user has specified 'gene' or 'genes_split' instead
     except ValueError:
         y = [i for i in x if i > 265 and i < 30001]
         if binsize == 'gene':
             # first get the gene start positions and gene names from file using
             # parse_gene_files() function
             genebins, names = parse_gene_files('gene')
-            # then make a list of the number of mutations that fall into each bin (gene)
-            counts, bins = np.histogram(y, bins=genebins)
-            # the last name is n/a, so remove it from the list of gene names
-            bins0 = names
         else:
             # first get the gene start positions and gene names from file using
             # parse_gene_files() function
             genebins, names = parse_gene_files('genes_split')
-            # then make a list of the number of mutations that fall into each bin (gene)
-            counts, bins = np.histogram(y, bins=genebins)
-            # the last name is n/a, so remove it from the list of gene names
-            bins0 = names
+        # then make a list of the number of mutations that fall into each bin (gene)
+        counts, bins = np.histogram(y, bins=genebins)
+        # the last name is n/a, so remove it from the list of gene names
+        bins0 = names
     return counts, bins0
 
 # function to calculate likelihood of user's mutation list belonging to specified distributions
@@ -230,23 +225,16 @@ def select_palette(palette_name):
         colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC', '#ECE133']
     return colour_list
 
-def parse_genome_positions():
-    '''
-    input: none
-    
-    output: a dictionary of nucleotides and their position numbers in the 
-    Wuhan reference sequence NC_045512.2 genome
-    '''
-    # open file that contains genome
-    g = open(Path(__file__).parent / "./data/genome.txt", "r")
-    genome = g.read()
-    # remove all white space
-    genome = (re.sub('[\s+]', '', genome))
-    #convert to list
-    genome = list(genome)
-    # create list of genome positions
-    positions = list(range(len(genome)))
-    return {positions[i]: genome[i] for i in range(len(positions))}
+def parse_user_input(input):
+    # first strip trailing commas and whitespace from end of string input
+    # then split by commas
+    input_split = input.rstrip(',').rstrip().split(',')
+    # remove any duplicate entries
+    input_unique = list(set(input_split))
+    # remove any additional tabs, newlines, returns or whitespace from list
+    input_cleaned = [i.strip(' \t\n\r') for i in input_unique]
+    # remove any list entries that are empty
+    return [i for i in input_cleaned if i != '']
 
 def check_for_standard_nucleotides(nuc_list):
     # first check to see if each list position contains two uppercase alphabetic characters
@@ -259,43 +247,52 @@ def check_for_standard_nucleotides(nuc_list):
     return True
 
 def transition_or_transversion(nuc_pos_list):
-    # remove digits
-    nuc_pos_list_stripped = nuc_pos_list.rstrip(',').rstrip().split(',')
-    nuc_pos_list_stripped = list(set(nuc_pos_list_stripped))
-    nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list_stripped]
-    nuc_pos_list_nospace = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
-    nuc_pos_list_blank_removed = [i for i in nuc_pos_list_nospace if i != '']
+    # remove trailing commas and whitespace, split string into list
+    # remove duplicate entries
+    # remove any additional tabs, newlines, returns or whitespace from list
+    # remove empty list entries
+    nuc_pos_list_blank_removed = parse_user_input(nuc_pos_list)
+    # convert 'U' to 'T'
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_blank_removed]
+    # convert lowercase to uppercase
     nuc_list_upper = [i.upper() for i in nuc_list_standard]
-    nuc_list_parsed = [i for i in nuc_list_upper if (len(i) == 2)]
-    if check_for_standard_nucleotides(nuc_list_upper) == False:
+    # remove digit characters
+    nuc_list_alpha = [re.sub('[0-9]+', '', i) for i in nuc_list_upper]
+    if check_for_standard_nucleotides(nuc_list_alpha) == False:
+        # This will trigger an error message to be displayed for the user
         return False, False
-    else:
-        transitions = 0
-        transversions = 0
-        for i in nuc_list_parsed:
-            if i[0] == 'A':
-                if i[1] == 'G':
-                    transitions += 1
-                elif i[1] in ['C', 'T']:
-                    transversions += 1
-            elif i[0] == 'C':
-                if i[1] == 'T':
-                    transitions += 1
-                elif i[1] in ['A', 'G']:
-                    transversions += 1
-            elif i[0] == 'G':
-                if i[1] == 'A':
-                    transitions += 1
-                elif i[1] in ['C', 'T']:
-                    transversions += 1
-            elif i[0] == 'T':
-                if i[1] == 'C':
-                    transitions += 1
-                elif i[1] in ['A', 'G']:
-                    transversions += 1
+    # instatiate lists of transitions, transversions
+    transitions = 0
+    transversions = 0
+    # remove 'INS', 'DEL' and 'INDEL' from list
+    nuc_list_parsed = [s.replace('INS', '').replace('DEL', '').replace('INDEL', '') for s in nuc_list_alpha]
+    # iterate through each item in list of mutated nucleotides
+    # classify each as a transition or transversion
+    for i in nuc_list_parsed:
+        if i[0] == 'A':
+            if i[1] == 'G':
+                transitions += 1
+            elif i[1] in ['C', 'T']:
+                transversions += 1
+        elif i[0] == 'C':
+            if i[1] == 'T':
+                transitions += 1
+            elif i[1] in ['A', 'G']:
+                transversions += 1
+        elif i[0] == 'G':
+            if i[1] == 'A':
+                transitions += 1
+            elif i[1] in ['C', 'T']:
+                transversions += 1
+        elif i[0] == 'T':
+            if i[1] == 'C':
+                transitions += 1
+            elif i[1] in ['A', 'G']:
+                transversions += 1
+    # if there are no transversions, add one to the count to avoid a division by 0 error
     if transversions == 0:
         transversions += 1
+    # return the counts of transitions and transversions
     return transitions, transversions
                 
 def mut_lineage_parsing(nuc_pos_list):

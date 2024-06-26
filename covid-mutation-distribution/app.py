@@ -81,15 +81,9 @@ with ui.nav_panel("Home"):
             def number_of_mutations():
                 # return the number of mutations that the user has entered
                 if input.var2() != '1':
-                    if input.var2().rstrip(',').rstrip().split(',') == ['']:
-                        return 0
-                    else:
-                        return len(list(set(input.var2().rstrip(',').rstrip().split(','))))
+                    return len(functions.parse_user_input(input.var2()))
                 else:
-                    if input.var4().rstrip(',').rstrip().split(',') == ['']:
-                        return 0
-                    else:
-                        return len(list(set(input.var4().rstrip(',').rstrip().split(','))))
+                    return len(functions.parse_user_input(input.var4()))
             @render.text
             @reactive.event(input.submit)
             def print_mutations():
