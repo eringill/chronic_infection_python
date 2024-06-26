@@ -261,6 +261,7 @@ def check_for_standard_nucleotides(nuc_list):
 def transition_or_transversion(nuc_pos_list):
     # remove digits
     nuc_pos_list_stripped = nuc_pos_list.rstrip(',').rstrip().split(',')
+    nuc_pos_list_stripped = list(set(nuc_pos_list_stripped))
     nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list_stripped]
     nuc_pos_list_nospace = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
     nuc_pos_list_blank_removed = [i for i in nuc_pos_list_nospace if i != '']

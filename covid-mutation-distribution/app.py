@@ -84,12 +84,12 @@ with ui.nav_panel("Home"):
                     if input.var2().rstrip(',').rstrip().split(',') == ['']:
                         return 0
                     else:
-                        return len(input.var2().rstrip(',').rstrip().split(','))
+                        return len(list(set(input.var2().rstrip(',').rstrip().split(','))))
                 else:
                     if input.var4().rstrip(',').rstrip().split(',') == ['']:
                         return 0
                     else:
-                        return len(input.var4().rstrip(',').rstrip().split(','))
+                        return len(list(set(input.var4().rstrip(',').rstrip().split(','))))
             @render.text
             @reactive.event(input.submit)
             def print_mutations():
