@@ -93,7 +93,7 @@ with ui.nav_panel("Home"):
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 if transitions == False:
                     return 'Please double check your input to ensure that it includes only numeric nucleotide positions and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start or end with "ins", "del" or "indel".'
-                if number_of_mutations == 1:
+                if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
                     return f'You have entered {number_of_mutations()} mutations.'
@@ -215,9 +215,9 @@ with ui.nav_panel("Home"):
                     # gui accepts input as a string, so it first needs to be split into a list 
                     # splits occur wherever there is a comma
                     if input.var2() != '1':
-                        mutated_nucleotide_list = input.var2().rstrip(',').rstrip().split(',')
+                        mutated_nucleotide_list = functions.parse_user_input(input.var2())
                     else:
-                        mutated_nucleotide_list = input.var4().rstrip(',').rstrip().split(',')
+                        mutated_nucleotide_list = functions.parse_user_input(input.var4())
                     # try to remove non-digit characters, then convert each string in list into
                     # a digit
                     try: 
@@ -570,12 +570,27 @@ The addition of one to each bin ensures that there are no bins lacking data.
 - If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
 - If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
 
-### Acknowledgements
-This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. More details are available on VIROLOGICAL POST?
+### Additional Information
+More details are available on VIROLOGICAL POST?
 
 '''
     )
-                     
+          
+# name of notes tab 
+with ui.nav_panel("Contact"):
+    # markdown of text to appear on second tab page
+    ui.markdown(
+'''
+### Acknowledgements
+This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
+
+### Feedbac, Issues and Feature Requests
+We're pleased to accept any feedback you have. You can submit an issue on the issues page of the [GitHub repository](https://github.com/eringill/chronic_infection_python). 
+
+You can also email questions, comments or suggestions to Erin Gill at erin.gill81(at)gmail.com.
+
+'''
+    )           
 
 
     
