@@ -225,7 +225,15 @@ def select_palette(palette_name):
         colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC', '#ECE133']
     return colour_list
 
+# function to parse user's input into a list and make sure each entry is unique
 def parse_user_input(input):
+    '''
+    input:
+    input - string of comma-separated nucleotide positions where mutations occur (optionally
+    flanked by nucleotides and or "ins", "del" or "indel")
+    output - list of unique nucleotide positions where mutations occur with trailing commas and
+    whitespace removed
+    '''
     # first strip trailing commas and whitespace from end of string input
     # then split by commas
     input_split = input.rstrip(',').rstrip().split(',')
@@ -236,26 +244,58 @@ def parse_user_input(input):
     # remove any duplicate entries
     return list(set(input_nonempty))
 
+# function to check if user input matches specified format
 def check_for_standard_nucleotides(nuc_list):
+    '''
+    input:
+    nuc_list - list of unique nucleotide positions where mutations occur optionally flanked by 
+    uppercase nucleotides and /or "ins", "del" or "indel" with trailing commas and whitespace removed
+    output:
+        if each element in the list matches the regular expression, True else False
+        regex matches the following:
+            optionally "ins", "del" or "indel" optionally followed by "A", "C", "T" or "G", 
+            followed by a digit between 1 and 30000, optionally followed by "A", "C", "T" or "G", 
+            optionally followed by "ins", "del" or "indel" (but ONLY if "ins", "del" or "indel" 
+            is NOT at the start of the capture group)
+    '''
+    # instantiate the regular expression
     pattern = re.compile(r"^(?:INS|DEL|INDEL)?[ACTG]?\d{1,5}[ACTG]?(?:(?<!^)INS|DEL|INDEL)?$")
+    # for each item in the user's input list, check to see if it matches the regular expression
     for i in nuc_list:
         if re.match(pattern, i):
             pass
         else:
+            # if any items don't match, return False
             return False
+    # if all items match, return True
     return True
+
+# function to count the number of transitions and transversions in a list of mutations with
+# associated nucleotides
 def transition_or_transversion(nuc_pos_list):
-    # remove digits
-    nuc_pos_list_stripped = nuc_pos_list.rstrip(',').rstrip().split(',')
-    #nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list_stripped]
-    nuc_pos_list_nospace = [i.strip(' \t\n\r') for i in nuc_pos_list_stripped]
-    nuc_pos_list_blank_removed = [i for i in nuc_pos_list_nospace if i != '']
+    '''
+    input:
+    nuc_pos_list - string of comma-separated nucleotide positions where mutations occur (optionally
+    flanked by nucleotides and or "ins", "del" or "indel")
+    output: 
+    transitions - count of transitions in user's list of mutations
+    transversions - count of transversions in user's list of mutations
+    '''
+    # first generate list of unique nucleotide positions where mutations occur with trailing commas and
+    # whitespace removed
+    nuc_pos_list_blank_removed = parse_user_input(nuc_pos_list)
+    # replace uracil with thymidine
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_blank_removed]
+    # convert all alphabetic characters to uppercase
     nuc_list_upper = [i.upper() for i in nuc_list_standard]
+    # make sure user's input matches expected pattern
+    # if not, instead of returning counts of transitions and transversions, return
+    # False, False
     if check_for_standard_nucleotides(nuc_list_upper) == False:
         return False, False
-    # remove digits
+    # remove digits from list of mutations so that we can count transitions and transversions
     nuc_pos_list_no_digits = [re.sub('\d+', '', i) for i in nuc_list_upper]
+    # instantiate transition and transversion counts
     transitions = 0
     transversions = 0
     # remove 'INS', 'DEL' and 'INDEL' from list, only keep list items with 2 nucleotides
@@ -290,26 +330,57 @@ def transition_or_transversion(nuc_pos_list):
     return transitions, transversions
 
                 
+# function to count mutations that confer a mutator phenotype
 def mut_lineage_parsing(nuc_pos_list):
+    '''
+    input:
+    nuc_pos_list - string of comma-separated nucleotide positions where mutations occur (optionally
+    flanked by nucleotides and or "ins", "del" or "indel")
+    output:
+    mutator_text - list of user-entered mutations conferring mutator phenotype in string format
+    potential_mutator_text - list of user-entered mutations potentially conferring mutator phenotype
+    in string format
+    '''
     try:
-        nuc_pos_list_parsed = nuc_pos_list.rstrip(',').split(',')
-        nuc_pos_list_stripped = [i.strip(' \t\n\r') for i in nuc_pos_list_parsed]
-        nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_stripped]
-        int_nuc_list = [re.sub('\D', '', i) for i in nuc_list_standard]
+        # parse user input to list of unique nucleotide positions where mutations occur with trailing commas and
+        # whitespace removed
+        nuc_pos_list_parsed = parse_user_input(nuc_pos_list)
+        # remove any non-digit characters from list of nucleotide positions
+        int_nuc_list = [re.sub('\D', '', i) for i in nuc_pos_list_parsed]
+        # convert each list entry to an integer
         mut_nuc_list = [int(i) for i in int_nuc_list]
+        # instantiate lists of mutator and potential mutator mutations
         mutator_list = [18155, 18218, 18647]
         potential_mutator_list = [18307, 18308, 18309, 18313, 18314, 18315, 18610, 18611, 18612, 18841, 18842, 18843, 18856, 18857, 18858]
+        # check to see if the user has entered a nucleotide position that confers a mutator
+        # phenotype
         mutator_exists = set(mut_nuc_list) & set(mutator_list)
+        # check to see if the user has entered a nucleotide position that potentially 
+        # confers a mutator phenotype
         potential_mutator_exists = set(mut_nuc_list) & set(potential_mutator_list)
+        # join entries in list of user's mutator mutations into a single string
         mutator_text = ', '.join(str(e) for e in (list(mutator_exists)))
+        # join entries in list of user's potential mutator mutations into a single string
         potential_mutator_text = ', '.join(str(e) for e in (list(potential_mutator_exists)))
     except:
+        # if the above block doesn't work, provide dummy text
         mutator_text = ''
         potential_mutator_text = ''
     return mutator_text, potential_mutator_text
     
+# function to parse numeric data into scientific notation
 def sci_notation(number, sig_fig=2):
+    '''
+    input:
+    number - the number to convert into scientific notation
+    sig_fig - the number of significant figures to include in the scientific notation
+    output:
+    number in scientific notation
+    '''
+    # format the number using built-in .format function
+    # looks like 8.2e+7
     ret_string = "{0:.{1:d}e}".format(number, sig_fig)
+    # split the formatted number into two parts (the number itself and the exponent)
     a, b = ret_string.split("e")
     # remove leading "+" and strip leading zeros
     b = int(b)
