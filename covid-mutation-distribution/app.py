@@ -91,8 +91,8 @@ with ui.nav_panel("Home"):
                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                 else:
                     transitions, transversions = functions.transition_or_transversion(input.var4())
-                if transitions == False:
-                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start or end with "ins", "del" or "indel".'
+                if transversions == False:
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel".'
                 if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
@@ -120,7 +120,7 @@ with ui.nav_panel("Home"):
                             transitions, transversions = get_transition_transversion_ratio()
                             fig2 = go.Figure()
                             config = {'displayModeBar': False}
-                            if transitions == False:
+                            if transversions == False:
                                 fig2.update_yaxes(showticklabels=False)
                                 fig2.update_xaxes(showticklabels=False)
                                 fig2.update_layout(height=150, width=300)
@@ -164,7 +164,7 @@ with ui.nav_panel("Home"):
                                             transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                                         else:
                                             transitions, transversions = functions.transition_or_transversion(input.var4())
-                                        if transitions == False:
+                                        if transversions == False:
                                             return ''
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
@@ -241,7 +241,7 @@ with ui.nav_panel("Home"):
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                     else:
                         transitions, transversions = functions.transition_or_transversion(input.var4())
-                    if transitions == False:
+                    if transversions == False:
                         return [[0,0,0,0], [1,1,1,1], 1]
                     # otherwise, parse the list of mutation positions into bins based on the size
                     # specified by the user
@@ -282,7 +282,7 @@ with ui.nav_panel("Home"):
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                     else:
                         transitions, transversions = functions.transition_or_transversion(input.var4())
-                    if transitions == False:
+                    if transversions == False:
                         return fig
                     # add plot of nucleotide positions specified by user
                     fig.add_trace(go.Bar(
@@ -391,7 +391,7 @@ with ui.nav_panel("Home"):
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                                 else:
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transitions == False:
+                                if transversions == False:
                                     return ''
                                 try:
                                     return f'{calc_likelihoods()[0][0][0]:.2f}'
@@ -412,7 +412,7 @@ with ui.nav_panel("Home"):
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                                 else:
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transitions == False:
+                                if transversions == False:
                                     return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
@@ -436,7 +436,7 @@ with ui.nav_panel("Home"):
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                                 else:
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transitions == False:
+                                if transversions == False:
                                     return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
@@ -462,7 +462,7 @@ with ui.nav_panel("Home"):
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                                 else:
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transitions == False:
+                                if transversions == False:
                                     return ''
                                 try:
                                     return f'{calc_likelihoods()[0][3][0]:.2f}'
@@ -482,7 +482,7 @@ with ui.nav_panel("Home"):
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                     else:
                         transitions, transversions = functions.transition_or_transversion(input.var4())
-                    if transitions == False:
+                    if transversions == False:
                         return ''
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                     # display likelihoods, otherwise don't do anything
@@ -499,7 +499,7 @@ with ui.nav_panel("Home"):
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                     else:
                         transitions, transversions = functions.transition_or_transversion(input.var4())
-                    if transitions == False:
+                    if transversions == False:
                         return ''
                     try:
                         if int(functions.times_more_likely(calc_likelihoods()[0])[0]) > 99999:     
@@ -584,7 +584,7 @@ with ui.nav_panel("Contact"):
 ### Acknowledgements
 This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
 
-### Feedbac, Issues and Feature Requests
+### Feedback, Issues and Feature Requests
 We're pleased to accept any feedback you have. You can submit an issue on the issues page of the [GitHub repository](https://github.com/eringill/chronic_infection_python). 
 
 You can also email questions, comments or suggestions to Erin Gill at erin.gill81(at)gmail.com.

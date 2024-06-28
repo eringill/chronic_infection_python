@@ -229,43 +229,37 @@ def parse_user_input(input):
     # first strip trailing commas and whitespace from end of string input
     # then split by commas
     input_split = input.rstrip(',').rstrip().split(',')
-    # remove any duplicate entries
-    input_unique = list(set(input_split))
     # remove any additional tabs, newlines, returns or whitespace from list
-    input_cleaned = [i.strip(' \t\n\r') for i in input_unique]
+    input_cleaned = [i.strip(' \t\n\r') for i in input_split]
     # remove any list entries that are empty
-    return [i for i in input_cleaned if i != '']
+    input_nonempty = [i for i in input_cleaned if i != '']
+    # remove any duplicate entries
+    return list(set(input_nonempty))
 
 def check_for_standard_nucleotides(nuc_list):
-    # first check to see if each list position contains two uppercase alphabetic characters
-    pattern = re.compile(r'^(?:INS|DEL|INDEL)?[ACTG]{0,2}(?:INS|DEL|INDEL)?$')
+    pattern = re.compile(r"^(?:INS|DEL|INDEL)?[ACTG]?\d{1,5}[ACTG]?(?:(?<!^)INS|DEL|INDEL)?$")
     for i in nuc_list:
         if re.match(pattern, i):
             pass
         else:
             return False
     return True
-
 def transition_or_transversion(nuc_pos_list):
-    # remove trailing commas and whitespace, split string into list
-    # remove duplicate entries
-    # remove any additional tabs, newlines, returns or whitespace from list
-    # remove empty list entries
-    nuc_pos_list_blank_removed = parse_user_input(nuc_pos_list)
-    # convert 'U' to 'T'
+    # remove digits
+    nuc_pos_list_stripped = nuc_pos_list.rstrip(',').rstrip().split(',')
+    #nuc_pos_list_parsed = [re.sub('\d+', '', i) for i in nuc_pos_list_stripped]
+    nuc_pos_list_nospace = [i.strip(' \t\n\r') for i in nuc_pos_list_stripped]
+    nuc_pos_list_blank_removed = [i for i in nuc_pos_list_nospace if i != '']
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_blank_removed]
-    # convert lowercase to uppercase
     nuc_list_upper = [i.upper() for i in nuc_list_standard]
-    # remove digit characters
-    nuc_list_alpha = [re.sub('[0-9]+', '', i) for i in nuc_list_upper]
-    if check_for_standard_nucleotides(nuc_list_alpha) == False:
-        # This will trigger an error message to be displayed for the user
+    if check_for_standard_nucleotides(nuc_list_upper) == False:
         return False, False
-    # instatiate lists of transitions, transversions
+    # remove digits
+    nuc_pos_list_no_digits = [re.sub('\d+', '', i) for i in nuc_list_upper]
     transitions = 0
     transversions = 0
-    # remove 'INS', 'DEL' and 'INDEL' from list
-    nuc_list_parsed = [s.replace('INS', '').replace('DEL', '').replace('INDEL', '') for s in nuc_list_alpha]
+    # remove 'INS', 'DEL' and 'INDEL' from list, only keep list items with 2 nucleotides
+    nuc_list_parsed = [i for i in nuc_pos_list_no_digits if (len(i) == 2)]
     # iterate through each item in list of mutated nucleotides
     # classify each as a transition or transversion
     for i in nuc_list_parsed:
@@ -294,6 +288,7 @@ def transition_or_transversion(nuc_pos_list):
         transversions += 1
     # return the counts of transitions and transversions
     return transitions, transversions
+
                 
 def mut_lineage_parsing(nuc_pos_list):
     try:
