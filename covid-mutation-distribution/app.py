@@ -1,7 +1,7 @@
 # imports
 from functools import partial # for adding a navbar
 from shiny.express import input, render, ui # interactivity
-from shiny import reactive # reactivity (i.e. calculations)
+from shiny import reactive, render # reactivity (i.e. calculations)
 from shiny.ui import page_navbar # for adding a navbar
 import plotly.graph_objects as go # graph
 from shinywidgets import render_widget # rendering graph
@@ -53,9 +53,11 @@ with ui.nav_panel("Home"):
             ui.input_radio_buttons(
                 'var2',
                 'Please select a lineage whose mutation distribution you would like to visualize',
-                {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
+                {'1':'I want to enter my own list of lineage-defining mutations',
+                 'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
                  'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641 (zoonotic lineage from white-tailed deer)',
-                 '1':'I want to enter my own list of lineage-defining mutations'}
+                 'G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T': 'Molnupiravir-induced mutation signature (Patient D from Fountain-Jones et al. (2024))'
+                 }
             )
             with ui.panel_conditional("input.var2 === '1'"):
                 with ui.tooltip(id="cond_tooltip", placement="right"):
@@ -68,6 +70,10 @@ with ui.nav_panel("Home"):
                 ui.input_select("var3", "Select Color Palette",
                     choices= ["plasma", "viridis", "inferno", "seaborn"])
                 'You can change the colors of the plot here.'
+                
+            with ui.tooltip(id="btn_tip_submit", placement="below"):
+                ui.input_action_button("submit", "Submit", class_="btn-success")
+                'Click here to analyze your list of mutations.'
 
         # second column (or "card")
         with ui.card():
@@ -75,18 +81,19 @@ with ui.nav_panel("Home"):
             def number_of_mutations():
                 # return the number of mutations that the user has entered
                 if input.var2() != '1':
-                    if input.var2().split(',') == ['']:
-                        return 0
-                    else:
-                        return len(input.var2().rstrip(',').rstrip().split(','))
+                    return len(functions.parse_user_input(input.var2()))
                 else:
-                    if input.var4().split(',') == ['']:
-                        return 0
-                    else:
-                        return len(input.var4().rstrip(',').rstrip().split(','))
+                    return len(functions.parse_user_input(input.var4()))
             @render.text
+            @reactive.event(input.submit)
             def print_mutations():
-                if number_of_mutations == 1:
+                if input.var2() != '1':
+                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                else:
+                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                if transversions == False:
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel".'
+                if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
                     return f'You have entered {number_of_mutations()} mutations.'
@@ -100,32 +107,38 @@ with ui.nav_panel("Home"):
                                 # then pass to function defined in functions.py
                                 # to get number of transitions, transversions
                         if input.var2() != '1':
-                            transitions, transversions = functions.transition_or_transversion(input.var2())
+                            transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                         else:
                             transitions, transversions = functions.transition_or_transversion(input.var4())
                         return transitions, transversions
                     
                     with ui.tooltip(id="btn_tooltip3", placement="right"):        
                         @render_widget
+                        @reactive.event(input.submit)
                                 # function to plot transition/transversion ratio heatmap
                         def heatmap():
                             transitions, transversions = get_transition_transversion_ratio()
                             fig2 = go.Figure()
                             config = {'displayModeBar': False}
+                            if transversions == False:
+                                fig2.update_yaxes(showticklabels=False)
+                                fig2.update_xaxes(showticklabels=False)
+                                fig2.update_layout(height=150, width=300)
+                                return fig2
                             fig2.add_trace(go.Heatmap(
                                 z=[[float(transitions)/float(transversions)]],
                                 text=[[f'{float(transitions)/transversions:.2f}']],
                                 texttemplate='%{text}',
                                 colorscale='RdBu',
                                 textfont={'size':20},
-                                zmax=15, zmin=0,
+                                zmax=16, zmin=0,
                                 hovertemplate='Transition - Transversion Ratio: %{z}',
                                 colorbar=dict(
                                     title="Ratio",
                                     titleside="top",
                                     tickmode="array",
-                                    tickvals=[1, 7, 14],
-                                    labelalias={1: "Typical", 14: "Molnupiravir-induced"},
+                                    tickvals=[2, 8, 14],
+                                    labelalias={2: "Typical", 14: "Molnupiravir-induced"},
                                     ticks="outside"
                                 )))
                             
@@ -145,7 +158,14 @@ with ui.nav_panel("Home"):
                                     "Changes at known mutator sites:"
                                     
                                     @render.ui
+                                    @reactive.event(input.submit)
                                     def mut_lineage():
+                                        if input.var2() != '1':
+                                            transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                        else:
+                                            transitions, transversions = functions.transition_or_transversion(input.var4())
+                                        if transversions == False:
+                                            return ''
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
                                                 return 'NO'
@@ -157,6 +177,7 @@ with ui.nav_panel("Home"):
                                             else:
                                                 return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
                                     @render.ui
+                                    @reactive.event(input.submit)
                                     def potential_mut_lineage():
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
@@ -194,9 +215,9 @@ with ui.nav_panel("Home"):
                     # gui accepts input as a string, so it first needs to be split into a list 
                     # splits occur wherever there is a comma
                     if input.var2() != '1':
-                        mutated_nucleotide_list = input.var2().rstrip(',').rstrip().split(',')
+                        mutated_nucleotide_list = functions.parse_user_input(input.var2())
                     else:
-                        mutated_nucleotide_list = input.var4().rstrip(',').rstrip().split(',')
+                        mutated_nucleotide_list = functions.parse_user_input(input.var4())
                     # try to remove non-digit characters, then convert each string in list into
                     # a digit
                     try: 
@@ -214,9 +235,14 @@ with ui.nav_panel("Home"):
                             except ValueError:
                                 return [[0,0,0,0], [1,1,1,1], 1]
                         if len(mut_nuc_list) == 0:
-                            return [[0,0,0,0], [1,1,1,1], 1]   
-                                
+                            return [[0,0,0,0], [1,1,1,1], 1]               
                     except: return [[0,0,0,0], [1,1,1,1], 1]
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transversions == False:
+                        return [[0,0,0,0], [1,1,1,1], 1]
                     # otherwise, parse the list of mutation positions into bins based on the size
                     # specified by the user
                     counts, bins0 = functions.make_bins(mut_nuc_list, input.var())
@@ -226,10 +252,12 @@ with ui.nav_panel("Home"):
                     if total_counts == 0:
                         total_counts += 1
                     # return everything
+                    
                     return counts, bins0, total_counts
 
                 # plot out mutation distributions
                 @render_widget
+                @reactive.event(input.submit)
                 # function to plot graph
                 def hist1():
                     # assign x variables
@@ -250,6 +278,12 @@ with ui.nav_panel("Home"):
                     counts3, bins3 = functions.make_bins(x3,input.var())
                     # instatiate figure
                     fig = go.Figure()
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transversions == False:
+                        return fig
                     # add plot of nucleotide positions specified by user
                     fig.add_trace(go.Bar(
                     x=bins0,
@@ -317,8 +351,9 @@ with ui.nav_panel("Home"):
             
             with ui.card():
                 @render.text
+                @reactive.event(input.submit)
                 def txt():
-                    return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows:'
+                    return f'The log likelihoods of your sequence fitting the mutation distributions above are as follows: (higher is better)'
                 with ui.layout_column_wrap(width=1/2):
                 # once nucleotide positions where mutations occur are entered into the text box, these
                 # calculations occur reactively
@@ -348,9 +383,16 @@ with ui.nav_panel("Home"):
                             "Global pre-VoC"
                             
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt1():
                             # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                             # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transversions == False:
+                                    return ''
                                 try:
                                     return f'{calc_likelihoods()[0][0][0]:.2f}'
                                 except:
@@ -364,7 +406,14 @@ with ui.nav_panel("Home"):
                         ):
                             "Global Omicron"
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt2():
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transversions == False:
+                                    return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
                                 try:
@@ -381,7 +430,14 @@ with ui.nav_panel("Home"):
                         ):
                             "Chronic"
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt3():
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transversions == False:
+                                    return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything 
                                 try:
@@ -398,9 +454,16 @@ with ui.nav_panel("Home"):
                         ):
                             "Deer"            
                             @render.ui
+                            @reactive.event(input.submit)
                             def txt4():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything
+                                if input.var2() != '1':
+                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(input.var4())
+                                if transversions == False:
+                                    return ''
                                 try:
                                     return f'{calc_likelihoods()[0][3][0]:.2f}'
                                 except:
@@ -413,7 +476,14 @@ with ui.nav_panel("Home"):
             ):
                 "Your sequence best fits the following distribution:"
                 @render.ui
+                @reactive.event(input.submit)
                 def txt5():
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transversions == False:
+                        return ''
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                     # display likelihoods, otherwise don't do anything
                     if calc_likelihoods()[0][0][0] == float(0):
@@ -423,9 +493,19 @@ with ui.nav_panel("Home"):
                     except:
                         pass
                 @render.ui
+                @reactive.event(input.submit)
                 def txt6():
-                    try:    
-                        more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
+                    if input.var2() != '1':
+                        transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(input.var4())
+                    if transversions == False:
+                        return ''
+                    try:
+                        if int(functions.times_more_likely(calc_likelihoods()[0])[0]) > 99999:     
+                            more_likely = functions.sci_notation(functions.times_more_likely(calc_likelihoods()[0])[0], sig_fig=1)
+                        else:
+                            more_likely = f'{functions.times_more_likely(calc_likelihoods()[0])[0]:.2f}'
                         dist = functions.times_more_likely(calc_likelihoods()[0])[1]
                         return f'({more_likely} times more likely than the {dist} distribution.)'
                     except:
@@ -454,7 +534,7 @@ In the first paper, the authors demonstrate that specific lineage-defining mutat
 Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
 
 In addition, the app informs the user whether the data contain signals consistent with:
-- **Past molnupiravir Use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions.
+- **Past molnupiravir Use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions. A sample molnupiravir-induced mutation distribution is taken from [Fountain-Jones et al. (2024)](https://www.thelancet.com/journals/lanmic/article/PIIS2666-5247(23)00393-2/fulltext#:~:text=We%20found%20that%20as%20early,patients%20not%20treated%20with%20molnupiravir)
 - **Mutator lineages:** Mutator alleles may contribute to the unusual features of a lineage by increasing the rate and type of mutation. Known mutators have been observed in nsp14 within the ExoN proofreading domain of SARS-CoV-2.  P203L in nsp14 was shown to have an elevated substitution rate in phylogenetic analyses, which was confirmed to double the mutation rate when passaged through hamsters ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)). Sites F60S and C39F in nsp14 were associated with a 22-fold and 6-fold higher substitution rate in phylogenetic analyses ([Mack et al. (2023)](https://link.springer.com/article/10.1186/s12967-020-02344-6)). We considered mutations at sites 39, 60, and 203 in nsp14 to be known mutators and mutations in sites 90, 92, 191, 268, and 273, which fall within the ExoN proofreading domain of nsp14, to be potential mutators.
 
 **Table 1: Mutator Sites.** Known and Potential mutator sites (denoted by “Confirmed” and “Potential” in the “Site Type” column, respectively) are listed in the table below. Known sites have been confirmed experimentally, and the specific amino acid / nucleotide changes leading to mutator phenotypes are shown. Potential sites lie within the ExoN proofreading domain of nsp14 (as shown in Mack et al. 2023). The wild type amino acids, their positions within the mature nsp14 protein, encoding nucleotides and genomic locations are shown for these sites, but changes that would lead to mutator phenotypes have not been confirmed.
@@ -473,7 +553,7 @@ In addition, the app informs the user whether the data contain signals consisten
 
 
 ### Application Use
-This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
+This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
 
 The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, global (pre-VOC) and global (Omicron era)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units).
 
@@ -490,12 +570,27 @@ The addition of one to each bin ensures that there are no bins lacking data.
 - If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
 - If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
 
-### Acknowledgements
-This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. More details are available on VIROLOGICAL POST?
+### Additional Information
+More details are available on VIROLOGICAL POST?
 
 '''
     )
-                     
+          
+# name of notes tab 
+with ui.nav_panel("Contact"):
+    # markdown of text to appear on second tab page
+    ui.markdown(
+'''
+### Acknowledgements
+This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
+
+### Feedback, Issues and Feature Requests
+We're pleased to accept any feedback you have. You can submit an issue on the issues page of the [GitHub repository](https://github.com/eringill/chronic_infection_python). 
+
+You can also email questions, comments or suggestions to Erin Gill at erin.gill81(at)gmail.com.
+
+'''
+    )           
 
 
     
