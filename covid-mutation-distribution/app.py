@@ -261,9 +261,9 @@ with ui.nav_panel("Home"):
                 # function to plot graph
                 def hist1():
                     # assign x variables
-                    x0 = chronic
-                    x1 = global_
-                    x2 = global_late
+                    x0 = global_
+                    x1 = global_late
+                    x2 = chronic
                     x3 = deer
                     opacity = 1.0
                     
@@ -292,27 +292,27 @@ with ui.nav_panel("Home"):
                     marker_color=functions.select_palette(input.var3())[0], # user specifies colour palette
                     opacity=opacity
                     ))
-                    # add plot of chronic distribution
+                    # add plot of early global
                     fig.add_trace(go.Bar(
                     x=bins0,
-                    y=[x/total_chronic for x in counts0], # normalize bin counts by total number of mutations
-                    name='chronic', # name used in legend and hover labels,
+                    y=[x/total_global for x in counts0], # normalize bin counts by total number of mutations
+                    name='global pre-VoC', # name used in legend and hover labels,
                     marker_color=functions.select_palette(input.var3())[1], # user specifies colour palette
                     opacity=opacity
                     ))
-                    # add plot of global distribution
+                    # add plot of late global distribution
                     fig.add_trace(go.Bar(
                     x=bins0,
-                    y=[x/total_global for x in counts1], # normalize bin counts by total number of mutations
-                    name='global pre-VoC', # name used in legend and hover labels,
+                    y=[x/total_lateglobal for x in counts1], # normalize bin counts by total number of mutations
+                    name='global Omicron', # name used in legend and hover labels,
                     marker_color=functions.select_palette(input.var3())[2], # user specifies colour palette
                     opacity=opacity
                     ))
-                    # add plot of global late distribution
+                    # add plot of chronic distribution
                     fig.add_trace(go.Bar(
                     x=bins0,
-                    y=[x/total_lateglobal for x in counts2],
-                    name='global Omicron',
+                    y=[x/total_chronic for x in counts2],
+                    name='chronic',
                     marker_color=functions.select_palette(input.var3())[3],
                     opacity=opacity    
                     ))
@@ -375,8 +375,9 @@ with ui.nav_panel("Home"):
                         # print text out for the user
 
                         with ui.value_box(
+                            
                             showcase=faicons.icon_svg("globe", width='50px'),
-                            theme="bg-cyan",
+                            theme=ui.value_box_theme(name = 'pre_voc', fg='white', bg='#e16462'),
                             showcase_layout="left center", 
                             max_height='90px'
                         ):
@@ -398,9 +399,15 @@ with ui.nav_panel("Home"):
                                 except:
                                     pass
                         # print text out for the user
+                        
+                        
+                        
+                        
+
                         with ui.value_box(
+                            
                             showcase=faicons.icon_svg("earth-americas", width="50px"),
-                            theme="bg-green",
+                            theme=ui.value_box_theme(name = 'omicron', fg='white', bg='#b12a90'),
                             sshowcase_layout="left center", 
                             max_height='90px'
                         ):
@@ -423,8 +430,9 @@ with ui.nav_panel("Home"):
                     with ui.card():
                         # print text out for the user
                         with ui.value_box(
+                            
                             showcase=faicons.icon_svg("head-side-virus", width="50px"),
-                            theme="bg-purple",
+                            theme=ui.value_box_theme(name = 'chronic', fg='white', bg='#6a00a8'),
                             sshowcase_layout="left center", 
                             max_height='90px'
                         ):
@@ -447,8 +455,9 @@ with ui.nav_panel("Home"):
 
                         # print text out for the user
                         with ui.value_box(
+                            
                             showcase=faicons.icon_svg("virus-covid", width="50px"),
-                            theme="bg-orange",
+                            theme=ui.value_box_theme(name = 'deer', fg='white', bg='#0d0887'),
                             showcase_layout="left center", 
                             max_height='90px'
                         ):
