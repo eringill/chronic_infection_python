@@ -11,7 +11,7 @@ from pathlib import Path
 import faicons
 
 ui.page_opts(
-    title="SARS-CoV-2 Mutation Distribution Profiler",
+    title="SMDP: SARS-CoV-2 Mutation Distribution Profiler",
     page_fn=partial(page_navbar, id="page"),
     fillable=True
 )
@@ -19,26 +19,31 @@ ui.page_opts(
 ui.nav_spacer()
 with ui.nav_control():
         ui.input_dark_mode() # << 
-        
+
+css_file = Path(__file__).parent / "css" / "styles.css"
+
 # Name of application tab
 with ui.nav_panel("Home"):
-    with ui.card(): 
-        ui.markdown(
-        '''
-        Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:
-        - Mutations observed during the first nine months of the pandemic (pre-VoC) (global pre-VoC distribution)
-        - Mutations observed during the Omicron era (global Omicron distribution)
-        - Mutations observed in chronic infections (chronic distribution)
-        - Mutations observed in zoonotic spillovers from humans to white-tailed deer (deer distribution)
+    with ui.card():
+        with ui.accordion(id="acc", open=False):  
+            with ui.accordion_panel("Application Information"):  
+                ui.include_css(css_file)
+                ui.markdown(
+                '''
+                Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:
+                - Mutations observed during the first nine months of the pandemic (pre-VoC) (global pre-VoC distribution)
+                - Mutations observed during the Omicron era (global Omicron distribution)
+                - Mutations observed in chronic infections (chronic distribution)
+                - Mutations observed in zoonotic spillovers from humans to white-tailed deer (deer distribution)
 
-        In addition, the application will inform the user if the mutation pattern is:
-        - Consistent with molnupiravir use (via examination of the transition:transversion ratio)
-        - A mutator lineage (contains a mutation in nsp14 that is known to increase the mutation rate of the lineage)
-        
-        See Application Notes tab for more information.
+                In addition, the application will inform the user if the mutation pattern is:
+                - Consistent with molnupiravir use (via examination of the transition:transversion ratio)
+                - A mutator lineage (contains a mutation in nsp14 that is known to increase the mutation rate of the lineage)
+                
+                See **Application Notes** tab for more information.
 
-        '''    
-        )
+                '''    
+                )
     # layout of columns on first tab
     with ui.layout_columns(col_widths=(4, 8)):
         # first column (or "card")
@@ -53,10 +58,10 @@ with ui.nav_panel("Home"):
             ui.input_radio_buttons(
                 'var2',
                 'Please select a lineage whose mutation distribution you would like to visualize',
-                {'1':'I want to enter my own list of lineage-defining mutations',
-                 'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
+                {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
                  'C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T':'B.1.641 (zoonotic lineage from white-tailed deer)',
-                 'G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T': 'Molnupiravir-induced mutation signature (Patient D from Fountain-Jones et al. (2024))'
+                 'G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T': 'Molnupiravir-induced mutation signature (Patient D from Fountain-Jones et al. (2024))',
+                 '1':'I want to enter my own list of lineage-defining mutations'
                  }
             )
             with ui.panel_conditional("input.var2 === '1'"):
