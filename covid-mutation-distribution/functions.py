@@ -66,15 +66,24 @@ def parse_gene_files(filename):
 
 # function to make bins based on either genes or a specific number of nucleotides,
 # depending on what the user selects. Mutation positions are then put into bins.
-def make_bins(x, binsize):
-    x = list(set(x))
+def make_bins(x, binsize, deer = False):
     '''
     inputs: x-list of nucleotide positions where mutations occur, binsize-user-defined bin size
     for plotting and likelihood calculations
+    binsize - the size of the bins that user input should be placed into
+    deer - flag for whether or not the mutations are being placed in bins to compare to deer distribution (sites are masked in this case)
     
     outputs: counts-a list of the number of mutations that fall into each bin, bins0- the names
     of the bins
     '''
+    # ensure that each site is unique
+    x = list(set(x))
+    # masked sites are because the deer distribution was calculated from aa positions, so non-coding sites were dropped
+    mask_deer = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,21556,21557,21558,21559,21560,21561,21562,25385,25386,25387,25388,25389,25390,25391,25392,26221,26222,26223,26224,26225,26226,26227,26228,26229,26230,26231,26232,26233,26234,26235,26236,26237,26238,26239,26240,26241,26242,26243,26244,26473,26474,26475,26476,26477,26478,26479,26480,26481,26482,26483,26484,26485,26486,26487,26488,26489,26490,26491,26492,26493,26494,26495,26496,26497,26498,26499,26500,26501,26502,26503,26504,26505,26506,26507,26508,26509,26510,26511,26512,26513,26514,26515,26516,26517,26518,26519,26520,26521,26522,27192,27193,27194,27195,27196,27197,27198,27199,27200,27201,27388,27389,27390,27391,27392,27393,27888,27889,27890,27891,27892,27893,28260,28261,28262,28263,28264,28265,28266,28267,28268,28269,28270,28271,28272,28273,29534,29535,29536,29537,29538,29539,29540,29541,29542,29543,29544,29545,29546,29547,29548,29549,29550,29551,29552,29553,29554,29555,29556,29557,29675,29676,29677,29678,29679,29680,29681,29682,29683,29684,29685,29686,29687,29688,29689,29690,29691,29692,29693,29694,29695,29696,29697,29698,29699,29700,29701,29702,29703,29704,29705,29706,29707,29708,29709,29710,29711,29712,29713,29714,29715,29716,29717,29718,29719,29720,29721,29722,29723,29724,29725,29726,29727,29728,29729,29730,29731,29732,29733,29734,29735,29736,29737,29738,29739,29740,29741,29742,29743,29744,29745,29746,29747,29748,29749,29750,29751,29752,29753,29754,29755,29756,29757,29758,29759,29760,29761,29762,29763,29764,29765,29766,29767,29768,29769,29770,29771,29772,29773,29774,29775,29776,29777,29778,29779,29780,29781,29782,29783,29784,29785,29786,29787,29788,29789,29790,29791,29792,29793,29794,29795,29796,29797,29798,29799,29800,29801,29802,29803,29804,29805,29806,29807,29808,29809,29810,29811,29812,29813,29814,29815,29816,29817,29818,29819,29820,29821,29822,29823,29824,29825,29826,29827,29828,29829,29830,29831,29832,29833,29834,29835,29836,29837,29838,29839,29840,29841,29842,29843,29844,29845,29846,29847,29848,29849,29850,29851,29852,29853,29854,29855,29856,29857,29858,29859,29860,29861,29862,29863,29864,29865,29866,29867,29868,29869,29870,29871,29872,29873,29874,29875,29876,29877,29878,29879,29880,29881,29882,29883,29884,29885,29886,29887,29888,29889,29890,29891,29892,29893,29894,29895,29896,29897,29898,29899,29900,29901,29902,29903]
+    # if the list of mutations is being compared to the deer distribution, it needs to be masked
+    if deer == True:
+        masked_input = [i for i in x if i not in mask_deer]
+        x = masked_input
     # first see if the user has selected an integer bin size
     try:
         int(binsize)
@@ -96,7 +105,6 @@ def make_bins(x, binsize):
             genebins, names = parse_gene_files('genes_split')
         # then make a list of the number of mutations that fall into each bin (gene)
         counts, bins = np.histogram(y, bins=genebins)
-        # the last name is n/a, so remove it from the list of gene names
         bins0 = names
     return counts, bins0
 
@@ -161,23 +169,24 @@ def most_likely(binsize, global_, global_late, chronic, deer, mutated_nucleotide
     # if the user's input is processed successfully, split the mutated nucleotide positions
     # into bins
     mut_counts, mut_bins = make_bins(mut_nuc_list, binsize)
+    mut_counts_deer, mut_bins_deer = make_bins(mut_nuc_list, binsize, deer=True)
     # get bins for global, chronic and deer
     global_counts, global_bins = make_bins(global_,binsize)
     global_late_counts, global_late_bins = make_bins(global_late, binsize)
     chronic_counts, chronic_bins = make_bins(chronic,binsize)
-    deer_counts, deer_bins = make_bins(deer,binsize)
+    deer_counts, deer__bins = make_bins(deer,binsize,deer=True)
     
     # calculate all likelihoods using the number of mutations per bin in the user's input and
     # in existing distributions
     global_likelihood = get_likelihood(global_counts, mut_counts)
     global_late_likelihood = get_likelihood(global_late_counts, mut_counts)
     chronic_likelihood = get_likelihood(chronic_counts, mut_counts)
-    deer_likelihood = get_likelihood(deer_counts, mut_counts)
+    deer_likelihood = get_likelihood(deer_counts, mut_counts_deer)
     
     # make a list of all likelihoods
     likelihood_list = [global_likelihood, global_late_likelihood, chronic_likelihood, deer_likelihood]
     # create a matching list of names for the list above
-    names = ['global_preVoC', 'global_Omicron', 'chronic', 'deer']
+    names = ['global_pre-VoC', 'global_Omicron', 'chronic', 'deer']
     # zip the two lists together
     zipped = list(zip(likelihood_list, names))
     # find the name of the distribution that best fits the user's input
