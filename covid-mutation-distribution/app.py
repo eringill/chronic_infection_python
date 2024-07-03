@@ -25,16 +25,16 @@ css_file = Path(__file__).parent / "css" / "styles.css"
 # Name of application tab
 with ui.nav_panel("Home"):
     with ui.card():
-        with ui.accordion(id="acc", open=False):  
+        with ui.accordion(id="acc", open="Application Information"):  
             with ui.accordion_panel("Application Information"):  
                 ui.include_css(css_file)
                 ui.markdown(
                 '''
                 Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:
-                - Mutations observed during the first nine months of the pandemic (pre-VoC) (global pre-VoC distribution)
-                - Mutations observed during the Omicron era (global Omicron distribution)
-                - Mutations observed in chronic infections (chronic distribution)
-                - Mutations observed in zoonotic spillovers from humans to white-tailed deer (deer distribution)
+                - Mutations observed during the first nine months of the pandemic (pre-VoC) (**global pre-VoC distribution**)
+                - Mutations observed during the Omicron era (**global Omicron distribution**)
+                - Mutations observed in chronic infections (**chronic distribution**)
+                - Mutations observed in zoonotic spillovers from humans to white-tailed deer (**deer distribution**)
 
                 In addition, the application will inform the user if the mutation pattern is:
                 - Consistent with molnupiravir use (via examination of the transition:transversion ratio)
