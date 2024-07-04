@@ -21,7 +21,6 @@ with ui.nav_control():
         ui.input_dark_mode() # << 
 
 css_file = Path(__file__).parent / "css" / "styles.css"
-
 # Name of application tab
 with ui.nav_panel("Home"):
     with ui.card():
@@ -38,7 +37,6 @@ with ui.nav_panel("Home"):
                     <li>Mutations observed in chronic infections (<b>chronic distribution</b>)
                     <li>Mutations observed in zoonotic spillovers from humans to white-tailed deer (<b>deer distribution</b>)
                 </ul>
-
                 <p class="opening_paragraph">In addition, the application will inform the user if the mutation pattern is:</p>
                 <ul class="unordered_list">
                     <li>Consistent with <b>molnupiravir use</b> (via examination of the transition:transversion ratio)
@@ -47,6 +45,7 @@ with ui.nav_panel("Home"):
                 <p class="opening_paragraph">See <b>Application Notes</b> tab for more information.</p>
                 '''    
                 )
+
     # layout of columns on first tab
     with ui.layout_columns(col_widths=(4, 8)):
         # first column (or "card")
@@ -107,7 +106,6 @@ with ui.nav_panel("Home"):
                     return f'You have entered {number_of_mutations()} mutations.'
             with ui.layout_column_wrap(width=1/2):
                 with ui.card():
-                    "Transition to Transversion Ratio"
                     @reactive.calc
                     def get_transition_transversion_ratio():
                                 # gui accepts input as a string, so it first needs to be split into a list 
@@ -132,6 +130,7 @@ with ui.nav_panel("Home"):
                                 fig2.update_yaxes(showticklabels=False)
                                 fig2.update_xaxes(showticklabels=False)
                                 fig2.update_layout(height=150, width=300)
+                                fig2.update_layout(title_text='Transition to Transversion Ratio') # title of plot
                                 return fig2
                             fig2.add_trace(go.Heatmap(
                                 z=[[float(transitions)/float(transversions)]],
@@ -153,6 +152,7 @@ with ui.nav_panel("Home"):
                             fig2.update_yaxes(showticklabels=False)
                             fig2.update_xaxes(showticklabels=False)
                             fig2.update_layout(height=150, width=300)
+                            fig2.update_layout(title_text='Transition to Transversion Ratio') # title of plot
                             
                             # return figure
                             return fig2
