@@ -526,7 +526,7 @@ with ui.nav_panel("Home"):
                         return f'Please enter a list of nucleotide positions to calculate likelihoods.'
     ui.markdown(
         '''
-        <p style="text-align: center; font-size: 10pt">If you use this tool, please cite the following: </p>
+        <p class="footer">If you use this tool, please cite the following: </p>
         '''
     )                
 
@@ -644,10 +644,14 @@ The addition of one to each bin ensures that there are no bins lacking data.
 ### Additional Information
 More details are available on VIROLOGICAL POST?
 
-<p style="text-align: center; font-size: 10pt">If you use this tool, please cite the following: </p>
+### Example Mutation Distributions
+The example mutation distributions available for analysis on the main page are as follows:
+- **BA.2.86:** C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A
+- **B.1.641:** C1059T, C2388T, C4113T, C4206T, A6377ins, C7029T, C7764T, C9611T, C9711T, C9712T, A10323G, C12213T, C12596T, C12756T, C12786T, A14041G, C14408T, G14557T, G17278T, G18546T, C18646T, G19891T, A21203G, C21707T, C21846T, G21989del, T23020G, A23064C, A23403G, G25563T, T26047G, C26455T, G27996T, G28209T, C28775T, T28889C, C29445T, C29666T
+- **Molnupiravir-induced signature:** G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T
+
+<p class="footer">If you use this tool, please cite the following: </p>
         
-
-
 '''
     )
           
@@ -666,7 +670,7 @@ We're pleased to accept any feedback you have. You can submit an issue on the is
 
 You can also email questions, comments or suggestions to Erin Gill at erin.gill81(at)gmail.com.
 
-<p style="text-align: center; font-size: 10pt">If you use this tool, please cite the following: </p>
+<p class="footer">If you use this tool, please cite the following: </p>
 
 '''
     )           

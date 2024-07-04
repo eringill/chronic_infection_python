@@ -17,12 +17,24 @@ table {
     width: 75%;
     text-align: center;
     padding: 10px;
-  }
+}
 
-  table, th, td {
+table, th, td {
     border: 1px solid;
+}
+
+th {
+    background-color: #0082cb;
+    color: white;
   }
 
-  .equation {
+.equation {
     font-size: 16pt;
-  }
+    text-align: center;
+}
+
+.footer {
+    text-align: center; 
+    font-size: 10pt;
+    color: #0082cb;
+}
