@@ -21,6 +21,7 @@ with ui.nav_control():
         ui.input_dark_mode() # << 
 
 css_file = Path(__file__).parent / "css" / "styles.css"
+icon_file = Path(__file__).parent / "static_assets" / "icon.png"
 # Name of application tab
 with ui.nav_panel("Home"):
     with ui.card():
@@ -29,6 +30,9 @@ with ui.nav_panel("Home"):
                 ui.include_css(css_file)
                 ui.markdown(
                 '''
+                <div>
+                <img src=https://drive.google.com/thumbnail?id=10krtHUH8xbWrfkcVLfZTu6JJAFKtDK6b>
+                </div>
                 <p class="opening_paragraph">
                 Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:</p>
                 <ul class="unordered_list">
@@ -43,6 +47,7 @@ with ui.nav_panel("Home"):
                     <li>A <b>mutator lineage</b> (contains a mutation in nsp14/exonuclease that is known to increase the mutation rate of the lineage)
                 </ul>
                 <p class="opening_paragraph">See <b>Application Notes</b> tab for more information.</p>
+                
                 '''    
                 )
 

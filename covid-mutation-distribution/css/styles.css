@@ -6,6 +6,7 @@ body {
 .opening_paragraph {
     font-size: 10pt;
     margin: 0;
+    text-align: left;
 }
   
 .unordered_list {
@@ -37,4 +38,11 @@ th {
     text-align: center; 
     font-size: 10pt;
     color: #0082cb;
+}
+
+img {
+    float: right;
+    margin: 10px;
+    height: 175px;
+    width: 175px;
 }
