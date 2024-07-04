@@ -33,18 +33,18 @@ with ui.nav_panel("Home"):
                 <p class="opening_paragraph">
                 Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:</p>
                 <ul class="unordered_list">
-                    <li>Mutations observed during the first nine months of the pandemic (pre-VoC) (**global pre-VoC distribution**)
-                    <li>Mutations observed during the Omicron era (**global Omicron distribution**)
-                    <li>Mutations observed in chronic infections (**chronic distribution**)
-                    <li>Mutations observed in zoonotic spillovers from humans to white-tailed deer (**deer distribution**)
+                    <li>Mutations observed during the first nine months of the pandemic (pre-VoC) (<b>global pre-VoC distribution</b>)
+                    <li>Mutations observed during the Omicron era (<b>global Omicron distribution</b>)
+                    <li>Mutations observed in chronic infections (<b>chronic distribution</b>)
+                    <li>Mutations observed in zoonotic spillovers from humans to white-tailed deer (<b>deer distribution</b>)
                 </ul>
 
                 <p class="opening_paragraph">In addition, the application will inform the user if the mutation pattern is:</p>
                 <ul class="unordered_list">
-                    <li>Consistent with **molnupiravir use** (via examination of the transition:transversion ratio)
-                    <li>A **mutator lineage** (contains a mutation in nsp14/endoRNAse that is known to increase the mutation rate of the lineage)
+                    <li>Consistent with <b>molnupiravir use</b> (via examination of the transition:transversion ratio)
+                    <li>A <b>mutator lineage</b> (contains a mutation in nsp14/endoRNAse that is known to increase the mutation rate of the lineage)
                 </ul>
-                <p class="opening_paragraph">See **Application Notes** tab for more information.</p>
+                <p class="opening_paragraph">See <b>Application Notes</b> tab for more information.</p>
                 '''    
                 )
     # layout of columns on first tab
@@ -539,13 +539,13 @@ with ui.nav_panel("Application Notes"):
 ### Background
 SARS-CoV-2 evolution exhibits a strong clock-like signature with mutational changes accumulating over time, but this pattern is punctuated by “saltational changes”, where lineages appear with a higher number of mutations than expected from their divergence time from other lineages ([Neher (2022)](https://academic.oup.com/ve/article/8/2/veac113/6887176)). Such unusual lineages are thought to reflect long passage times within immunocompromised individuals, sharing many of the same signatures seen in chronic infections ([Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4)). 
 
-When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. (2023)](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), and exposure to mutagens such as molnupiravir ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
+When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. (2023)](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases ([Takada et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), and exposure to mutagens such as molnupiravir ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
 
 Given a user-provided set of nucleotide mutations defining an unusual lineage of SARS-CoV-2, this application compares the probability of generating this set from the following four distributions:
-- The list of mutations observed during the first nine months of the pandemic, prior to the spread of VoC [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
-- The list of mutations observed in Omicron-era sequences by Harari et al., included submission dates only up to 25 May 2022.
-- The list of mutations compiled from 27 chronic infections of immunocompromised individuals [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
-- The list of mutations inferred from 109 separate zoonotic spillovers from humans to white-tailed deer [Feng et al. (2023)](https://www.nature.com/articles/s41467-023-39782-x). 
+- The list of mutations observed during the first nine months of the pandemic, prior to the spread of VoC [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4). (**global pre-VoC distribution**)
+- The list of mutations observed in Omicron-era sequences by Harari et al., included submission dates only up to 25 May 2022. (**global Omicron distribution**)
+- The list of mutations compiled from 27 chronic infections of immunocompromised individuals [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4). (**chronic distribution**)
+- The list of mutations inferred from 109 separate zoonotic spillovers from humans to white-tailed deer [Feng et al. (2023)](https://www.nature.com/articles/s41467-023-39782-x). (**deer distribution**)
 
 In the first paper, the authors demonstrate that specific lineage-defining mutation patterns occur in SARS-CoV-2 genomes that are sequenced from chronic infections vs. mutations that occurred in SARS-CoV-2 genomes sequenced around the globe at the start of the pandemic (before the rise of Variants of Concern (VOCs)). They also analyzed lineage-defining mutation patterns in VOCs, and concluded that “mutations in chronic infections are predictive of lineage-defining mutations of VOCs”.
 
@@ -556,19 +556,72 @@ In addition, the app informs the user whether the data contain signals consisten
 - **Mutator lineages:** Mutator alleles may contribute to the unusual features of a lineage by increasing the rate and type of mutation. Known mutators have been observed in nsp14 within the ExoN proofreading domain of SARS-CoV-2.  P203L in nsp14 was shown to have an elevated substitution rate in phylogenetic analyses, which was confirmed to double the mutation rate when passaged through hamsters ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)). Sites F60S and C39F in nsp14 were associated with a 22-fold and 6-fold higher substitution rate in phylogenetic analyses ([Mack et al. (2023)](https://link.springer.com/article/10.1186/s12967-020-02344-6)). We considered mutations at sites 39, 60, and 203 in nsp14 to be known mutators and mutations in sites 90, 92, 191, 268, and 273, which fall within the ExoN proofreading domain of nsp14, to be potential mutators.
 
 **Table 1: Mutator Sites.** Known and Potential mutator sites (denoted by “Confirmed” and “Potential” in the “Site Type” column, respectively) are listed in the table below. Known sites have been confirmed experimentally, and the specific amino acid / nucleotide changes leading to mutator phenotypes are shown. Potential sites lie within the ExoN proofreading domain of nsp14 (as shown in Mack et al. 2023). The wild type amino acids, their positions within the mature nsp14 protein, encoding nucleotides and genomic locations are shown for these sites, but changes that would lead to mutator phenotypes have not been confirmed.
-
-| **Gene** 	| **Amino Acid Change** 	| **Nucleotide Change** 	| **Site Type** 	|     **Reference**    	|
-|:--------:	|:---------------------:	|:---------------------:	|:-------------:	|:--------------------:	|
-| nsp14    	|          C39F         	|        G18,155T       	|   Confirmed   	|  (Mack et al. 2023)  	|
-| nsp14    	|          F60S         	|        T18,218C       	|   Confirmed   	| (Takada et al. 2023) 	|
-| nsp14    	|         P203L         	|        C18,647T       	|   Confirmed   	|  (Mack et al. 2023)  	|
-| nsp14    	|          D90          	|  18,307-18,309 (GAT)  	|   Potential   	|  (Mack et al. 2023)  	|
-| nsp14    	|          E92          	|  18,313-18,315 (GAG)  	|   Potential   	|  (Mack et al. 2023)  	|
-| nsp14    	|          E191         	|  18,610-18,612 (GAG)  	|   Potential   	|  (Mack et al. 2023)  	|
-| nsp14    	|          H268         	|  18,841-18,843 (CAT)  	|   Potential   	|  (Mack et al. 2023)  	|
-| nsp14    	|          D273         	|  18,856-18,858 (GAT)  	|   Potential   	|  (Mack et al. 2023)  	|
-
-
+<table>
+    <tr>
+        <th>Gene</th>
+        <th>Amino Acid Change</th>
+        <th>Nucleotide Change</th>
+        <th>Site Type</th>
+        <th>Reference</th>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>C39F</td>
+        <td>G18,155T</td>
+        <td>Confirmed</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>F60S</td>
+        <td>T18,218C</td>
+        <td>Confirmed</td>
+        <td>(Takada et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>P203L</td>
+        <td>C18,647T</td>
+        <td>Confirmed</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>D90</td>
+        <td>18,307-18,309 (GAT)</td>
+        <td>Potential</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>E92</td>
+        <td>18,313-18,315 (GAG)</td>
+        <td>Potential</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>E191</td>
+        <td>18,610-18,612 (GAG)</td>
+        <td>Potential</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>H268</td>
+        <td>18,841-18,843 (CAT)</td>
+        <td>Potential</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+    <tr>
+        <td>nsp14 / endoRNAase</td>
+        <td>D273</td>
+        <td>18,856-18,858 (GAT)</td>
+        <td>Potential</td>
+        <td>(Mack et al. 2023)</td>
+    </tr>
+</table>
+<br>
 
 ### Application Use
 This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
@@ -576,9 +629,9 @@ This application accepts a list of comma separated nucleotide positions in a SAR
 The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, global (pre-VOC) and global (Omicron era)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units).
 
 Because the mutational data sets are sparse, the method bins sites across the genome when calculating likelihoods. The user can define the bin of interest: genes, genes splitting the spike protein into regions of interest, genome split into 500 nucleotide windows, or genome split into 1000 nucleotide windows. For a given bin choice, the log-likelihood of drawing the user-defined mutation set from each distribution is calculated from the multinomial distribution as:
-```
-sum(log(((distribution bin counts + 1) / sum(distribution bin counts + 1))^user bin counts))
-```
+
+<p class="equation"><i>Σ(log(((distribution bin counts + 1) / Σ(distribution bin counts + 1))<sup>user bin counts</sup>))</i></p>
+
 The addition of one to each bin ensures that there are no bins lacking data.
 
 ### Notes on Input and Useful Tools
@@ -604,7 +657,9 @@ with ui.nav_panel("Contact"):
     ui.markdown(
 '''
 ### Acknowledgements
-This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
+This application was developed by the **Computational Analysis, Modelling and Evolutionary Outcomes** ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's **Coronavirus Variants Rapid Response Network** ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
+
+Funding was gratefully provided by CoVaRR-Net, which is supported by Genome Canada, Innovation, Science and Economic Development Canada (ISED) and CIHR (grant #ARR-175622).
 
 ### Feedback, Issues and Feature Requests
 We're pleased to accept any feedback you have. You can submit an issue on the issues page of the [GitHub repository](https://github.com/eringill/chronic_infection_python). 

@@ -10,3 +10,18 @@ body {
 .unordered_list {
     font-size: 10pt;
 }
+
+table {
+    table-layout: fixed;
+    width: 75%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  table, th, td {
+    border: 1px solid;
+  }
+
+  .equation {
+    font-size: 16pt;
+  }
