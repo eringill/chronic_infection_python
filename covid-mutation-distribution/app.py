@@ -40,7 +40,7 @@ with ui.nav_panel("Home"):
                 <p class="opening_paragraph">In addition, the application will inform the user if the mutation pattern is:</p>
                 <ul class="unordered_list">
                     <li>Consistent with <b>molnupiravir use</b> (via examination of the transition:transversion ratio)
-                    <li>A <b>mutator lineage</b> (contains a mutation in nsp14/endoRNAse that is known to increase the mutation rate of the lineage)
+                    <li>A <b>mutator lineage</b> (contains a mutation in nsp14/exonuclease that is known to increase the mutation rate of the lineage)
                 </ul>
                 <p class="opening_paragraph">See <b>Application Notes</b> tab for more information.</p>
                 '''    
@@ -565,56 +565,56 @@ In addition, the app informs the user whether the data contain signals consisten
         <th>Reference</th>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>C39F</td>
         <td>G18,155T</td>
         <td>Confirmed</td>
         <td>(Mack et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>F60S</td>
         <td>T18,218C</td>
         <td>Confirmed</td>
         <td>(Takada et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>P203L</td>
         <td>C18,647T</td>
         <td>Confirmed</td>
         <td>(Mack et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>D90</td>
         <td>18,307-18,309 (GAT)</td>
         <td>Potential</td>
         <td>(Mack et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>E92</td>
         <td>18,313-18,315 (GAG)</td>
         <td>Potential</td>
         <td>(Mack et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>E191</td>
         <td>18,610-18,612 (GAG)</td>
         <td>Potential</td>
         <td>(Mack et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>H268</td>
         <td>18,841-18,843 (CAT)</td>
         <td>Potential</td>
         <td>(Mack et al. 2023)</td>
     </tr>
     <tr>
-        <td>nsp14 / endoRNAase</td>
+        <td>nsp14 / exonuclease</td>
         <td>D273</td>
         <td>18,856-18,858 (GAT)</td>
         <td>Potential</td>
