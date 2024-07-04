@@ -25,8 +25,8 @@ icon_file = Path(__file__).parent / "static_assets" / "icon.png"
 # Name of application tab
 with ui.nav_panel("Home"):
     with ui.card():
-        with ui.accordion(id="acc", open="Application Information"):  
-            with ui.accordion_panel("Application Information"):  
+        with ui.accordion(id="acc", open="Quick Start Information"):  
+            with ui.accordion_panel("Quick Start Information"):  
                 ui.include_css(css_file)
                 ui.markdown(
                 '''
