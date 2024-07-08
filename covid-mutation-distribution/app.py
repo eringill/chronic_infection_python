@@ -642,7 +642,7 @@ The addition of one to each bin ensures that there are no bins lacking data.
 ### Notes on Input and Useful Tools
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
-- Indels should be reported by including the first position only e.g. `ins21608` **NOT** `ins21608TCATGCCGCTGT`
+- Indels should be reported by including the first position only e.g. `ins21608` or `del28248` **NOT** `ins21608TCATGCCGCTGT` or `del28248_28250`
 - If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
 - If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
 
