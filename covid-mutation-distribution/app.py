@@ -666,7 +666,7 @@ with ui.nav_panel("Contact"):
     ui.markdown(
 '''
 ### Acknowledgements
-This application was developed by the **Computational Analysis, Modelling and Evolutionary Outcomes** ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's **Coronavirus Variants Rapid Response Network** ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
+This application was developed by the **Computational Analysis, Modelling and Evolutionary Outcomes** ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's **Coronavirus Variants Rapid Response Network** ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Sheri Harari, Aijing Feng, Fiona S.L. Brinkman, and Sarah Otto. 
 
 Funding was gratefully provided by CoVaRR-Net, which is supported by Genome Canada, Innovation, Science and Economic Development Canada (ISED) and CIHR (grant #ARR-175622).
 
