@@ -104,7 +104,7 @@ with ui.nav_panel("Home"):
                 else:
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 if transversions == False:
-                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel".'
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters.'
                 if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
