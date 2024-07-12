@@ -91,10 +91,10 @@ def make_bins(x, binsize, deer = False):
         # fall into each bin (based on genome size of 30,000) and then make a list
         # of the centers of each of the bins for plotting 
         # np.histogram gives you the bin edges https://numpy.org/doc/stable/reference/generated/numpy.histogram.html
-        counts, bins0 = np.histogram(x, bins=range(1,30001,int(binsize)))
+        counts, bins0 = np.histogram(x, bins=range(1,30002,int(binsize)))
         bins0 = 0.5 * (bins0[:-1] + bins0[1:])
     except ValueError:
-        y = [i for i in x if i > 265 and i < 30001]
+        y = [i for i in x if i > 263 and i < 30001]
         if binsize == 'gene':
             # first get the gene start positions and gene names from file using
             # parse_gene_files() function
