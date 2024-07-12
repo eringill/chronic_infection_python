@@ -37,3 +37,11 @@ def test_make_bins_gene():
 def test_make_bins_gene_names():
     counts, bins0 = functions.make_bins(functions.parse_mutation_files(test_dist)[0], 'gene')
     assert bins0[-1] == 'ORF10'
+    
+def test_make_bins_genes_split():
+    counts, bins0 = functions.make_bins(functions.parse_mutation_files(test_dist)[0], 'genes_split')
+    assert len(counts) == len(bins0)
+    
+def test_make_bins_genes_split_names():
+    counts, bins0 = functions.make_bins(functions.parse_mutation_files(test_dist)[0], 'genes_split')
+    assert bins0[-1] == 'ORF10'

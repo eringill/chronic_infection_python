@@ -22,7 +22,7 @@ with ui.nav_control():
         ui.input_dark_mode() # << 
 
 css_file = Path(__file__).parent / "css" / "styles.css"
-icon_file = Path(__file__).parent / "static_assets" / "icon.png"
+
 # Name of application tab
 with ui.nav_panel("Home"):
     with ui.card():
