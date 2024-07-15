@@ -669,7 +669,7 @@ with ui.nav_panel("Contact"):
 ### Acknowledgements
 This application was developed by the **Computational Analysis, Modelling and Evolutionary Outcomes** ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's **Coronavirus Variants Rapid Response Network** ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Sheri Harari, Aijing Feng, Fiona S.L. Brinkman, and Sarah Otto. 
 
-Funding was gratefully provided by CoVaRR-Net, which is supported by Genome Canada, Innovation, Science and Economic Development Canada (ISED) and CIHR (grant #ARR-175622).
+Funding was gratefully provided by CoVaRR-Net, which is supported by Genome Canada, Innovation, Science and Economic Development Canada (ISED) and CIHR (grant #ARR-175622). This project was supported by funding from a CoVaRR-Net Rapid Response Research Grant.
 
 ### Feedback, Issues and Feature Requests
 We're pleased to accept any feedback you have. You can submit an issue on the issues page of the [GitHub repository](https://github.com/eringill/chronic_infection_python). 
