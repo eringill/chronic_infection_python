@@ -35,7 +35,7 @@ with ui.nav_panel("Home"):
                 <img src=https://drive.google.com/thumbnail?id=10krtHUH8xbWrfkcVLfZTu6JJAFKtDK6b>
                 </div>
                 <p class="opening_paragraph">
-                Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following three distributions:</p>
+                Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following four distributions:</p>
                 <ul class="unordered_list">
                     <li>Mutations observed during the first nine months of the pandemic (pre-VoC) (<b>global pre-VoC distribution</b>)
                     <li>Mutations observed during the Omicron era (<b>global Omicron distribution</b>)
