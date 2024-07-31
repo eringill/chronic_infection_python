@@ -543,7 +543,7 @@ with ui.nav_panel("Home"):
                         return f'Please enter a list of nucleotide positions to calculate likelihoods.'
     ui.markdown(
         '''
-        <p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201">Gill, E.E. et al. SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. arXiV. 2024</a></p>
+        <p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201"><b>Gill, E.E. et al.</b> SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. <i>arXiv</i> 2024; 2407.11201</a></p>
         '''
     )                
 
@@ -667,7 +667,7 @@ The example mutation distributions available for analysis on the main page are a
 - **White-tailed deer sample:** G3692T, G4181T, G5617T, C5822T, C6402T, C6638T, C6990T, C7124T, C7926T, C8733T, G9053T, C9611T, C10029T, G11083T, A11201G, C13665T, T14014G, C16466T, C19011T, C19572T, C20589T, C21618G, C21627T, G22028, T22917G, A23403G, C23604G, G24410A, G24815A, C25427T, C25469T, G25793A, T26767C, C27509T, T27638C, C27752T, T28072, T28092, A28247, A28461G, G28881T, G28916T, G29402T
 - **Molnupiravir-induced signature:** G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T
 
-<p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201">Gill, E.E. et al. SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. arXiV. 2024</a></p>
+<p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201"><b>Gill, E.E. et al.</b> SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. <i>arXiv</i> 2024; 2407.11201</a></p>
         
 '''
     )
@@ -687,7 +687,7 @@ We're pleased to accept any feedback you have. You can submit an issue on the is
 
 You can also email questions, comments or suggestions to Erin Gill at erin.gill81(at)gmail.com.
 
-<p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201">Gill, E.E. et al. SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. arXiV. 2024</a></p>
+<p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201"><b>Gill, E.E. et al.</b> SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. <i>arXiv</i> 2024; 2407.11201</a></p>
 
 '''
     )           
