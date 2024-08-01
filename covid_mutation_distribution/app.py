@@ -543,7 +543,7 @@ with ui.nav_panel("Home"):
                         return f'Please enter a list of nucleotide positions to calculate likelihoods.'
             ui.markdown(
                             '''
-                            If you would like to analyze your lineage's mutations using an alternative context-based approach, try [movbranch](https://movbranchapp.streamlit.app/).
+                            If you would like to analyze your lineage's mutations using an alternative context-based approach, try [movbranch](ttps://movbranchapp.streamlit.app/?mutations=A123T).
                             '''
                             )
     ui.markdown(
