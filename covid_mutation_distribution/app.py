@@ -541,6 +541,11 @@ with ui.nav_panel("Home"):
                         return f'({more_likely} times more likely than the {dist.replace("_", " ")} distribution.)'
                     except:
                         return f'Please enter a list of nucleotide positions to calculate likelihoods.'
+            ui.markdown(
+                            '''
+                            If you would like to analyze your lineage's mutations using an alternative context-based approach, try [movbranch](https://movbranchapp.streamlit.app/).
+                            '''
+                            )
     ui.markdown(
         '''
         <p class="footer">If you use this tool, please cite the following: <a href="https://arxiv.org/abs/2407.11201"><b>Gill, E.E. et al.</b> SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. <i>arXiv</i> 2024; 2407.11201</a></p>
