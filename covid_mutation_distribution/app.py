@@ -176,7 +176,7 @@ with ui.nav_panel("Home"):
                         'The transition:transversion ratio of SARS-CoV-2 is typically ~2:1, while molnupiravir induces a ratio of between 9:1 and 14:1 (Gruber et al. 2024).'
                     ui.markdown(
                             '''
-                            <p class="opening_paragraph">(see <b><a href="https://movbranchapp.streamlit.app/?mutations=A123T">movbranch</a></b> for additional analyses)</p>
+                            <p class="opening_paragraph">(see <b><a href="https://movbranchapp.streamlit.app/">movbranch</a></b> for additional molnupiravir analyses)</p>
                             '''
                             )
                 with ui.card():
