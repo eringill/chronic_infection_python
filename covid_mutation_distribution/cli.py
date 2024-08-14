@@ -9,8 +9,8 @@ import functions
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="""SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories.
-Developed by the CAMEO team of CoVaRR-Net.
 
+Erin E. Gill, Sheri Harari, Aijing Feng, Fiona S.L. Brinkman, Sarah Otto
 For the web app, visit: https://eringill.shinyapps.io/covid_mutation_distributions/
 Source code: https://github.com/eringill/chronic_infection_python
 Please cite: https://doi.org/10.48550/arXiv.2407.11201""",
