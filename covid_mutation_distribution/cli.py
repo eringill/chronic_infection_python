@@ -8,7 +8,13 @@ import functions
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="SARS-CoV-2 Mutation Distribution Profiler (SMDP) CLI"
+        description="""SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories.
+Developed by the CAMEO team of CoVaRR-Net.
+
+For the web app, visit: https://eringill.shinyapps.io/covid_mutation_distributions/
+Source code: https://github.com/eringill/chronic_infection_python
+Please cite: https://doi.org/10.48550/arXiv.2407.11201""",
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
         "mutations",
@@ -202,7 +208,9 @@ def main() -> None:
     args = parse_arguments()
 
     if args.plot and args.bin_size not in ["500", "1000"]:
-        print("Error: Plotting is only available for integer bin sizes. Set `--bin-size` to 500 or 1000 to plot.")
+        print(
+            "Error: Plotting is only available for integer bin sizes. Set `--bin-size` to 500 or 1000 to plot."
+        )
         exit(1)
 
     results, mut_list, distribution_data = analyze_mutations(
