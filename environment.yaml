@@ -1,0 +1,9 @@
+name: smdpcli
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python
+  - pandas
+  - matplotlib
+  - seaborn
