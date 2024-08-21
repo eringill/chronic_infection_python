@@ -55,6 +55,59 @@ sum(log(((distribution bin counts + 1) / sum(distribution bin counts + 1))^user 
 ```
 The addition of one to each bin ensures that there are no bins lacking data.
 
+### CLI
+
+A command line interface (CLI) is available for this application. The CLI is a Python script. You can install the necessary packages with conda using the following command:
+
+```sh
+conda env create -f environment.yaml
+```
+
+Here is an example of how to run the CLI with a list of mutations and the output you can expect:
+
+```sh
+$ python covid_mutation_distribution/cli.py "C241T, C3037T, A23403G, G28881A, G28882A, G28883C"
+Number of mutations: 6
+Transition/Transversion ratio: 5.00
+
+Log Likelihoods:
+  chronic: -11.04
+  total chronic: -11.50
+  deer: -12.92
+  total deer: -12.11
+
+Best fit distribution: (np.float64(-11.040868182380382), 'global_pre-VoC')
+(1.58 times more likely than the global Omicron distribution)
+
+Mutator lineage analysis:
+  No mutator lineage detected
+```
+
+Full usage information can be found by running:
+
+```txt
+usage: cli.py [-h] [--bin-size {genes_split,gene,500,1000}] [--output {text,json}] [--plot] [--plot-output PLOT_OUTPUT] [--color-palette {plasma,viridis,inferno,seaborn}] [--verbose] mutations
+
+SARS-CoV-2 Mutation Distribution Profiler (SMDP) CLI
+
+positional arguments:
+  mutations             Comma-separated list of mutations or path to a file containing mutations
+
+options:
+  -h, --help            show this help message and exit
+  --bin-size {genes_split,gene,500,1000}
+                        Bin size for analysis (default: gene)
+  --output {text,json}  Output format (default: text)
+  --plot                Generate a plot of mutation distribution
+  --plot-output PLOT_OUTPUT
+                        Output file for the plot (default: mutation_distribution.png)
+  --color-palette {plasma,viridis,inferno,seaborn}
+                        Color palette for the plot (default: plasma)
+  --verbose             Print detailed information during analysis
+```
+
+Currently, the CLI only supports a single query at a time.
+
 ## Notes on Input
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
