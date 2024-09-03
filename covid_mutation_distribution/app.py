@@ -131,7 +131,7 @@ with ui.nav_panel("Home"):
                 elif input.var2() == '1':
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 elif input.var2() == '2':
-                    transitions, transversions = 
+                    transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                 if transversions == False:
                     return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters.'
                 if number_of_mutations() == 1:
@@ -146,10 +146,12 @@ with ui.nav_panel("Home"):
                                 # splits occur wherever there is a comma
                                 # then pass to function defined in functions.py
                                 # to get number of transitions, transversions
-                        if input.var2() != '1':
+                        if input.var2() != '1' or '2':
                             transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                        else:
+                        elif input.var2() == '1':
                             transitions, transversions = functions.transition_or_transversion(input.var4())
+                        else:
+                            transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                         return transitions, transversions
                     
                     with ui.tooltip(id="btn_tooltip3", placement="right"):        
@@ -207,35 +209,47 @@ with ui.nav_panel("Home"):
                                     @render.ui
                                     @reactive.event(input.submit, ignore_none=False)
                                     def mut_lineage():
-                                        if input.var2() != '1':
+                                        if input.var2() != '1' or '2':
                                             transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                        else:
+                                        elif input.var2() == '1':
                                             transitions, transversions = functions.transition_or_transversion(input.var4())
+                                        elif input.var2() == '2':
+                                            transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                                         if transversions == False:
                                             return ''
-                                        if input.var2() != '1':
+                                        if input.var2() != '1' or '2':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
                                                 return 'NO'
                                             else:
                                                 return f'Confirmed: {functions.mut_lineage_parsing(input.var2())[0]}'
-                                        else:
+                                        elif input.var2() == '1':
                                             if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
                                                 return 'NO'
                                             else:
                                                 return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
+                                        else:
+                                            if (functions.mut_lineage_parsing(nextcladefunctions.parse_private_mutations(input.file1()))[0] == '') and (functions.mut_lineage_parsing(nextcladefunctions.parse_private_mutations(input.file1()))[1] == ''):
+                                                return 'NO'
+                                            else:
+                                                return f'Confirmed: {functions.mut_lineage_parsing(nextcladefunctions.parse_private_mutations(input.file1()))[0]}'
                                     @render.ui
                                     @reactive.event(input.submit, ignore_none=False)
                                     def potential_mut_lineage():
-                                        if input.var2() != '1':
+                                        if input.var2() != '1' or '2':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
                                                 return ''
                                             else:
                                                 return f'Potential: {functions.mut_lineage_parsing(input.var2())[1]}'
-                                        else:
+                                        elif input.var2() == '1':
                                             if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
                                                 return ''
                                             else:
                                                 return f'Potential: {functions.mut_lineage_parsing(input.var4())[1]}'
+                                        else:
+                                            if (functions.mut_lineage_parsing(nextcladefunctions.parse_private_mutations(input.file1()))[0] == '') and (functions.mut_lineage_parsing(nextcladefunctions.parse_private_mutations(input.file1()))[1] == ''):
+                                                return ''
+                                            else:
+                                                return f'Potential: {functions.mut_lineage_parsing(nextcladefunctions.parse_private_mutations(input.file1()))[1]}'
                         'See Application Notes table for a list of Confirmed and Potential mutator sites.'
 
             with ui.card():
@@ -261,10 +275,12 @@ with ui.nav_panel("Home"):
                 def plot_user_input():
                     # gui accepts input as a string, so it first needs to be split into a list 
                     # splits occur wherever there is a comma
-                    if input.var2() != '1':
+                    if input.var2() != '1' or '2':
                         mutated_nucleotide_list = functions.parse_user_input(input.var2())
-                    else:
+                    elif input.var2() == '1':
                         mutated_nucleotide_list = functions.parse_user_input(input.var4())
+                    else:
+                        mutated_nucleotide_list = nextcladefunctions.parse_private_mutations(input.file1())
                     # try to remove non-digit characters, then convert each string in list into
                     # a digit
                     try: 
@@ -325,10 +341,12 @@ with ui.nav_panel("Home"):
                     counts3, bins3 = functions.make_bins(x3,input.var(), deer = True)
                     # instatiate figure
                     fig = go.Figure()
-                    if input.var2() != '1':
+                    if input.var2() != '1' or '2':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                     if transversions == False:
                         return fig
                     # add plot of nucleotide positions specified by user
@@ -409,16 +427,16 @@ with ui.nav_panel("Home"):
                     # of the specified mutation distributions
                     def calc_likelihoods():
                         # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
-                        if input.var2() != '1':
+                        if input.var2() != '1' or '2':
                             likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
-                        else:
+                        elif input.var2() == '1':
                             likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var4())
+                        else:
+                            likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, nextcladefunctions.parse_private_mutations(input.file1()))
                         # return a list of tuples: [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),(chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
                         # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
                         return likelihood_list, most_likely
                     with ui.card():
-                    
-
                         # print text out for the user
 
                         with ui.value_box(
@@ -435,10 +453,12 @@ with ui.nav_panel("Home"):
                             def txt1():
                             # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                             # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
-                                if input.var2() != '1':
+                                if input.var2() != '1' or '2':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                                 if transversions == False:
                                     return ''
                                 try:
@@ -458,10 +478,12 @@ with ui.nav_panel("Home"):
                             @render.ui
                             @reactive.event(input.submit, ignore_none=False)
                             def txt2():
-                                if input.var2() != '1':
+                                if input.var2() != '1' or '2':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                                 if transversions == False:
                                     return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
@@ -483,10 +505,12 @@ with ui.nav_panel("Home"):
                             @render.ui
                             @reactive.event(input.submit, ignore_none=False)
                             def txt3():
-                                if input.var2() != '1':
+                                if input.var2() != '1' or '2':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                                 if transversions == False:
                                     return ''
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
@@ -510,10 +534,12 @@ with ui.nav_panel("Home"):
                             def txt4():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything
-                                if input.var2() != '1':
+                                if input.var2() != '1' or '2':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
+                                else:
+                                    transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                                 if transversions == False:
                                     return ''
                                 try:
@@ -530,10 +556,12 @@ with ui.nav_panel("Home"):
                 @render.ui
                 @reactive.event(input.submit, ignore_none=False)
                 def txt5():
-                    if input.var2() != '1':
+                    if input.var2() != '1' or '2':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                     if transversions == False:
                         return ''
                     # if reactive calculations have been performed (i.e. likelihoods have been calculated),
@@ -548,10 +576,12 @@ with ui.nav_panel("Home"):
                 @render.ui
                 @reactive.event(input.submit, ignore_none=False)
                 def txt6():
-                    if input.var2() != '1':
+                    if input.var2() != '1' or '2':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
+                    else:
+                        transitions, transversions = functions.transition_or_transversion(nextcladefunctions.parse_private_mutations(input.file1()))
                     if transversions == False:
                         return ''
                     try:
