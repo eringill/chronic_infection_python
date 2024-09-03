@@ -7,6 +7,7 @@ from shiny.types import FileInfo
 import plotly.graph_objects as go # graph
 from shinywidgets import render_widget # rendering graph
 import functions # functions from functions.py
+import nextcladefunctions
 import re # regex
 from pathlib import Path
 import faicons
@@ -93,7 +94,13 @@ with ui.nav_panel("Home"):
             with ui.panel_conditional("input.var2 === '2'"):
                 with ui.tooltip(id="cond_tooltip2", placement="right"):
                     ui.input_file("file1", "Please select a SARS-CoV-2 genome consensus sequence FASTA file", accept=['.fasta', '.FASTA', '.fa'], multiple = False,)
-                    'You must include a FASTA header and all U in the sequence should be converted to T.'
+                    'You must include a SINGLE FASTA header and all U in the sequence should be converted to T.'
+                    @reactive.calc
+                    def parsed_file():
+                        file: list[FileInfo] | None = input.file1()
+                        if file is None:
+                            return pd.DataFrame()
+                        return pd.read_csv(file[0][Path(__file__).parent / "data/results/userinput.fasta"])
 
             # colour palette
             with ui.tooltip(id="btn_tooltip2", placement="right"):
@@ -110,17 +117,21 @@ with ui.nav_panel("Home"):
             @reactive.calc
             def number_of_mutations():
                 # return the number of mutations that the user has entered
-                if input.var2() != '1':
+                if input.var2() != '1' or '2':
                     return len(functions.parse_user_input(input.var2()))
-                else:
+                elif input.var2() == '1':
                     return len(functions.parse_user_input(input.var4()))
+                else:
+                    return len(nextcladefunctions.parse_private_mutations(input.file1()))
             @render.text
             @reactive.event(input.submit, ignore_none=False)
             def print_mutations():
-                if input.var2() != '1':
+                if input.var2() != '1' or '2':
                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                else:
+                elif input.var2() == '1':
                     transitions, transversions = functions.transition_or_transversion(input.var4())
+                elif input.var2() == '2':
+                    transitions, transversions = 
                 if transversions == False:
                     return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters.'
                 if number_of_mutations() == 1:
