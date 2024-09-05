@@ -8,24 +8,23 @@ import math # math is important!
 from pathlib import Path
 from subprocess import call
 
-def generate_alignment_script(input):
+def generate_alignment_script():
     ref_seqs = ['wuhan', 'BA2', 'BA286', 'XBB']
-    path = Path(__file__).parent / "./data/results/nextcladerun.sh"
-    results = Path(__file__).parent / "data/results/"
-    test_file = Path(__file__).parent / "./data/reference_seqs/testFASTA/test.fasta"
-    user_file = Path(__file__).parent / "data/results/userinput.fasta"
-    path.touch()
-    with path.open('w') as file:
+    script_path = Path(__file__).parent / "./data/results/nextcladerun.sh"
+    results = Path(__file__).parent / "./data/results/"
+    test_file = Path(__file__).parent / "./data/reference_seqs/"
+    user_file = Path(__file__).parent / "./data/results/user_input.fasta"
+    script_path.touch()
+    with script_path.open('w') as file:
         for i in ref_seqs:
-            file.write(f'nextclade run {user_file} --output-tsv {results}/{i}results.tsv --input-dataset /Users/egill/Projects/chronic_infection_python/covid_mutation_distribution/data/reference_seqs/{i}/\n')
+            file.write(f'nextclade run {user_file} --output-tsv {results}/{i}results.tsv --input-dataset {test_file}/{i}/\n')
 
 def generate_alignments():        
-    generate_alignment_script()
     path = Path(__file__).parent / "./data/results/nextcladerun.sh"
     with open(path, 'rb') as file:
         script = file.read()
     call(script, shell=True)
-    
+
 def get_best_reference():
     generate_alignments()
     ref_seqs = ['wuhan', 'BA2', 'BA286', 'XBB']
@@ -54,7 +53,13 @@ def parse_private_mutations():
         item = re.sub(pattern, '', item)
         if len(item) > 0:
             fixed_list.append(item)
-    [f.unlink() for f in Path("data/results/").glob("*") if f.is_file()] 
-    return (fixed_list)
+    #[f.unlink() for f in Path("data/results/").glob("*") if f.is_file()] 
+    return (','.join(fixed_list))
         
+def execute_nextclade():
+    generate_alignment_script()
+    print(parse_private_mutations())
+    return parse_private_mutations()
+#print(execute_nextclade(Path(__file__).parent / '/Users/egill/Desktop/testFASTA/test.fasta'))
 
+execute_nextclade()
