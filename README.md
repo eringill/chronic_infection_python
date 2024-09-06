@@ -17,7 +17,7 @@ SARS-CoV-2 evolution exhibits a strong clock-like signature with mutational chan
 
 When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. (2023)](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases ([Takeda et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), and exposure to mutagens such as molnupiravir ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
 
-Given a user-provided set of nucleotide mutations defining an unusual lineage of SARS-CoV-2, this application compares the probability of generating this set from the following four distributions:
+Given a user-provided set of nucleotide mutations or genome consensus sequence defining an unusual lineage of SARS-CoV-2, this application compares the probability of generating this set from the following four distributions:
 - The list of mutations observed during the first nine months of the pandemic, prior to the spread of VoC [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
 - The list of mutations observed in Omicron-era sequences by Harari et al., included submission dates only up to 25 May 2022.
 - The list of mutations compiled from 27 chronic infections of immunocompromised individuals [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4).
@@ -45,7 +45,7 @@ In addition, the app informs the user whether the data contain signals consisten
 
 
 ### Application Use
-This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
+This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://www.pango.network/) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). The tool will also accept a FASTA file containing a **SINGLE** SARS-CoV-2 genome consensus sequence. In this case, the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html) is used to determine lineage-defining mutations (called private mutations in NextClade).
 
 The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, global (pre-VOC) and global (Omicron era)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units)12.
 
@@ -112,8 +112,8 @@ Currently, the CLI only supports a single query at a time.
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
 - Indels should be reported by including the first position only e.g. `ins21608` **NOT** `ins21608TCATGCCGCTGT`
-- If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data).
 - If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
+-- FASTA files must contain a single sequence with a canonical header (e.g. `>genome_sequence`), have one of the following suffixes: `.FASTA`, `.fasta` or `.fa` and **ALL** U nucleotides must be converted to T before upload
 
 
 ### Feedback
