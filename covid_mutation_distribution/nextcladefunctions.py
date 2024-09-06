@@ -7,6 +7,8 @@ import re # regex
 import math # math is important!
 from pathlib import Path
 from subprocess import call
+import os
+
 
 def generate_alignment_script():
     ref_seqs = ['wuhan', 'BA2', 'BA286', 'XBB']
@@ -53,13 +55,12 @@ def parse_private_mutations():
         item = re.sub(pattern, '', item)
         if len(item) > 0:
             fixed_list.append(item)
-    #[f.unlink() for f in Path("data/results/").glob("*") if f.is_file()] 
+            
+    path = Path(__file__).parent / "data/results"
+    os.system('rm -rf %s/*' % path)
     return (','.join(fixed_list))
         
 def execute_nextclade():
     generate_alignment_script()
-    print(parse_private_mutations())
     return parse_private_mutations()
 #print(execute_nextclade(Path(__file__).parent / '/Users/egill/Desktop/testFASTA/test.fasta'))
-
-execute_nextclade()
