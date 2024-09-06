@@ -125,6 +125,7 @@ with ui.nav_panel("Home"):
         # second column (or "card")
         with ui.card():
             private_muts = reactive.value(None)
+            
             @reactive.effect
             @reactive.event(input.file1)
             def _():
@@ -149,7 +150,9 @@ with ui.nav_panel("Home"):
                 elif input.var2() == '1':
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 if transversions == False:
-                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters.'
+                    if private_muts.get() == "Error":
+                        private_muts.set(None)
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters. If you uploaded a file, make sure that the file contains at least 100 nucleotides.'
                 if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
@@ -613,7 +616,8 @@ with ui.nav_panel("Home"):
                             private_muts.set(None)
                         return f'({more_likely} times more likely than the {dist.replace("_", " ")} distribution.)'
                     except:
-                        return f'Please enter a list of nucleotide positions to calculate likelihoods.'
+                        private_muts.set(None)
+                        return f'Please enter a list of nucleotide positions or upload a FASTA file to calculate likelihoods.'
                     
                         
             

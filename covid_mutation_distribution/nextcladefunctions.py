@@ -35,27 +35,35 @@ def get_best_reference():
         file = Path(__file__).parent / "data/results/"
         results = pd.read_csv(f'{file}/{i}results.tsv', sep= '\t')
         score = results['alignmentScore'].tolist()
-        score_list.append(int(score[0]))
+        try:
+            score_list.append(int(score[0]))
+        except:
+            return "Error"
     m = max(score_list)
     best_index = score_list.index(m)
     return ref_seqs[best_index]
 
 def get_private_mutations():
     best_reference = get_best_reference()
+    if best_reference == "Error":
+        return "Error"
     tsv = best_reference + "results.tsv"
     file = Path(__file__).parent / "data/results/"
     df = pd.read_csv(f'{file}/{tsv}', sep = '\t')
     return ((f'{df["privateNucMutations.reversionSubstitutions"][0]},{df["privateNucMutations.labeledSubstitutions"][0]},{df["privateNucMutations.unlabeledSubstitutions"][0]}').split(','))
-    
+
 def parse_private_mutations():
     mutation_list = get_private_mutations()
+    if mutation_list == "Error":
+        path = Path(__file__).parent / "data/results"
+        os.system('rm -rf %s/*' % path)
+        return "Error"
     pattern = r'(\|.*)|(^-.*)'
     fixed_list = []
     for item in mutation_list:
         item = re.sub(pattern, '', item)
         if len(item) > 0:
-            fixed_list.append(item)
-            
+            fixed_list.append(item)        
     path = Path(__file__).parent / "data/results"
     os.system('rm -rf %s/*' % path)
     return (','.join(fixed_list))
