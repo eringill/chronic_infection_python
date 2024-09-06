@@ -48,7 +48,7 @@ with ui.nav_panel("Home"):
                 <img src=https://drive.google.com/thumbnail?id=10krtHUH8xbWrfkcVLfZTu6JJAFKtDK6b>
                 </div>
                 <p class="opening_paragraph">
-                Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following four distributions:</p>
+                Given a user-provided set of SARS-CoV-2 nucleotide mutations or genome consensus sequence, this application compares the probability of generating this set from the following four distributions:</p>
                 <ul class="unordered_list">
                     <li>Mutations observed during the first nine months of the pandemic (pre-VoC) (<b>global pre-VoC distribution</b>)
                     <li>Mutations observed during the Omicron era (<b>global Omicron distribution</b>)
@@ -717,7 +717,7 @@ In addition, the app informs the user whether the data contain signals consisten
 <br>
 
 ### Application Use
-This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
+This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). The tool will also accept a FASTA file containing a **SINGLE** SARS-CoV-2 genome consensus sequence. In this case, the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html) is used to determine lineage-defining mutations (called private mutations in NextClade).
 
 The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, global (pre-VOC) and global (Omicron era)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units).
 
@@ -731,8 +731,8 @@ The addition of one to each bin ensures that there are no bins lacking data.
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
 - Indels should be reported by including the first position only e.g. `ins21608` or `del28248` **NOT** `ins21608TCATGCCGCTGT` or `del28248_28250`
-- If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data). You can also visualize and export mutations relative to the founder of the clade a sequence belongs to using [NextClade](https://clades.nextstrain.org/).
-- If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
+- If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/)
+- FASTA files must contain a single sequence with a canonical header (e.g. `>genome_sequence`), have one of the following suffixes: `.FASTA`, `.fasta` or `.fa` and **ALL** U nucleotides must be converted to T before upload
 
 ### Additional Information
 More details are available in [arXiv preprint](https://doi.org/10.48550/arXiv.2407.11201).
