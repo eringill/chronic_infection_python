@@ -80,20 +80,20 @@ with ui.nav_panel("Home"):
                 'var2',
                 'Please select a lineage whose mutation distribution you would like to visualize, then click "Submit"',
                 {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
-                 'G3692T, G4181T, G5617T, C5822T, C6402T, C6638T, C6990T, C7124T, C7926T, C8733T, G9053T, C9611T, C10029T, G11083T, A11201G, C13665T, T14014G, C16466T, C19011T, C19572T, C20589T, C21618G, C21627T, G22028, T22917G, A23403G, C23604G, G24410A, G24815A, C25427T, C25469T, G25793A, T26767C, C27509T, T27638C, C27752T, T28072, T28092, A28247, A28461G, G28881T, G28916T, G29402T':HTML("Lineage from white-tailed deer (Sample 4205 from (<a href=' https://www.cell.com/iscience/fulltext/S2589-0042(23)02396-9 '>Kotwa et al., 2023</a>) "),
+                 'G3692T, G4181T, G5617T, C5822T, C6402T, C6638T, C6990T, C7124T, C7926T, C8733T, G9053T, C9611T, C10029T, G11083T, A11201G, C13665T, T14014G, C16466T, C19011T, C19572T, C20589T, C21618G, C21627T, G22028, T22917G, A23403G, C23604G, G24410A, G24815A, C25427T, C25469T, G25793A, T26767C, C27509T, T27638C, C27752T, T28072, T28092, A28247, A28461G, G28881T, G28916T, G29402T':HTML("Lineage from white-tailed deer (Sample 4205 from (<a href=' https://www.cell.com/iscience/fulltext/S2589-0042(23)02396-9 '>Kotwa et al., 2023</a>)) "),
                  'G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T': HTML('Molnupiravir-induced mutation signature (Patient D from (<a href="https://www.thelancet.com/journals/lanmic/article/PIIS2666-5247(23)00393-2/fulltext">Fountain-Jones et al. 2024</a>))'),
                  '1':'I want to enter my own list of lineage-defining mutations',
-                 '2':'I want to enter sequence data in FASTA format (supported by NextClade)',
+                 '2':HTML('I want to enter sequence data in FASTA format (lineage-defining mutations calculated via <a href=" https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html ">NextClade CLI</a>)'),
                  }
             )
             with ui.panel_conditional("input.var2 === '1'"):
                 with ui.tooltip(id="cond_tooltip", placement="right"):
-                    ui.input_text_area("var4", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
+                    ui.input_text_area("var4", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide positions, example shown)", 
                                         "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,)
                     'Power analyses suggest that a minimum of 10 lineage-defining mutations are needed for accurate results.'
             with ui.panel_conditional("input.var2 === '2'"):
                 #with ui.tooltip(id="cond_tooltip2", placement="right"):
-                ui.input_file("file1", "Please select a SARS-CoV-2 genome consensus sequence FASTA file", accept=['.fasta', '.FASTA', '.fa'], multiple = False,)
+                ui.input_file("file1", "Please select a file that contains a SARS-CoV-2 genome consensus sequence (FASTA header required, U must be converted to T)", accept=['.fasta', '.FASTA', '.fa'], multiple = False,)
                 #'You must include a SINGLE FASTA header and all U in the sequence should be converted to T.'
             
             @reactive.calc
