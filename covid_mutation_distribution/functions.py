@@ -241,6 +241,8 @@ def parse_user_input(input):
     output - list of unique nucleotide positions where mutations occur with trailing commas and
     whitespace removed
     '''
+    if input is None:
+        return None
     # first strip trailing commas and whitespace from end of string input
     # then split by commas
     input_split = input.rstrip(',').rstrip().split(',')
@@ -290,6 +292,8 @@ def transition_or_transversion(nuc_pos_list):
     '''
     # first generate list of unique nucleotide positions where mutations occur with trailing commas and
     # whitespace removed
+    if nuc_pos_list is None:
+        return False, False
     nuc_pos_list_blank_removed = parse_user_input(nuc_pos_list)
     # replace uracil with thymidine
     nuc_list_standard = [s.replace('u', 'T').replace('U', 'T') for s in nuc_pos_list_blank_removed]

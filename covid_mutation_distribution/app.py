@@ -100,12 +100,14 @@ with ui.nav_panel("Home"):
             def parsed_file():
                 if not input.file1():
                     return
-                f = open(input.file1()[0]["datapath"], "r")
-                content = f.read()
-                f.close()
-                with open(Path(__file__).parent / "./data/results/user_input.fasta", 'w') as f2:
-                    f2.write(content)
-                return content
+                try:
+                    with open(input.file1()[0]["datapath"]) as f:
+                        content = f.read()
+                    with open(Path(__file__).parent / "./data/results/user_input.fasta", 'w') as f2:
+                        f2.write(content)
+                    return content
+                except:
+                    return "Error"
             
             @reactive.effect
             @reactive.event(input.file1)
@@ -129,7 +131,11 @@ with ui.nav_panel("Home"):
             @reactive.effect
             @reactive.event(input.file1)
             def _():
-                private_muts.set(nextcladefunctions.execute_nextclade())
+                results = parsed_file()
+                if results == "Error":
+                    private_muts.set(None)
+                else:
+                    private_muts.set(nextcladefunctions.execute_nextclade())
             @reactive.calc
             def number_of_mutations():
                 # return the number of mutations that the user has entered
