@@ -11,7 +11,7 @@ import os
 
 def generate_alignment_script():
     path = Path(__file__).parent / "./results/"
-    os.environ['PATH'] += ':'+path
+    os.environ['PATH'] += os.pathsep + str(path)
     ref_seqs = ['wuhan', 'BA2', 'BA286', 'XBB']
     script_path = Path(__file__).parent / "./data/results/nextcladerun.sh"
     results = Path(__file__).parent / "./data/results/"
