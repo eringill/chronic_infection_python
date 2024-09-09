@@ -9,6 +9,8 @@ from pathlib import Path
 from subprocess import call
 import os
 
+path = Path(__file__).parent / "./results/"
+os.environ['PATH'] += ':'+path
 
 def generate_alignment_script():
     ref_seqs = ['wuhan', 'BA2', 'BA286', 'XBB']
