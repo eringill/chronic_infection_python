@@ -133,13 +133,15 @@ with ui.nav_panel("Home"):
             def _():
                 results = parsed_file()
                 if results == "Error":
-                    private_muts.set(None)
+                    private_muts.set("Error")
                 else:
                     private_muts.set(nextcladefunctions.execute_nextclade())
             @reactive.calc
             def number_of_mutations():
                 # return the number of mutations that the user has entered
                 if private_muts.get():
+                    if private_muts.get() == "Error":
+                        return 
                     return len(functions.parse_user_input(private_muts.get()))
                 elif input.var2() != '1':
                     return len(functions.parse_user_input(input.var2()))
@@ -150,15 +152,16 @@ with ui.nav_panel("Home"):
             @reactive.event(input.submit, ignore_none=False)
             def print_mutations():
                 if private_muts.get():
+                    if private_muts.get() == "Error":
+                        private_muts.set(None)
+                        return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters. If you uploaded a file, make sure that the file contains at least 100 nucleotides and that it is the correct file format.'
                     transitions, transversions = functions.transition_or_transversion(private_muts.get())
                 elif input.var2() != '1':
                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
                 elif input.var2() == '1':
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 if transversions == False:
-                    if private_muts.get() == "Error":
-                        private_muts.set(None)
-                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters. If you uploaded a file, make sure that the file contains at least 100 nucleotides.'
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters. If you uploaded a file, make sure that the file contains at least 100 nucleotides and that it is the correct file format.'
                 if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
