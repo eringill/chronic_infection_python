@@ -12,6 +12,7 @@ import re # regex
 from pathlib import Path
 import faicons
 from htmltools import HTML
+import os
 
 ui.page_opts(
     title="SMDP: SARS-CoV-2 Mutation Distribution Profiler",
@@ -98,16 +99,26 @@ with ui.nav_panel("Home"):
             
             @reactive.calc
             def parsed_file():
+                err_msg = "Error"
                 if not input.file1():
                     return
                 try:
-                    with open(input.file1()[0]["datapath"]) as f:
+                    with open(input.file1()[0]["datapath"], "r") as f:
                         content = f.read()
-                    with open(Path(__file__).parent / "./data/results/user_input.fasta", 'w') as f2:
+                        err_msg += "read"
+                    file_path = Path(__file__).parent / "./data/results/user_input.fasta" #need unique name
+                    err_msg += "path"
+                    os.chmod(Path(__file__).parent / "./data/results/", 0o777)
+                    err_msg += "mod"
+                    file_path.touch()
+                    err_msg += "touch"
+                    with open(file_path, "w") as f2:
+                        err_msg += "open"
                         f2.write(content)
+                        err_msg += "write"
                     return content
                 except:
-                    return "Error"
+                    return err_msg
             
             @reactive.effect
             @reactive.event(input.file1)
@@ -123,7 +134,10 @@ with ui.nav_panel("Home"):
             with ui.tooltip(id="btn_tip_submit", placement="right"):
                 ui.input_action_button("submit", "Submit", class_="btn-success")
                 'Click here to analyze your list of mutations.'
-
+            @render.text
+            @reactive.event(input.file1)
+            def _():
+                return parsed_file()
         # second column (or "card")
         with ui.card():
             private_muts = reactive.value(None)
@@ -132,7 +146,7 @@ with ui.nav_panel("Home"):
             @reactive.event(input.file1)
             def _():
                 results = parsed_file()
-                if results == "Error":
+                if results.startswith("Error"):
                     private_muts.set("Error")
                 else:
                     private_muts.set(nextcladefunctions.execute_nextclade())

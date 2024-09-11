@@ -12,7 +12,7 @@ import shutil
 
 def generate_alignment_script():
     file_to_copy = Path(__file__).parent / "./nextclade"
-    path = Path(__file__).parent / "./results/"
+    path = Path(__file__).parent / "./data/results/"
     shutil.copy2(file_to_copy, path)
     os.environ['PATH'] += os.pathsep + str(path)
     ref_seqs = ['wuhan', 'BA2', 'BA286', 'XBB']
