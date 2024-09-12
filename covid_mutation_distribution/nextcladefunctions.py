@@ -10,7 +10,7 @@ from subprocess import call
 import os
 import shutil
 
-def generate_alignment_script():
+def generate_alignment_script(input_path):
     file_to_copy = Path(__file__).parent / "./nextclade"
     path = Path(__file__).parent / "./data/results/"
     shutil.copy2(file_to_copy, path)
@@ -19,7 +19,7 @@ def generate_alignment_script():
     script_path = Path(__file__).parent / "./data/results/nextcladerun.sh"
     results = Path(__file__).parent / "./data/results/"
     test_file = Path(__file__).parent / "./data/reference_seqs/"
-    user_file = Path(__file__).parent / "./data/results/user_input.fasta"
+    user_file = Path(__file__).parent / input_path
     script_path.touch()
     with script_path.open('w') as file:
         for i in ref_seqs:
@@ -72,7 +72,7 @@ def parse_private_mutations():
     os.system('rm -rf %s/*' % path)
     return (','.join(fixed_list))
         
-def execute_nextclade():
-    generate_alignment_script()
+def execute_nextclade(input_path):
+    generate_alignment_script(input_path)
     return parse_private_mutations()
 #print(execute_nextclade(Path(__file__).parent / '/Users/egill/Desktop/testFASTA/test.fasta'))

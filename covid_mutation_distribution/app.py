@@ -13,6 +13,7 @@ from pathlib import Path
 import faicons
 from htmltools import HTML
 import os
+import time
 
 ui.page_opts(
     title="SMDP: SARS-CoV-2 Mutation Distribution Profiler",
@@ -106,7 +107,8 @@ with ui.nav_panel("Home"):
                     with open(input.file1()[0]["datapath"], "r") as f:
                         content = f.read()
                         err_msg += "read"
-                    file_path = Path(__file__).parent / "./data/results/user_input.fasta" #need unique name
+                    timestr = time.strftime("%m%d-%H%M%S")
+                    file_path = Path(__file__).parent / f"./data/results/{timestr}.fasta" #need unique name
                     err_msg += "path"
                     os.chmod(Path(__file__).parent / "./data/results/", 0o777)
                     err_msg += "mod"
@@ -116,14 +118,14 @@ with ui.nav_panel("Home"):
                         err_msg += "open"
                         f2.write(content)
                         err_msg += "write"
-                    return content
+                    return content, file_path
                 except:
-                    return err_msg
+                    return err_msg, err_msg
             
             @reactive.effect
             @reactive.event(input.file1)
             def prompt_submit():
-                contents = parsed_file()
+                contents, file_path = parsed_file()
  
             # colour palette
             with ui.tooltip(id="btn_tooltip2", placement="right"):
@@ -137,7 +139,7 @@ with ui.nav_panel("Home"):
             @render.text
             @reactive.event(input.file1)
             def _():
-                return parsed_file()
+                return parsed_file()[1]
         # second column (or "card")
         with ui.card():
             private_muts = reactive.value(None)
@@ -145,11 +147,11 @@ with ui.nav_panel("Home"):
             @reactive.effect
             @reactive.event(input.file1)
             def _():
-                results = parsed_file()
+                results, file_path = parsed_file()
                 if results.startswith("Error"):
                     private_muts.set("Error")
                 else:
-                    private_muts.set(nextcladefunctions.execute_nextclade())
+                    private_muts.set(nextcladefunctions.execute_nextclade(file_path))
             @reactive.calc
             def number_of_mutations():
                 # return the number of mutations that the user has entered
