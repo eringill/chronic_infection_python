@@ -110,6 +110,7 @@ with ui.nav_panel("Home"):
                     timestr = time.strftime("%m%d-%H%M%S")
                     file_path = Path(__file__).parent / f"./data/results/{timestr}.fasta" #need unique name
                     err_msg += "path"
+                    os.system("sudo chown -R shiny:shiny ./data/results/")
                     os.chmod(Path(__file__).parent / "./data/results/", 0o777)
                     err_msg += "mod"
                     file_path.touch()
