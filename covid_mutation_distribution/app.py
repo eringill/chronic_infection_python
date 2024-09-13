@@ -14,6 +14,9 @@ import faicons
 from htmltools import HTML
 import os
 import time
+import subprocess
+import shutil
+import stat
 
 ui.page_opts(
     title="SMDP: SARS-CoV-2 Mutation Distribution Profiler",
@@ -103,17 +106,22 @@ with ui.nav_panel("Home"):
                 err_msg = "Error"
                 if not input.file1():
                     return
+                if not os.path.exists("./data/results/"):
+                    os.makedirs("./data/results/")
                 try:
                     with open(input.file1()[0]["datapath"], "r") as f:
                         content = f.read()
                         err_msg += "read"
                     timestr = time.strftime("%m%d-%H%M%S")
                     file_path = Path(__file__).parent / f"./data/results/{timestr}.fasta" #need unique name
-                    err_msg += "path"
-                    os.system("sudo chown -R shiny:shiny ./data/results/")
-                    os.chmod(Path(__file__).parent / "./data/results/", 0o777)
+                    os.system("chown -R shiny:shiny ./data/results/")
+                    err_msg += "own"
+                    # change permissions for the directory to 777
+                    subprocess.run(['chmod', '0777', "./data/results/"])
                     err_msg += "mod"
-                    file_path.touch()
+                    # make node for file in directory
+                    fh1 = os.open (f"./data/results/{timestr}.fasta", os.O_CREAT, 0o777)
+                    os.close (fh1)
                     err_msg += "touch"
                     with open(file_path, "w") as f2:
                         err_msg += "open"
