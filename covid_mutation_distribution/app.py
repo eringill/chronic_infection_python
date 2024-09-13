@@ -145,10 +145,7 @@ with ui.nav_panel("Home"):
             with ui.tooltip(id="btn_tip_submit", placement="right"):
                 ui.input_action_button("submit", "Submit", class_="btn-success")
                 'Click here to analyze your list of mutations.'
-            @render.text
-            @reactive.event(input.file1)
-            def _():
-                return parsed_file()[1]
+
         # second column (or "card")
         with ui.card():
             private_muts = reactive.value(None)
