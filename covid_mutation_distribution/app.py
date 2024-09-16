@@ -3,13 +3,20 @@ from functools import partial # for adding a navbar
 from shiny.express import input, render, ui # interactivity
 from shiny import reactive, render # reactivity (i.e. calculations)
 from shiny.ui import page_navbar # for adding a navbar
+from shiny.types import FileInfo
 import plotly.graph_objects as go # graph
 from shinywidgets import render_widget # rendering graph
 import functions # functions from functions.py
+import nextcladefunctions
 import re # regex
 from pathlib import Path
 import faicons
 from htmltools import HTML
+import os
+import time
+import subprocess
+import shutil
+import stat
 
 ui.page_opts(
     title="SMDP: SARS-CoV-2 Mutation Distribution Profiler",
@@ -46,7 +53,7 @@ with ui.nav_panel("Home"):
                 <img src=https://drive.google.com/thumbnail?id=10krtHUH8xbWrfkcVLfZTu6JJAFKtDK6b>
                 </div>
                 <p class="opening_paragraph">
-                Given a user-provided set of SARS-CoV-2 nucleotide mutations, this application compares the probability of generating this set from the following four distributions:</p>
+                Given a user-provided set of SARS-CoV-2 nucleotide mutations or genome consensus sequence, this application compares the probability of generating this set from the following four distributions:</p>
                 <ul class="unordered_list">
                     <li>Mutations observed during the first nine months of the pandemic (pre-VoC) (<b>global pre-VoC distribution</b>)
                     <li>Mutations observed during the Omicron era (<b>global Omicron distribution</b>)
@@ -78,17 +85,57 @@ with ui.nav_panel("Home"):
                 'var2',
                 'Please select a lineage whose mutation distribution you would like to visualize, then click "Submit"',
                 {'C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A':'BA.2.86 (Omicron lineage with chronic-like mutation profile)',
-                 'G3692T, G4181T, G5617T, C5822T, C6402T, C6638T, C6990T, C7124T, C7926T, C8733T, G9053T, C9611T, C10029T, G11083T, A11201G, C13665T, T14014G, C16466T, C19011T, C19572T, C20589T, C21618G, C21627T, G22028, T22917G, A23403G, C23604G, G24410A, G24815A, C25427T, C25469T, G25793A, T26767C, C27509T, T27638C, C27752T, T28072, T28092, A28247, A28461G, G28881T, G28916T, G29402T':HTML("Lineage from white-tailed deer (Sample 4205 from (<a href=' https://www.cell.com/iscience/fulltext/S2589-0042(23)02396-9 '>Kotwa et al., 2023</a>) "),
+                 'G3692T, G4181T, G5617T, C5822T, C6402T, C6638T, C6990T, C7124T, C7926T, C8733T, G9053T, C9611T, C10029T, G11083T, A11201G, C13665T, T14014G, C16466T, C19011T, C19572T, C20589T, C21618G, C21627T, G22028, T22917G, A23403G, C23604G, G24410A, G24815A, C25427T, C25469T, G25793A, T26767C, C27509T, T27638C, C27752T, T28072, T28092, A28247, A28461G, G28881T, G28916T, G29402T':HTML("Lineage from white-tailed deer (Sample 4205 from (<a href=' https://www.cell.com/iscience/fulltext/S2589-0042(23)02396-9 '>Kotwa et al., 2023</a>)) "),
                  'G4460A, G11071A, G3004A, T724C, C11300T, G22186A, G20493A, C2638T, G9128A, C24133T, C12445T, T25150C, G14743A, G18025A, A22633G, C12789T, G28325A, A6626G, T9007C, A15775G, A1844G, C5621T, G12761A, G22899A, C6606T': HTML('Molnupiravir-induced mutation signature (Patient D from (<a href="https://www.thelancet.com/journals/lanmic/article/PIIS2666-5247(23)00393-2/fulltext">Fountain-Jones et al. 2024</a>))'),
-                 '1':'I want to enter my own list of lineage-defining mutations'
+                 '1':'I want to enter my own list of lineage-defining mutations',
+                 '2':HTML('I want to enter sequence data in FASTA format (lineage-defining mutations calculated via <a href=" https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html ">NextClade CLI</a>)'),
                  }
             )
             with ui.panel_conditional("input.var2 === '1'"):
                 with ui.tooltip(id="cond_tooltip", placement="right"):
-                    ui.input_text_area("var4", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide position, example shown)", 
+                    ui.input_text_area("var4", "Please enter a comma-separated list of the lineage-defining mutations (using genomic nucleotide positions, example shown)", 
                                         "C897A, G3431T, A7842G, C8293T, G8393A, G11042T, C12789T, T13339C, T15756A, A18492G, ins21608, C21711T, G21941T, T22032C, C22208T, A22034G, C22295A, C22353A, A22556G, G22770A, G22895C, T22896A, G22898A, A22910G, C22916T, del23009, G23012A, C23013A, T23018C, T23019C, C23271T, C23423T, A23604G, C24378T, C24990T, C25207T, A26529C, A26610G, C26681T, C26833T, C28958A",autoresize=True,)
                     'Power analyses suggest that a minimum of 10 lineage-defining mutations are needed for accurate results.'
-
+            with ui.panel_conditional("input.var2 === '2'"):
+                #with ui.tooltip(id="cond_tooltip2", placement="right"):
+                ui.input_file("file1", "Please select a file that contains a SARS-CoV-2 genome consensus sequence (FASTA header required, U must be converted to T)", accept=['.fasta', '.FASTA', '.fa'], multiple = False,)
+                #'You must include a SINGLE FASTA header and all U in the sequence should be converted to T.'
+            
+            @reactive.calc
+            def parsed_file():
+                err_msg = "Error"
+                if not input.file1():
+                    return
+                if not os.path.exists("./data/results/"):
+                    os.makedirs("./data/results/")
+                try:
+                    with open(input.file1()[0]["datapath"], "r") as f:
+                        content = f.read()
+                        err_msg += "read"
+                    timestr = time.strftime("%m%d-%H%M%S")
+                    file_path = Path(__file__).parent / f"./data/results/{timestr}.fasta" #need unique name
+                    os.system("chown -R shiny:shiny ./data/results/")
+                    err_msg += "own"
+                    # change permissions for the directory to 777
+                    subprocess.run(['chmod', '0777', "./data/results/"])
+                    err_msg += "mod"
+                    # make node for file in directory
+                    fh1 = os.open (f"./data/results/{timestr}.fasta", os.O_CREAT, 0o777)
+                    os.close (fh1)
+                    err_msg += "touch"
+                    with open(file_path, "w") as f2:
+                        err_msg += "open"
+                        f2.write(content)
+                        err_msg += "write"
+                    return content, file_path
+                except:
+                    return err_msg, err_msg
+            
+            @reactive.effect
+            @reactive.event(input.file1)
+            def prompt_submit():
+                contents, file_path = parsed_file()
+ 
             # colour palette
             with ui.tooltip(id="btn_tooltip2", placement="right"):
                 ui.input_select("var3", "Select Color Palette",
@@ -101,22 +148,42 @@ with ui.nav_panel("Home"):
 
         # second column (or "card")
         with ui.card():
+            private_muts = reactive.value(None)
+            
+            @reactive.effect
+            @reactive.event(input.file1)
+            def _():
+                results, file_path = parsed_file()
+                if results.startswith("Error"):
+                    private_muts.set("Error")
+                else:
+                    private_muts.set(nextcladefunctions.execute_nextclade(file_path))
             @reactive.calc
             def number_of_mutations():
                 # return the number of mutations that the user has entered
-                if input.var2() != '1':
+                if private_muts.get():
+                    if private_muts.get() == "Error":
+                        return 
+                    return len(functions.parse_user_input(private_muts.get()))
+                elif input.var2() != '1':
                     return len(functions.parse_user_input(input.var2()))
-                else:
+                elif input.var2() == '1':
                     return len(functions.parse_user_input(input.var4()))
+
             @render.text
             @reactive.event(input.submit, ignore_none=False)
             def print_mutations():
-                if input.var2() != '1':
+                if private_muts.get():
+                    if private_muts.get() == "Error":
+                        private_muts.set(None)
+                        return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters. If you uploaded a file, make sure that the file contains at least 100 nucleotides and that it is the correct file format.'
+                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                elif input.var2() != '1':
                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                else:
+                elif input.var2() == '1':
                     transitions, transversions = functions.transition_or_transversion(input.var4())
                 if transversions == False:
-                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters.'
+                    return 'Please double check your input to ensure that it includes only numeric nucleotide positions between 1 and 30000 (no commas inside digits) and either zero, one or two of the nucleotides A, C, T, G or U. Optionally, each list item may start OR end with "ins", "del" or "indel". Please enter ONLY the first nucleotide at which an insertion, deletion or indel occurs (e.g. del28248). Do not use "_" characters. If you uploaded a file, make sure that the file contains at least 100 nucleotides and that it is the correct file format.'
                 if number_of_mutations() == 1:
                     return f'You have entered {number_of_mutations()} mutation.'
                 else:
@@ -129,9 +196,11 @@ with ui.nav_panel("Home"):
                                 # splits occur wherever there is a comma
                                 # then pass to function defined in functions.py
                                 # to get number of transitions, transversions
-                        if input.var2() != '1':
+                        if private_muts.get():
+                            transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                        elif input.var2() != '1':
                             transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                        else:
+                        elif input.var2() == '1':
                             transitions, transversions = functions.transition_or_transversion(input.var4())
                         return transitions, transversions
                     
@@ -190,31 +259,44 @@ with ui.nav_panel("Home"):
                                     @render.ui
                                     @reactive.event(input.submit, ignore_none=False)
                                     def mut_lineage():
-                                        if input.var2() != '1':
+                                        if private_muts.get():
+                                            transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                                        elif input.var2() != '1':
                                             transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                        else:
+                                        elif input.var2() == '1':
                                             transitions, transversions = functions.transition_or_transversion(input.var4())
                                         if transversions == False:
                                             return ''
+                                        if private_muts.get():
+                                            if (functions.mut_lineage_parsing(private_muts.get())[0] == '') and (functions.mut_lineage_parsing(private_muts.get())[1] == ''):
+                                                return 'NO'
+                                            else:
+                                                return f'Confirmed: {functions.mut_lineage_parsing(private_muts.get())[0]}'
                                         if input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
                                                 return 'NO'
                                             else:
                                                 return f'Confirmed: {functions.mut_lineage_parsing(input.var2())[0]}'
-                                        else:
+                                        elif input.var2() == '1':
                                             if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
                                                 return 'NO'
                                             else:
                                                 return f'Confirmed: {functions.mut_lineage_parsing(input.var4())[0]}'
+
                                     @render.ui
                                     @reactive.event(input.submit, ignore_none=False)
                                     def potential_mut_lineage():
-                                        if input.var2() != '1':
+                                        if private_muts.get():
+                                            if (functions.mut_lineage_parsing(private_muts.get())[0] == '') and (functions.mut_lineage_parsing(private_muts.get())[1] == ''):
+                                                return ''
+                                            else:
+                                                return f'Potential: {functions.mut_lineage_parsing(private_muts.get())[1]}'
+                                        elif input.var2() != '1':
                                             if (functions.mut_lineage_parsing(input.var2())[0] == '') and (functions.mut_lineage_parsing(input.var2())[1] == ''):
                                                 return ''
                                             else:
                                                 return f'Potential: {functions.mut_lineage_parsing(input.var2())[1]}'
-                                        else:
+                                        elif input.var2() == '1':
                                             if (functions.mut_lineage_parsing(input.var4())[0] == '') and (functions.mut_lineage_parsing(input.var4())[1] == ''):
                                                 return ''
                                             else:
@@ -244,9 +326,11 @@ with ui.nav_panel("Home"):
                 def plot_user_input():
                     # gui accepts input as a string, so it first needs to be split into a list 
                     # splits occur wherever there is a comma
-                    if input.var2() != '1':
+                    if private_muts.get():
+                        mutated_nucleotide_list = functions.parse_user_input(private_muts.get())
+                    elif input.var2() != '1':
                         mutated_nucleotide_list = functions.parse_user_input(input.var2())
-                    else:
+                    elif input.var2() == '1':
                         mutated_nucleotide_list = functions.parse_user_input(input.var4())
                     # try to remove non-digit characters, then convert each string in list into
                     # a digit
@@ -267,9 +351,11 @@ with ui.nav_panel("Home"):
                         if len(mut_nuc_list) == 0:
                             return [[0,0,0,0], [1,1,1,1], 1]               
                     except: return [[0,0,0,0], [1,1,1,1], 1]
-                    if input.var2() != '1':
+                    if private_muts.get():
+                        transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                    elif input.var2() != '1':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
                     if transversions == False:
                         return [[0,0,0,0], [1,1,1,1], 1]
@@ -308,9 +394,11 @@ with ui.nav_panel("Home"):
                     counts3, bins3 = functions.make_bins(x3,input.var(), deer = True)
                     # instatiate figure
                     fig = go.Figure()
-                    if input.var2() != '1':
+                    if private_muts.get():
+                        transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                    elif input.var2() != '1' or '2':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
                     if transversions == False:
                         return fig
@@ -392,16 +480,16 @@ with ui.nav_panel("Home"):
                     # of the specified mutation distributions
                     def calc_likelihoods():
                         # input user's bin size selection, global mutations, chronic mutations, deer mutations, user's mutations
-                        if input.var2() != '1':
+                        if private_muts.get():
+                            likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, private_muts.get())
+                        elif input.var2() != '1':
                             likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var2())
-                        else:
+                        elif input.var2() == '1':
                             likelihood_list, most_likely = functions.most_likely(input.var(), global_, global_late, chronic, deer, input.var4())
                         # return a list of tuples: [(global_likelihood, 'global'), (global_late_likelihood, 'global_late'),(chronic_likelihood, 'chronic'), (deer_likelihood, 'deer')]
                         # and the name of the distribution that the user's list of mutations fits best (e.g. 'chronic')
                         return likelihood_list, most_likely
                     with ui.card():
-                    
-
                         # print text out for the user
 
                         with ui.value_box(
@@ -418,9 +506,11 @@ with ui.nav_panel("Home"):
                             def txt1():
                             # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                             # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
-                                if input.var2() != '1':
+                                if private_muts.get():
+                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                                elif input.var2() != '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
                                 if transversions == False:
                                     return ''
@@ -441,9 +531,11 @@ with ui.nav_panel("Home"):
                             @render.ui
                             @reactive.event(input.submit, ignore_none=False)
                             def txt2():
-                                if input.var2() != '1':
+                                if private_muts.get():
+                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                                elif input.var2() != '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
                                 if transversions == False:
                                     return ''
@@ -466,9 +558,11 @@ with ui.nav_panel("Home"):
                             @render.ui
                             @reactive.event(input.submit, ignore_none=False)
                             def txt3():
-                                if input.var2() != '1':
+                                if private_muts.get():
+                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                                elif input.var2() != '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
                                 if transversions == False:
                                     return ''
@@ -493,9 +587,11 @@ with ui.nav_panel("Home"):
                             def txt4():
                                 # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                                 # display likelihoods, otherwise don't do anything
-                                if input.var2() != '1':
+                                if private_muts.get():
+                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                                elif input.var2() != '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                else:
+                                elif input.var2() == '1':
                                     transitions, transversions = functions.transition_or_transversion(input.var4())
                                 if transversions == False:
                                     return ''
@@ -513,9 +609,11 @@ with ui.nav_panel("Home"):
                 @render.ui
                 @reactive.event(input.submit, ignore_none=False)
                 def txt5():
-                    if input.var2() != '1':
+                    if private_muts.get():
+                        transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                    elif input.var2() != '1':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
                     if transversions == False:
                         return ''
@@ -531,9 +629,11 @@ with ui.nav_panel("Home"):
                 @render.ui
                 @reactive.event(input.submit, ignore_none=False)
                 def txt6():
-                    if input.var2() != '1':
+                    if private_muts.get():
+                        transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                    elif input.var2() != '1':
                         transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                    else:
+                    elif input.var2() == '1':
                         transitions, transversions = functions.transition_or_transversion(input.var4())
                     if transversions == False:
                         return ''
@@ -543,9 +643,14 @@ with ui.nav_panel("Home"):
                         else:
                             more_likely = f'{functions.times_more_likely(calc_likelihoods()[0])[0]:.2f}'
                         dist = functions.times_more_likely(calc_likelihoods()[0])[1]
+                        if private_muts.get():
+                            private_muts.set(None)
                         return f'({more_likely} times more likely than the {dist.replace("_", " ")} distribution.)'
                     except:
-                        return f'Please enter a list of nucleotide positions to calculate likelihoods.'
+                        private_muts.set(None)
+                        return f'Please enter a list of nucleotide positions or upload a FASTA file to calculate likelihoods.'
+                    
+                        
             
     ui.markdown(
         '''
@@ -564,7 +669,7 @@ SARS-CoV-2 evolution exhibits a strong clock-like signature with mutational chan
 
 When unusual lineages arise, however, it is challenging to know the evolutionary history leading to the observed genomic changes.  Other processes, including passage through animals, ([Bashor et al. 2021](https://www.pnas.org/doi/full/10.1073/pnas.2105253118), [Naderi et al. (2023)](https://elifesciences.org/articles/83685)) mutator lineages with error-prone polymerases ([Takada et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)), and exposure to mutagens such as molnupiravir ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)), can also leave unusual genomic signatures. 
 
-Given a user-provided set of nucleotide mutations defining an unusual lineage of SARS-CoV-2, this application compares the probability of generating this set from the following four distributions:
+Given a user-provided set of nucleotide mutations defining an unusual lineage of SARS-CoV-2 or a SARS-CoV-2 genome consensus sequence (from which lineage-defining mutations are derived via the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html)), this application compares the probability of generating this set from the following four distributions:
 - The list of mutations observed during the first nine months of the pandemic, prior to the spread of VoC [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4). (**global pre-VoC distribution**)
 - The list of mutations observed in Omicron-era sequences by Harari et al., included submission dates only up to 25 May 2022. (**global Omicron distribution**)
 - The list of mutations compiled from 27 chronic infections of immunocompromised individuals [Harari et al. (2022)](https://www.nature.com/articles/s41591-022-01882-4). (**chronic distribution**)
@@ -575,7 +680,7 @@ In the first paper, the authors demonstrate that specific lineage-defining mutat
 Feng et al. sequenced hundreds of SARS-CoV-2 samples obtained from white-tailed deer in the United States. They observed Alpha, Gamma, Delta and Omicron VOCs and determined that the deer infections arose from a minimum of 109 separate transmission events from humans. In addition, the deer were then able to transmit the virus to each other. Deer infections resulted in three documented human zoonoses. The SARS-CoV-2 virus displayed specific adaptation patterns in deer, which differ from adaptations seen in humans. 
 
 In addition, the app informs the user whether the data contain signals consistent with:
-- **Past molnupiravir Use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions. A sample molnupiravir-induced mutation distribution is taken from [Fountain-Jones et al. (2024)](https://www.thelancet.com/journals/lanmic/article/PIIS2666-5247(23)00393-2/fulltext#:~:text=We%20found%20that%20as%20early,patients%20not%20treated%20with%20molnupiravir)
+- **Past molnupiravir use:** The transition-to-transversion ratio of mutations is calculated in the focal lineage and compared to a background ratio of ~2:1 for SARS-CoV-2 and to case-control cohort studies indicate a ratio of ~14:1 under molnupiravir treatment ([Gruber et al. (2024)](https://onlinelibrary.wiley.com/doi/10.1002/jmv.29642)). A high ratio may thus suggest past exposure to molnupiravir or a similar factor inducing transitions. A sample molnupiravir-induced mutation distribution is taken from [Fountain-Jones et al. (2024)](https://www.thelancet.com/journals/lanmic/article/PIIS2666-5247(23)00393-2/fulltext#:~:text=We%20found%20that%20as%20early,patients%20not%20treated%20with%20molnupiravir)
 - **Mutator lineages:** Mutator alleles may contribute to the unusual features of a lineage by increasing the rate and type of mutation. Known mutators have been observed in nsp14 within the ExoN proofreading domain of SARS-CoV-2.  P203L in nsp14 was shown to have an elevated substitution rate in phylogenetic analyses, which was confirmed to double the mutation rate when passaged through hamsters ([Takada et al. (2023)](https://doi.org/10.1016/j.isci.2023.106210)). Sites F60S and C39F in nsp14 were associated with a 22-fold and 6-fold higher substitution rate in phylogenetic analyses ([Mack et al. (2023)](https://link.springer.com/article/10.1186/s12967-020-02344-6)). We considered mutations at sites 39, 60, and 203 in nsp14 to be known mutators and mutations in sites 90, 92, 191, 268, and 273, which fall within the ExoN proofreading domain of nsp14, to be potential mutators.
 
 **Table 1: Mutator Sites.** Known and Potential mutator sites (denoted by “Confirmed” and “Potential” in the “Site Type” column, respectively) are listed in the table below. Known sites have been confirmed experimentally, and the specific amino acid / nucleotide changes leading to mutator phenotypes are shown. Potential sites lie within the ExoN proofreading domain of nsp14 (as shown in Mack et al. 2023). The wild type amino acids, their positions within the mature nsp14 protein, encoding nucleotides and genomic locations are shown for these sites, but changes that would lead to mutator phenotypes have not been confirmed.
@@ -647,7 +752,7 @@ In addition, the app informs the user whether the data contain signals consisten
 <br>
 
 ### Application Use
-This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). 
+This application accepts a list of comma separated nucleotide positions in a SARS-CoV-2 genome where lineage-defining mutations occur. **Lineage-defining mutations are the subset of mutations in a lineage that have occurred since divergence from the larger SARS-CoV-2 tree.** A list of lineage-defining mutations (the “mutation set”) for [pangolin-designated SARS-CoV-2 lineages](https://en.wikipedia.org/wiki/Phylogenetic_Assignment_of_Named_Global_Outbreak_Lineages) can be found [here](https://github.com/cov-lineages/pango-designation?tab=readme-ov-file). The tool will also accept a FASTA file containing a **SINGLE** SARS-CoV-2 genome consensus sequence. In this case, the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html) is used to determine lineage-defining mutations (called private mutations in NextClade).
 
 The application determines the likelihood of observing the mutation set as a random draw from each distribution (chronic infection, deer-specific mutations, global (pre-VOC) and global (Omicron era)). The log likelihood of observing the mutation set from each distribution is displayed (in natural log units).
 
@@ -661,11 +766,11 @@ The addition of one to each bin ensures that there are no bins lacking data.
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
 - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`
 - Indels should be reported by including the first position only e.g. `ins21608` or `del28248` **NOT** `ins21608TCATGCCGCTGT` or `del28248_28250`
-- If you have an unaligned SARS-CoV-2 genome sequence and would like to use this tool, you must first place it into a phylogeny so that you can detect lineage-defining mutations. To get started, you may wish to access the tools associated with the [UCSC SARS-CoV-2 Genome Browser](https://genome.ucsc.edu/goldenPath/help/covidBrowserIntro.html#data). You can also visualize and export mutations relative to the founder of the clade a sequence belongs to using [NextClade](https://clades.nextstrain.org/).
-- If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/).
+- If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/)
+- FASTA files must contain a single sequence with a canonical header (e.g. `>genome_sequence`), have one of the following suffixes: `.FASTA`, `.fasta` or `.fa` and **ALL** U nucleotides must be converted to T before upload
 
 ### Additional Information
-More details are available in [arXiv preprint](https://doi.org/10.48550/arXiv.2407.11201).
+More details are available in the [arXiv preprint](https://doi.org/10.48550/arXiv.2407.11201).
 
 ### Example Mutation Distributions
 The example mutation distributions available for analysis on the main page are as follows:
@@ -677,8 +782,49 @@ The example mutation distributions available for analysis on the main page are a
         
 '''
     )
-          
-# name of notes tab 
+
+# name of FAQ tab 
+with ui.nav_panel("FAQ"):
+    # markdown of text to appear on second tab page
+    ui.markdown(
+'''
+-   **How do FASTA files have to be formatted to be analyzed successfully?**
+    
+    Each file must:
+    -   Contain AT LEAST 100 nucleotides
+    -   Have a FASTA header (First line starts with '>')
+    -   Have one of the following suffixes: .FASTA, .fasta, .fa
+    -   All *U* nucleotides must be converted to *T*
+    -   Contain a **SINGLE** genome sequence
+<br><br>
+-   **How do lineage-defining mutation lists have to be formatted to be analyzed successfully?**
+
+    - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`.
+    - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`.
+    - Indels should be reported by including the first position only e.g. `ins21608` or `del28248` **NOT** `ins21608TCATGCCGCTGT` or `del28248_28250`.
+<br><br>
+-   **What happens to my sequence when I upload it? How are lineage-defining mutations determined?**
+
+    -   When you upload a file, the sequence is analyzed using the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html). 
+    -   The reference dataset is determined via *ad hoc* alignment with all available [Nextstrain datasets](https://github.com/nextstrain/nextclade_data/tree/release/data/nextstrain/sars-cov-2) (Wuhan, BA.2, BA.2.86, XBB) *latest release = 2024-07-17.*
+    -   Each resulting .tsv file is examined to determine the best alignment score. The reference dataset with the best score is chosen as the reference for your sequence. 
+    -   The **private nucleotide mutations** (reversion substitutions, labeled substitutions and unlabeled substitutions) that are found from the alignment of your sequence with the reference are extracted.
+    -   These mutations are used as input to determine distributions, changes at mutator sites and transition:transversion ratio.
+<br><br>
+-   **What happens to the data I upload?**
+
+    All FASTA data you upload and the results of alignments/analyses are deleted immediately after calculations are complete. 
+    
+-   **What factors could affect the quality of my results?**
+
+    If you are uploading a FASTA file, the quality of your sequence (number of N nucleotides, sequence length, etc.) is very important for the generation of good-quality alignments and detection of mutations. 
+
+
+<p class="footer">If you use this tool, please cite the following: <a href="https://doi.org/10.48550/arXiv.2407.11201"><b>Gill, E.E. et al.</b> SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. <i>arXiv</i> 2024; 2407.11201v2</a></p>
+
+'''
+    )    
+# name of contact tab 
 with ui.nav_panel("Contact"):
     # markdown of text to appear on second tab page
     ui.markdown(
