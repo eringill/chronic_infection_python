@@ -782,8 +782,49 @@ The example mutation distributions available for analysis on the main page are a
         
 '''
     )
-          
-# name of notes tab 
+
+# name of FAQ tab 
+with ui.nav_panel("FAQ"):
+    # markdown of text to appear on second tab page
+    ui.markdown(
+'''
+-   **How do FASTA files have to be formatted to be analyzed successfully?**
+    
+    Each file must:
+    -   Contain AT LEAST 100 nucleotides
+    -   Have a FASTA header (First line starts with '>')
+    -   Have one of the following suffixes: .FASTA, .fasta, .fa
+    -   All *U* nucleotides must be converted to *T*
+    -   Contain a **SINGLE** genome sequence
+<br><br>
+-   **How do lineage-defining mutation lists have to be formatted to be analyzed successfully?**
+
+    - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`.
+    - These coordinates MUST be **genomic** coordinates, **not gene** coordinates like `S:G107Y`.
+    - Indels should be reported by including the first position only e.g. `ins21608` or `del28248` **NOT** `ins21608TCATGCCGCTGT` or `del28248_28250`.
+<br><br>
+-   **What happens to my sequence when I upload it? How are lineage-defining mutations determined?**
+
+    -   When you upload a file, the sequence is analyzed using the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html). 
+    -   The reference dataset is determined via *ad hoc* alignment with all available [Nextstrain datasets](https://github.com/nextstrain/nextclade_data/tree/release/data/nextstrain/sars-cov-2) (Wuhan, BA.2, BA.2.86, XBB) *latest release = 2024-07-17.*
+    -   Each resulting .tsv file is examined to determine the best alignment score. The reference dataset with the best score is chosen as the reference for your sequence. 
+    -   The **private nucleotide mutations** (reversion substitutions, labeled substitutions and unlabeled substitutions) that are found from the alignment of your sequence with the reference are extracted.
+    -   These mutations are used as input to determine distributions, changes at mutator sites and transition:transversion ratio.
+<br><br>
+-   **What happens to the data I upload?**
+
+    All FASTA data you upload and the results of alignments/analyses are deleted immediately after calculations are complete. 
+    
+-   **What factors could affect the quality of my results?**
+
+    If you are uploading a FASTA file, the quality of your sequence (number of N nucleotides, sequence length, etc.) is very important for the generation of good-quality alignments and detection of mutations. 
+
+
+<p class="footer">If you use this tool, please cite the following: <a href="https://doi.org/10.48550/arXiv.2407.11201"><b>Gill, E.E. et al.</b> SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. <i>arXiv</i> 2024; 2407.11201v2</a></p>
+
+'''
+    )    
+# name of contact tab 
 with ui.nav_panel("Contact"):
     # markdown of text to appear on second tab page
     ui.markdown(
