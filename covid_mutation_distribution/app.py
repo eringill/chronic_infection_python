@@ -50,7 +50,7 @@ with ui.nav_panel("Home"):
                 </script>
 
                 <div>
-                <img src=https://drive.google.com/thumbnail?id=10krtHUH8xbWrfkcVLfZTu6JJAFKtDK6b>
+                <img class="icon" src=https://drive.google.com/thumbnail?id=10krtHUH8xbWrfkcVLfZTu6JJAFKtDK6b>
                 </div>
                 <p class="opening_paragraph">
                 Given a user-provided set of SARS-CoV-2 nucleotide mutations or genome consensus sequence, this application compares the probability of generating this set from the following four distributions:</p>
@@ -662,6 +662,7 @@ with ui.nav_panel("Home"):
 # name of notes tab 
 with ui.nav_panel("Application Notes"):
     # markdown of text to appear on second tab page
+    ui.include_css(css_file)
     ui.markdown(
 '''
 ### Background
@@ -758,9 +759,18 @@ The application determines the likelihood of observing the mutation set as a ran
 
 Because the mutational data sets are sparse, the method bins sites across the genome when calculating likelihoods. The user can define the bin of interest: genes, genes splitting the spike protein into regions of interest, genome split into 500 nucleotide windows, or genome split into 1000 nucleotide windows. For a given bin choice, the log-likelihood of drawing the user-defined mutation set from each distribution is calculated from the multinomial distribution as:
 
-<p class="equation"><i>Σ(log(((distribution bin counts + 1) / Σ(distribution bin counts + 1))<sup>user bin counts</sup>))</i></p>
+<div>
+<img class="flow" src="https://drive.google.com/thumbnail?id=1UdZOmdXXuH2ulVQBNR1EGg_3mI0k6Qya&sz=w200" alt="equation">
+</div>
+<br>
 
 The addition of one to each bin ensures that there are no bins lacking data.
+
+The following diagram shows how your data are processed following upload:
+<div>
+<img class="flow" src="https://drive.google.com/thumbnail?id=1T143qOis9oERC7o_dV6XW_-uYKhcbCxA&sz=w600" alt="data flow">
+</div>
+<br>
 
 ### Notes on Input and Useful Tools
 - Your list can be formatted **with** or **without** nucleotide abbreviations. e.g. `C897A, G3431T, A7842G, C8293T,...`  OR `897, 3431, 7842, 8293,...`
