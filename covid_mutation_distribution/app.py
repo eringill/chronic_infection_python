@@ -766,7 +766,7 @@ Because the mutational data sets are sparse, the method bins sites across the ge
 
 The addition of one to each bin ensures that there are no bins lacking data.
 
-The following diagram shows how your data are processed following upload:
+The following diagram shows how your data are processed after submission of either a FASTA file or list of lineage-defining mutations:
 <div>
 <img class="flow" src="https://drive.google.com/thumbnail?id=1T143qOis9oERC7o_dV6XW_-uYKhcbCxA&sz=w600" alt="data flow">
 </div>
