@@ -778,6 +778,7 @@ The following diagram shows how your data are processed following upload:
 - Indels should be reported by including the first position only e.g. `ins21608` or `del28248` **NOT** `ins21608TCATGCCGCTGT` or `del28248_28250`
 - If you would like to convert gene coordinates to nucleotide coordinates, try using Theo Sanderson’s [tool](https://codon2nucleotide.theo.io/)
 - FASTA files must contain a single sequence with a canonical header (e.g. `>genome_sequence`), have one of the following suffixes: `.FASTA`, `.fasta` or `.fa` and **ALL** U nucleotides must be converted to T before upload
+- For more tips on formatting your input for optimal results, see the **"FAQ"** tab
 
 ### Additional Information
 More details are available in the [arXiv preprint](https://doi.org/10.48550/arXiv.2407.11201).
@@ -804,7 +805,7 @@ with ui.nav_panel("FAQ"):
     -   Contain AT LEAST 100 nucleotides
     -   Have a FASTA header (First line starts with '>')
     -   Have one of the following suffixes: .FASTA, .fasta, .fa
-    -   All *U* nucleotides must be converted to *T*
+    -   Have all *U* nucleotides converted to *T*
     -   Contain a **SINGLE** genome sequence
 <br><br>
 -   **How do lineage-defining mutation lists have to be formatted to be analyzed successfully?**
@@ -820,6 +821,7 @@ with ui.nav_panel("FAQ"):
     -   Each resulting .tsv file is examined to determine the best alignment score. The reference dataset with the best score is chosen as the reference for your sequence. 
     -   The **private nucleotide mutations** (reversion substitutions, labeled substitutions and unlabeled substitutions) that are found from the alignment of your sequence with the reference are extracted.
     -   These mutations are used as input to determine distributions, changes at mutator sites and transition:transversion ratio.
+    -   See the diagram that describes the flow of data within SMDP in the **"Application Notes"** tab for a visual depiction.
 <br><br>
 -   **What happens to the data I upload?**
 
