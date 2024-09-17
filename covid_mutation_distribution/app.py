@@ -802,11 +802,12 @@ with ui.nav_panel("FAQ"):
 -   **How do FASTA files have to be formatted to be analyzed successfully?**
     
     Each file must:
-    -   Contain AT LEAST 100 nucleotides
-    -   Have a FASTA header (First line starts with '>')
-    -   Have one of the following suffixes: .FASTA, .fasta, .fa
+    -   Contain AT LEAST 100 nucleotides (This is required for alignments to be built with SARS-CoV-2 references. In order to generate high quality results, it is recommended that a **complete** SARS-CoV-2 genome (30,000 nucleotides) be uploaded.)
+    -   Have a [FASTA header](https://en.wikipedia.org/wiki/FASTA_format) (First line starts with '`>`')
+    -   Have one of the following suffixes: `.FASTA`, `.fasta`, `.fa`
     -   Have all *U* nucleotides converted to *T*
     -   Contain a **SINGLE** genome sequence
+    -   Use `linux` line breaks with [`UTF-8`](https://en.wikipedia.org/wiki/UTF-8) encoding. (File types that support [rich text formatting](https://en.wikipedia.org/wiki/Rich_Text_Format), such as Word documents, Google docs or pdf files are not supported.)
 <br><br>
 -   **How do lineage-defining mutation lists have to be formatted to be analyzed successfully?**
 
