@@ -807,7 +807,7 @@ with ui.nav_panel("FAQ"):
     -   Have one of the following suffixes: `.FASTA`, `.fasta`, `.fa`
     -   Have all *U* nucleotides converted to *T*
     -   Contain a **SINGLE** genome sequence
-    -   Use `linux` line breaks with [`UTF-8`](https://en.wikipedia.org/wiki/UTF-8) encoding. (File types that support [rich text formatting](https://en.wikipedia.org/wiki/Rich_Text_Format), such as Word documents, Google docs or pdf files are not supported.)
+    -   Be flat text with [`UTF-8`](https://en.wikipedia.org/wiki/UTF-8) encoding. If you are using a Windows OS, [Notepad](https://apps.microsoft.com/detail/9msmlrh6lzf3?hl=en-US&gl=US) will work. For Mac, [BBEdit](https://www.barebones.com/) will work. (File types that support [rich text formatting](https://en.wikipedia.org/wiki/Rich_Text_Format), such as Word documents, Google docs or pdf files are not supported.) 
 <br><br>
 -   **How do lineage-defining mutation lists have to be formatted to be analyzed successfully?**
 
