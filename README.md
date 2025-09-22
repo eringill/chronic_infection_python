@@ -1,4 +1,6 @@
 # chronic_infection_python
+### If you use this application, please cite: 
+**[Gill, E.E. et al. SMDP: SARS-CoV-2 Mutation Distribution Profiler for rapid estimation of mutational histories of unusual lineages. arXiv 2024; 2407.11201v3](https://doi.org/10.48550/arXiv.2407.11201v3)**
 ### Overview
 This application was developed by the Computational Analysis, Modelling and Evolutionary Outcomes ([CAMEO](https://covarrnet.ca/computational-analysis-modelling-and-evolutionary-outcomes-cameo/)) pillar of Canada's Coronavirus Variants Rapid Response Network ([CoVaRR-Net](https://covarrnet.ca/)). Data analysis, code and maintenance of the application are conducted by Erin E. Gill, Fiona S.L. Brinkman, and Sarah Otto. 
 
