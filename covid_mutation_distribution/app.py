@@ -821,7 +821,7 @@ with ui.nav_panel("FAQ"):
 -   **What happens to my sequence when I upload it? How are lineage-defining mutations determined?**
 
     -   When you upload a file, the sequence is analyzed using the [NextClade CLI](https://docs.nextstrain.org/projects/nextclade/en/stable/user/nextclade-cli/index.html). 
-    -   The reference dataset is determined via *ad hoc* alignment with all available [Nextstrain datasets](https://github.com/nextstrain/nextclade_data/tree/release/data/nextstrain/sars-cov-2) (Wuhan, BA.2, BA.2.86, XBB) *latest release = 2024-07-17.*
+    -   The reference dataset is determined via *ad hoc* alignment with all available [Nextstrain datasets](https://github.com/nextstrain/nextclade_data/tree/release/data/nextstrain/sars-cov-2) (Wuhan, BA.2, BA.2.86, XBB) *latest release = 2025-09-19.*
     -   Each resulting .tsv file is examined to determine the best alignment score. The reference dataset with the best score is chosen as the reference for your sequence. 
     -   The **private nucleotide mutations** (reversion substitutions, labeled substitutions and unlabeled substitutions) that are found from the alignment of your sequence with the reference are extracted.
     -   These mutations are used as input to determine distributions, changes at mutator sites and transition:transversion ratio.
