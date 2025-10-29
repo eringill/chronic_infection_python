@@ -493,7 +493,7 @@ with ui.nav_panel("Home"):
                     with ui.card():
                         # print text out for the user
 
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def txt1():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
@@ -509,7 +509,7 @@ with ui.nav_panel("Home"):
                                 return f'{calc_likelihoods()[0][0][0]:.2f}'
                             except:
                                 pass
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def txt2():
                             if private_muts.get():
                                 transitions, transversions = functions.transition_or_transversion(private_muts.get())
@@ -525,11 +525,11 @@ with ui.nav_panel("Home"):
                                 return f'{calc_likelihoods()[0][1][0]:.2f}'
                             except:
                                 pass
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def get_color():
                             color = functions.select_palette(input.var3())[1]
                             return color
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def get_color1():
                             color = functions.select_palette(input.var3())[2]
                             return color
@@ -559,7 +559,7 @@ with ui.nav_panel("Home"):
                        
                     with ui.card():
                         # print text out for the user
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def txt3():
                         # if reactive calculations have been performed (i.e. likelihoods have been calculated),
                         # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
@@ -575,7 +575,7 @@ with ui.nav_panel("Home"):
                                 return f'{calc_likelihoods()[0][2][0]:.2f}'
                             except:
                                 pass
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def txt4():
                             if private_muts.get():
                                 transitions, transversions = functions.transition_or_transversion(private_muts.get())
@@ -591,11 +591,11 @@ with ui.nav_panel("Home"):
                                 return f'{calc_likelihoods()[0][3][0]:.2f}'
                             except:
                                 pass
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def get_color2():
                             color = functions.select_palette(input.var3())[3]
                             return color
-                        @reactive.calc
+                        @reactive.event(input.submit, ignore_none=False)
                         def get_color3():
                             color = functions.select_palette(input.var3())[4]
                             return color
