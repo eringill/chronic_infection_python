@@ -17,6 +17,7 @@ import time
 import subprocess
 import shutil
 import stat
+from shiny import ui as core_ui
 
 ui.page_opts(
     title="SMDP: SARS-CoV-2 Mutation Distribution Profiler",
@@ -492,113 +493,130 @@ with ui.nav_panel("Home"):
                     with ui.card():
                         # print text out for the user
 
-                        with ui.value_box(
-                            
-                            showcase=faicons.icon_svg("globe", width='50px'),
-                            theme=ui.value_box_theme(name = 'pre_voc', fg='white', bg='#e16462'),
-                            showcase_layout="left center", 
-                            max_height='90px'
-                        ):
-                            "global pre-VoC"
-                            
-                            @render.ui
-                            @reactive.event(input.submit, ignore_none=False)
-                            def txt1():
+                        @reactive.calc
+                        def txt1():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
+                            if private_muts.get():
+                                transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                            elif input.var2() != '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                            elif input.var2() == '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var4())
+                            if transversions == False:
+                                return ''
+                            try:
+                                return f'{calc_likelihoods()[0][0][0]:.2f}'
+                            except:
+                                pass
+                        @reactive.calc
+                        def txt2():
+                            if private_muts.get():
+                                transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                            elif input.var2() != '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                            elif input.var2() == '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var4())
+                            if transversions == False:
+                                return ''
                             # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                            # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
-                                if private_muts.get():
-                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
-                                elif input.var2() != '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                elif input.var2() == '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transversions == False:
-                                    return ''
-                                try:
-                                    return f'{calc_likelihoods()[0][0][0]:.2f}'
-                                except:
-                                    pass
-                        # print text out for the user
+                            # display likelihoods, otherwise don't do anything 
+                            try:
+                                return f'{calc_likelihoods()[0][1][0]:.2f}'
+                            except:
+                                pass
+                        @reactive.calc
+                        def get_color():
+                            color = functions.select_palette(input.var3())[1]
+                            return color
+                        @reactive.calc
+                        def get_color1():
+                            color = functions.select_palette(input.var3())[2]
+                            return color
+                        @render.ui
+                        def styled_card_core():
+                            color = get_color()
+                            result = txt1()
+                            return core_ui.card(
+                                core_ui.card_header("global pre-VoC"),
+                                core_ui.h3(f'{result}'),
+                                style=f"background-color: {color}; text-align: center;"
+                            )
 
-                        with ui.value_box(
-                            
-                            showcase=faicons.icon_svg("earth-americas", width="50px"),
-                            theme=ui.value_box_theme(name = 'omicron', fg='white', bg='#b12a90'),
-                            sshowcase_layout="left center", 
-                            max_height='90px'
-                        ):
-                            "global Omicron"
-                            @render.ui
-                            @reactive.event(input.submit, ignore_none=False)
-                            def txt2():
-                                if private_muts.get():
-                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
-                                elif input.var2() != '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                elif input.var2() == '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transversions == False:
-                                    return ''
-                                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                                # display likelihoods, otherwise don't do anything 
-                                try:
-                                    return f'{calc_likelihoods()[0][1][0]:.2f}'
-                                except:
-                                    pass
+                        @render.ui
+                        def styled_card_core1():
+                            color = get_color1()
+                            result = txt2()
+                            return core_ui.card(
+                                core_ui.card_header("global Omicron"),
+                                core_ui.h3(f'{result}'),
+                                style=f"background-color: {color}; text-align: center;"
+                            )
+                        
+                        
+                        # print text out for the user
+                    
+                       
                     with ui.card():
                         # print text out for the user
-                        with ui.value_box(
-                            
-                            showcase=faicons.icon_svg("head-side-virus", width="50px"),
-                            theme=ui.value_box_theme(name = 'chronic', fg='white', bg='#6a00a8'),
-                            sshowcase_layout="left center", 
-                            max_height='90px'
-                        ):
-                            "chronic"
-                            @render.ui
-                            @reactive.event(input.submit, ignore_none=False)
-                            def txt3():
-                                if private_muts.get():
-                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
-                                elif input.var2() != '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                elif input.var2() == '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transversions == False:
-                                    return ''
-                                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                                # display likelihoods, otherwise don't do anything 
-                                try:
-                                    return f'{calc_likelihoods()[0][2][0]:.2f}'
-                                except:
-                                    pass
-
-                        # print text out for the user
-                        with ui.value_box(
-                            
-                            showcase=faicons.icon_svg("virus-covid", width="50px"),
-                            theme=ui.value_box_theme(name = 'deer', fg='white', bg='#0d0887'),
-                            showcase_layout="left center", 
-                            max_height='90px'
-                        ):
-                            "deer"            
-                            @render.ui
-                            @reactive.event(input.submit, ignore_none=False)
-                            def txt4():
-                                # if reactive calculations have been performed (i.e. likelihoods have been calculated),
-                                # display likelihoods, otherwise don't do anything
-                                if private_muts.get():
-                                    transitions, transversions = functions.transition_or_transversion(private_muts.get())
-                                elif input.var2() != '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                                elif input.var2() == '1':
-                                    transitions, transversions = functions.transition_or_transversion(input.var4())
-                                if transversions == False:
-                                    return ''
-                                try:
-                                    return f'{calc_likelihoods()[0][3][0]:.2f}'
-                                except:
-                                    pass
+                        @reactive.calc
+                        def txt3():
+                        # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                        # display likelihoods, otherwise prompt user to enter a list of mutated nucleotide positions
+                            if private_muts.get():
+                                transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                            elif input.var2() != '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                            elif input.var2() == '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var4())
+                            if transversions == False:
+                                return ''
+                            try:
+                                return f'{calc_likelihoods()[0][2][0]:.2f}'
+                            except:
+                                pass
+                        @reactive.calc
+                        def txt4():
+                            if private_muts.get():
+                                transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                            elif input.var2() != '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                            elif input.var2() == '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var4())
+                            if transversions == False:
+                                return ''
+                            # if reactive calculations have been performed (i.e. likelihoods have been calculated),
+                            # display likelihoods, otherwise don't do anything 
+                            try:
+                                return f'{calc_likelihoods()[0][3][0]:.2f}'
+                            except:
+                                pass
+                        @reactive.calc
+                        def get_color2():
+                            color = functions.select_palette(input.var3())[3]
+                            return color
+                        @reactive.calc
+                        def get_color3():
+                            color = functions.select_palette(input.var3())[4]
+                            return color
+                        @render.ui
+                        def styled_card_core2():
+                            color = get_color2()
+                            result = txt3()
+                            return core_ui.card(
+                                core_ui.card_header("chronic"),
+                                core_ui.h3(f'{result}'),
+                                style=f"background-color: {color}; text-align: center;"
+                            )
+                        @render.ui
+                        def styled_card_core3():
+                            color = get_color3()
+                            result = txt4()
+                            return core_ui.card(
+                                core_ui.card_header("deer"),
+                                core_ui.h3(f'{result}'),
+                                style=f"background-color: {color}; text-align: center;"
+                            )
                         
             # print text out for the user
             with ui.value_box(
