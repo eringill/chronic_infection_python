@@ -229,7 +229,7 @@ def select_palette(palette_name):
     elif palette_name == "plasma":
         colour_list = ['#fca636', '#e16462', '#b12a90', '#6a00a8', '#0d0887']
     elif palette_name == "seaborn":
-        colour_list = ['#0173B2', '#029E73', '#D55E00', '#CC78BC', '#ECE133']
+        colour_list = ['#0173B2', '#de8f05', '#029e73', '#d55e00', '#cc78bc']
     return colour_list
 
 # function to parse user's input into a list and make sure each entry is unique
