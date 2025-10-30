@@ -191,59 +191,62 @@ with ui.nav_panel("Home"):
                     return f'You have entered {number_of_mutations()} mutations.'
             with ui.layout_column_wrap(width=1/2):
                 with ui.card():
-                    @reactive.calc
-                    def get_transition_transversion_ratio():
-                                # gui accepts input as a string, so it first needs to be split into a list 
-                                # splits occur wherever there is a comma
-                                # then pass to function defined in functions.py
-                                # to get number of transitions, transversions
-                        if private_muts.get():
-                            transitions, transversions = functions.transition_or_transversion(private_muts.get())
-                        elif input.var2() != '1':
-                            transitions, transversions = functions.transition_or_transversion(input.var2())                                   
-                        elif input.var2() == '1':
-                            transitions, transversions = functions.transition_or_transversion(input.var4())
-                        return transitions, transversions
-                    
-                    with ui.tooltip(id="btn_tooltip3", placement="right"):        
-                        @render_widget
-                        @reactive.event(input.submit, ignore_none=False)
-                                # function to plot transition/transversion ratio heatmap
-                        def heatmap():
-                            transitions, transversions = get_transition_transversion_ratio()
-                            fig2 = go.Figure()
-                            config = {'displayModeBar': False}
-                            if transversions == False:
+                    with ui.div(style="display: flex; justify-content: center; align-items: center; height: 100%;"):
+                        @reactive.calc
+                        def get_transition_transversion_ratio():
+                                    # gui accepts input as a string, so it first needs to be split into a list 
+                                    # splits occur wherever there is a comma
+                                    # then pass to function defined in functions.py
+                                    # to get number of transitions, transversions
+                            if private_muts.get():
+                                transitions, transversions = functions.transition_or_transversion(private_muts.get())
+                            elif input.var2() != '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var2())                                   
+                            elif input.var2() == '1':
+                                transitions, transversions = functions.transition_or_transversion(input.var4())
+                            return transitions, transversions
+                        
+                        with ui.tooltip(id="btn_tooltip3", placement="right"):        
+                            @render_widget
+                            @reactive.event(input.submit, ignore_none=False)
+                                    # function to plot transition/transversion ratio heatmap
+                            
+                            def heatmap():
+                                transitions, transversions = get_transition_transversion_ratio()
+                                fig2 = go.Figure()
+                                config = {'displayModeBar': False}
+                                if transversions == False:
+                                    fig2.update_yaxes(showticklabels=False)
+                                    fig2.update_xaxes(showticklabels=False)
+                                    fig2.update_layout(height=150, width=300)
+                                    fig2.update_layout(title_text='Transition to Transversion Ratio') # title of plot
+                                    return fig2
+                                fig2.add_trace(go.Heatmap(
+                                    z=[[float(transitions)/float(transversions)]],
+                                    text=[[f'{float(transitions)/transversions:.2f}']],
+                                    texttemplate='%{text}',
+                                    colorscale='RdBu',
+                                    textfont={'size':20},
+                                    zmax=16, zmin=0,
+                                    hovertemplate='Transition - Transversion Ratio: %{z}',
+                                    colorbar=dict(
+                                        title="Ratio",
+                                        titleside="top",
+                                        tickmode="array",
+                                        tickvals=[2, 8, 14],
+                                        labelalias={2: "Typical", 14: "Molnupiravir-induced"},
+                                        ticks="outside"
+                                    )))
+                                
                                 fig2.update_yaxes(showticklabels=False)
                                 fig2.update_xaxes(showticklabels=False)
                                 fig2.update_layout(height=150, width=300)
                                 fig2.update_layout(title_text='Transition to Transversion Ratio') # title of plot
+                                
+                                # return figure
                                 return fig2
-                            fig2.add_trace(go.Heatmap(
-                                z=[[float(transitions)/float(transversions)]],
-                                text=[[f'{float(transitions)/transversions:.2f}']],
-                                texttemplate='%{text}',
-                                colorscale='RdBu',
-                                textfont={'size':20},
-                                zmax=16, zmin=0,
-                                hovertemplate='Transition - Transversion Ratio: %{z}',
-                                colorbar=dict(
-                                    title="Ratio",
-                                    titleside="top",
-                                    tickmode="array",
-                                    tickvals=[2, 8, 14],
-                                    labelalias={2: "Typical", 14: "Molnupiravir-induced"},
-                                    ticks="outside"
-                                )))
-                            
-                            fig2.update_yaxes(showticklabels=False)
-                            fig2.update_xaxes(showticklabels=False)
-                            fig2.update_layout(height=150, width=300)
-                            fig2.update_layout(title_text='Transition to Transversion Ratio') # title of plot
-                            
-                            # return figure
-                            return fig2
-                        'The transition:transversion ratio of SARS-CoV-2 is typically ~2:1, while molnupiravir induces a ratio of between 9:1 and 14:1 (Gruber et al. 2024).'
+                            'The transition:transversion ratio of SARS-CoV-2 is typically ~2:1, while molnupiravir induces a ratio of between 9:1 and 14:1 (Gruber et al. 2024).'
+                        
                     ui.markdown(
                             '''
                             <p class="opening_paragraph">(see <b><a href="https://movbranchapp.streamlit.app/">movbranch</a></b> for additional molnupiravir analyses)</p>
