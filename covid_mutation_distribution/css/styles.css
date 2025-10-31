@@ -38,6 +38,7 @@ th {
     text-align: center; 
     font-size: 12pt;
     color: #0082cb;
+    text-shadow: 0px 0px 2px #808080;
 }
 
 .icon {

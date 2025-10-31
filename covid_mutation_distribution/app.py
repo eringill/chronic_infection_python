@@ -542,8 +542,8 @@ with ui.nav_panel("Home"):
                             result = txt1()
                             return core_ui.card(
                                 core_ui.card_header("global pre-VoC"),
-                                core_ui.h3(f'{result}'),
-                                style=f"background-color: {color}; text-align: center;"
+                                core_ui.h2(f'{result}'),
+                                style=f"background-color: {color}; text-align: center; color: #FFFFFF;"
                             )
 
                         @render.ui
@@ -552,8 +552,8 @@ with ui.nav_panel("Home"):
                             result = txt2()
                             return core_ui.card(
                                 core_ui.card_header("global Omicron"),
-                                core_ui.h3(f'{result}'),
-                                style=f"background-color: {color}; text-align: center;"
+                                core_ui.h2(f'{result}'),
+                                style=f"background-color: {color}; text-align: center; color: #FFFFFF;"
                             )
                         
                         
@@ -608,8 +608,8 @@ with ui.nav_panel("Home"):
                             result = txt3()
                             return core_ui.card(
                                 core_ui.card_header("chronic"),
-                                core_ui.h3(f'{result}'),
-                                style=f"background-color: {color}; text-align: center;"
+                                core_ui.h2(f'{result}'),
+                                style=f"background-color: {color}; text-align: center; color: #FFFFFF;"
                             )
                         @render.ui
                         def styled_card_core3():
@@ -617,8 +617,8 @@ with ui.nav_panel("Home"):
                             result = txt4()
                             return core_ui.card(
                                 core_ui.card_header("deer"),
-                                core_ui.h3(f'{result}'),
-                                style=f"background-color: {color}; text-align: center;"
+                                core_ui.h2(f'{result}'),
+                                style=f"background-color: {color}; text-align: center; color: #FFFFFF;"
                             )
                         
             # print text out for the user
